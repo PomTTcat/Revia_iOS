@@ -17,6 +17,7 @@ struct SettingsView: View {
                     ForEach(AppAppearance.allCases) { mode in Text(mode.title).tag(mode.rawValue) }
                 }
                 Toggle(L("collapse_notes"), isOn: $collapseNotes)
+                NavigationLink { PlansView() } label: { Text(L("study_plans")) }
                 NavigationLink { ReminderView() } label: {
                     HStack {
                         Text(L("daily_reminder"))

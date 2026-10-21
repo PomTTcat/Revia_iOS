@@ -162,3 +162,48 @@
 "theme_light" = "Light";
 
 "theme_dark" = "Dark";
+
+"reset_reviews" = "Reset review schedule";
+
+
+"reset_note" = "The study schedule for this sentence has been refreshed.\n\nStarting today: review after 1, 3, 7, 14 and 30 days, then monthly, for 15 reviews in total. The old future schedule is deactivated. Past dates, the original learning date and existing audio are kept. Refreshing again today does not duplicate the schedule.";
+
+"reset_date_error" = "The reset date cannot precede the previous reset. Check your device date.";
+
+"reset_done" = "Study schedule refreshed";
+
+"study_plans" = "Study plans";
+
+"study_plan" = "Study plan";
+
+"default_plan" = "Default plan";
+
+"new_plan" = "New plan";
+
+"plan_name" = "Plan name";
+
+"save_plan" = "Save plan";
+
+"plan_invalid" = "Enter a name and arrange 1–15 valid review nodes. Add at least one day before each node and end with a review node.";
+
+"plan_limit" = "Up to 3 plans, including the default. Editing or deleting templates does not change existing sentences.";
+
+"plan_builder_note" = "Add day blocks to accumulate time, then place a Review node. Example: 1 day → Review → 2 days → Review schedules days 1 and 3 after learning. Tap a block below to remove it.";
+
+"days_block" = "%d d";
+
+"review_node" = "Review";
+
+"node_count" = "Review nodes: %d / 15";
+
+"undo_block" = "Undo";
+
+"clear_blocks" = "Clear";
+
+"remove_block" = "Remove block %d";
+
+"plan_summary" = "Review on days %@ after learning.";
+
+"plan_finish_node" = "Add days and finish with a review node. Up to 15 nodes.";
+
+"reset_custom_note" = "The study schedule has been refreshed. Starting today, reviews fall on days %@. Old future dates are deactivated. Past dates, the original learning date and audio are kept. Refreshing again today does not add duplicates.";

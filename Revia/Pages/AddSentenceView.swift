@@ -3,9 +3,12 @@ import SwiftUI
 struct AddSentenceView: View {
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var store: Store
+    @EnvironmentObject private var plans: PlanCatalog
     @EnvironmentObject private var speech: SpeechController
     @Environment(\.dismiss) private var dismiss
     let date: Date
+    @State private var selectedPlanID = StudyPlan.defaultPlan.id
+    private var selectedPlan: StudyPlan { plans.all.first { $0.id == selectedPlanID } ?? .defaultPlan }
     @State private var text = ""
     @State private var translation = ""
     @State private var error: String?
@@ -22,7 +25,11 @@ struct AddSentenceView: View {
                     field(title: L("sentence"), text: $text, placeholder: L("sentence_hint"), height: 120)
                     field(title: L("meaning"), text: $translation, placeholder: L("meaning_hint"), height: 90)
                     LabeledContent(L("learning_date"), value: Localization.date(date, template: "yMMMd"))
-                    Text(L("review_plan")).font(.system(size: 13)).foregroundStyle(Palette.muted).lineSpacing(4)
+                    Picker(L("study_plan"), selection: $selectedPlanID) {
+                        ForEach(plans.all) { plan in Text(plan.title).tag(plan.id) }
+                    }.disabled(saving)
+                    Text(selectedPlan.offsets.map { L("plan_summary", $0.map(String.init).joined(separator: "、")) } ?? L("review_plan"))
+                        .font(.system(size: 13)).foregroundStyle(Palette.muted).lineSpacing(4)
                     Button {
                         if speech.canGenerate { generateSpeech.toggle() }
                     } label: {
@@ -54,7 +61,7 @@ struct AddSentenceView: View {
         guard !saving, !saved else { return }
         saving = true
         do {
-            let sentence = try store.add(text: text, translation: translation, date: date)
+            let sentence = try store.add(text: text, translation: translation, date: date, plan: selectedPlan)
             saved = true
             if generateSpeech && speech.canGenerate {
                 speech.prepare(sentence) { result in

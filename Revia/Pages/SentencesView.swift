@@ -15,7 +15,7 @@ struct SentencesView: View {
                     EmptyViewMessage(text: L(query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "no_sentences" : "no_results"))
                 }
                 ForEach(sentences) { sentence in
-                    SentenceCard(sentence: sentence, fresh: false, showTimestamp: true)
+                    SentenceCard(sentence: sentence, fresh: false)
                 }
             }.padding(24)
         }

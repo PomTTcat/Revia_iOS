@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// A single one-second circuit follows the three nodes in the existing app icon.
+/// A single circuit gradually decelerates as it returns to the first node.
 struct BrainCircuit: View {
+    static let duration: Double = 1.6
     let animated: Bool
     @State private var startedAt = Date()
     private let nodes = [CGPoint(x: 420, y: 300), CGPoint(x: 725, y: 448), CGPoint(x: 500, y: 596)]
@@ -14,7 +15,9 @@ struct BrainCircuit: View {
             if animated {
                 background.opacity(0.67)
                 TimelineView(.animation(minimumInterval: 1.0 / 60)) { timeline in
-                    let elapsed = min(1, max(0, timeline.date.timeIntervalSince(startedAt)))
+                    let time = min(1, max(0, timeline.date.timeIntervalSince(startedAt) / Self.duration))
+                    // Quadratic ease-out: fast at the start, smoothly slowing to a stop.
+                    let elapsed = 1 - (1 - time) * (1 - time)
                     Canvas { context, size in
                         let scale = size.width / 1024
                         let transform = CGAffineTransform(scaleX: scale, y: scale)

@@ -9,6 +9,7 @@ struct ReviaApp: App {
     @StateObject private var store = Store()
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var reminder = ReminderController()
+    @StateObject private var plans = PlanCatalog()
     @StateObject private var language = AppLanguage()
     var body: some Scene {
         WindowGroup {
@@ -24,7 +25,7 @@ struct ReviaApp: App {
                 .task {
                     guard showingLaunch else { return }
                     if !reduceMotion {
-                        do { try await Task.sleep(for: .seconds(1)) }
+                        do { try await Task.sleep(for: .seconds(BrainCircuit.duration)) }
                         catch { return }
                     }
                     withAnimation(.easeOut(duration: reduceMotion ? 0.1 : 0.18), completionCriteria: .logicallyComplete) {
@@ -36,6 +37,7 @@ struct ReviaApp: App {
                 .environmentObject(store).environmentObject(store.speech)
                 .environmentObject(language)
                 .environmentObject(reminder)
+                .environmentObject(plans)
                 .task { await reminder.refresh() }
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active { Task { await reminder.refresh() } }

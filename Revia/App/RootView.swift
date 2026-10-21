@@ -26,9 +26,9 @@ struct RootView: View {
                 }.frame(maxWidth: .infinity, maxHeight: .infinity).background(Palette.background)
             }
         }
-        .alert(store.error != nil ? L("action_failed") : L("audio_notice"), isPresented: Binding(get: { store.error != nil || speech.alert != nil }, set: { if !$0 { store.error = nil; speech.alert = nil } })) {
-            Button(L("ok"), role: .cancel) { store.error = nil; speech.alert = nil }
-        } message: { Text(store.error ?? speech.alert ?? L("try_again")) }
+        .alert(store.error != nil ? L("action_failed") : (store.notice != nil ? L("reset_done") : L("audio_notice")), isPresented: Binding(get: { store.error != nil || store.notice != nil || speech.alert != nil }, set: { if !$0 { store.error = nil; store.notice = nil; speech.alert = nil } })) {
+            Button(L("ok"), role: .cancel) { store.error = nil; store.notice = nil; speech.alert = nil }
+        } message: { Text(store.error ?? store.notice ?? speech.alert ?? L("try_again")) }
     }
 }
 

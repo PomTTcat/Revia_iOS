@@ -7,6 +7,7 @@ final class Store: ObservableObject {
     @Published private(set) var reviews: [Review] = []
     @Published private(set) var ready = false
     @Published var error: String?
+    @Published var notice: String?
     let speech = SpeechController()
     private var database: Database?
     init() { load() }
@@ -28,9 +29,9 @@ final class Store: ObservableObject {
         self.sentences = sentences; self.reviews = reviews
     }
     @discardableResult
-    func add(text: String, translation: String, date: Date) throws -> Sentence {
+    func add(text: String, translation: String, date: Date, plan: StudyPlan = .defaultPlan) throws -> Sentence {
         guard let database else { throw ReviaError.message(L("db_not_ready")) }
-        let id = try database.add(text: text, translation: translation, date: Schedule.key(date))
+        let id = try database.add(text: text, translation: translation, date: Schedule.key(date), plan: plan)
         try refresh()
         guard let sentence = sentences.first(where: { $0.id == id }) else { throw ReviaError.message(L("sentence_read_failed")) }
         return sentence
@@ -44,6 +45,19 @@ final class Store: ObservableObject {
             try refresh()
             if let deletionError { throw deletionError }
         } catch { self.error = error.localizedDescription }
+    }
+    @discardableResult
+    func resetReviews(_ sentence: Sentence) -> Bool {
+        do {
+            guard let database else { throw ReviaError.message(L("db_not_ready")) }
+            try database.resetReviews(sentenceID: sentence.id, on: Schedule.key(Date()))
+            try refresh()
+            notice = sentence.studyPlan?.offsets.map { L("reset_custom_note", $0.map(String.init).joined(separator: "、")) } ?? L("reset_note")
+            return true
+        } catch {
+            self.error = error.localizedDescription
+            return false
+        }
     }
     func exportBackup() throws -> Data {
         guard let database else { throw ReviaError.message(L("db_not_ready")) }

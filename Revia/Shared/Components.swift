@@ -28,32 +28,48 @@ struct SentenceCard: View {
     @EnvironmentObject private var speech: SpeechController
     let sentence: Sentence
     let fresh: Bool
-    var showTimestamp = false
     @State private var confirming = false
     @AppStorage("notes.collapsed") private var collapseNotes = false
     @State private var notesExpanded: Bool?
     var body: some View {
         let _ = language.code
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 7) {
             HStack {
                 Text(L("added_on", (try? Schedule.date(sentence.learningDate)).map { Localization.date($0, template: "yMMMd") } ?? sentence.learningDate)).font(.system(size: 12)).foregroundStyle(Palette.muted)
                 Spacer()
-                Button(L("delete"), role: .destructive) { confirming = true }
-                    .font(.system(size: 12)).padding(.vertical, 5)
-            }
-            if showTimestamp {
-                Text(L("created_on", sentence.createdAt.map { Localization.date($0, template: "yMMMdjms") } ?? L("unknown_time")))
-                    .font(.system(size: 12)).foregroundStyle(Palette.muted)
+                Button(role: .destructive) { confirming = true } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 14, weight: .medium))
+                        .frame(width: 44, height: 44, alignment: .trailing)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(Palette.muted)
+                .accessibilityLabel(L("delete"))
+                .padding(.vertical, -12.5)
             }
             Text(sentence.text).font(.system(size: 21, weight: .medium))
                 .lineSpacing(6).textSelection(.enabled).foregroundStyle(Palette.ink)
-            Button { speech.play(sentence) } label: {
-                HStack(spacing: 8) {
-                    if speech.busyIDs.contains(sentence.id) { ProgressView().controlSize(.small) }
-                    Image(systemName: speech.playingID == sentence.id ? "stop.fill" : "play.fill")
-                    Text(speech.busyIDs.contains(sentence.id) ? L("generating_audio") : (speech.playingID == sentence.id ? L("stop_audio") : L("play_audio")))
-                }.font(.system(size: 14, weight: .medium)).foregroundStyle(Palette.green).padding(.vertical, 6)
-            }.buttonStyle(.plain).disabled(speech.busyIDs.contains(sentence.id))
+            HStack {
+                Button { speech.play(sentence) } label: {
+                    Group {
+                        if speech.busyIDs.contains(sentence.id) { ProgressView().controlSize(.small) }
+                        else { Image(systemName: speech.playingID == sentence.id ? "stop.fill" : "play.fill") }
+                    }
+                    .font(.system(size: 18, weight: .medium)).frame(width: 44, height: 44, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain).foregroundStyle(Palette.green).disabled(speech.busyIDs.contains(sentence.id))
+                .accessibilityLabel(L(speech.busyIDs.contains(sentence.id) ? "generating_audio" : (speech.playingID == sentence.id ? "stop_audio" : "play_audio")))
+                Spacer()
+                Button { store.resetReviews(sentence) } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 18, weight: .medium)).frame(width: 44, height: 44, alignment: .trailing)
+                        .contentShape(Rectangle())
+                }.buttonStyle(.plain).foregroundStyle(Palette.green)
+                    .accessibilityLabel(L("reset_reviews"))
+            }
+            .padding(.vertical, -6.5)
             if !sentence.translation.isEmpty {
                 DisclosureGroup(isExpanded: Binding(get: { notesExpanded ?? !collapseNotes }, set: { notesExpanded = $0 })) {
                     Text(sentence.translation).font(.system(size: 15)).lineSpacing(5)
@@ -64,8 +80,9 @@ struct SentenceCard: View {
                 }.tint(Palette.green)
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading).padding(20)
-        .background(fresh ? Palette.fresh : Palette.review, in: RoundedRectangle(cornerRadius: 20))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 20).padding(.top, 6).padding(.bottom, 8)
+        .background(fresh ? Palette.fresh : Palette.review, in: RoundedRectangle(cornerRadius: 12))
         .onChange(of: collapseNotes) { _, _ in notesExpanded = nil }
         .alert(L("delete_title"), isPresented: $confirming) {
             Button(L("cancel"), role: .cancel) {}

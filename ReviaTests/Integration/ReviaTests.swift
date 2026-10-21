@@ -160,3 +160,132 @@ final class BackupTests: XCTestCase {
         XCTAssertThrowsError(try ReviaBackup.decode(Data(unknown.utf8)))
     }
 }
+
+final class ReviewResetTests: XCTestCase {
+    func testResetKeepsHistoryAndArchivesOriginalFutureWithoutChangingSentenceOrAudio() throws {
+        let database = try Database(path: ":memory:")
+        let id = try database.add(text: "Difficult", translation: "Note", date: "2026-10-01")
+        let original = try XCTUnwrap(database.sentences().first)
+        let dates = try Schedule.reviews(for: "2026-10-01")
+        let audio = AudioRecord(sentenceID: id, text: original.text, voiceID: "voice", modelID: ElevenLabs.model, filename: AudioCache.filename(text: original.text, voice: "voice", model: ElevenLabs.model), version: AudioCache.version)
+        try database.saveAudio(audio)
+        try database.resetReviews(sentenceID: id, on: "2026-10-10")
+        let expected = Set(dates.filter { $0 <= "2026-10-10" } + ["2026-10-10"] + (try Schedule.reviews(for: "2026-10-10")))
+        XCTAssertEqual(Set(try database.reviews().map(\.date)), expected)
+        XCTAssertFalse(try database.reviews().contains { $0.date == "2026-10-15" })
+        XCTAssertEqual(try database.sentences().first, original)
+        XCTAssertEqual(try database.audioRecords(), [audio])
+        XCTAssertEqual(try database.exportBackup().sentences.first?.reviewDates, dates)
+        XCTAssertEqual(try database.resetCycles(sentenceID: id).count, 1)
+        try database.resetReviews(sentenceID: id, on: "2026-10-10")
+        XCTAssertEqual(try database.resetCycles(sentenceID: id).count, 1)
+        try database.resetReviews(sentenceID: id, on: "2026-10-20")
+        let actual = Set(try database.reviews().map(\.date))
+        XCTAssertFalse(actual.contains("2026-10-15"))
+        XCTAssertFalse(actual.contains("2026-10-24"))
+        XCTAssertTrue(actual.contains("2026-10-17"))
+        XCTAssertTrue(actual.contains("2026-10-20"))
+        XCTAssertTrue(actual.contains("2026-10-21"))
+        XCTAssertEqual(try database.resetCycles(sentenceID: id).first?.reviewDates, try Schedule.reviews(for: "2026-10-10"))
+        XCTAssertThrowsError(try database.resetReviews(sentenceID: id, on: "2026-10-19"))
+        XCTAssertEqual(try database.resetCycles(sentenceID: id).count, 2)
+        try database.delete(id: id)
+        XCTAssertTrue(try database.reviews().isEmpty)
+        XCTAssertTrue(try database.resetCycles(sentenceID: id).isEmpty)
+        XCTAssertTrue(try database.audioRecords().isEmpty)
+    }
+    func testResetBackupAndReopenPreserveEveryCycleAndActiveDates() throws {
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).path
+        defer { for suffix in ["", "-wal", "-shm"] { try? FileManager.default.removeItem(atPath: path + suffix) } }
+        var database: Database? = try Database(path: path)
+        let id = try database!.add(text: "Memory", translation: "", date: "2026-10-01")
+        try database!.resetReviews(sentenceID: id, on: "2026-10-10")
+        try database!.resetReviews(sentenceID: id, on: "2026-10-20")
+        let effective = Set(try database!.reviews().map(\.date))
+        let backup = try database!.exportBackup()
+        XCTAssertEqual(backup.version, 2)
+        let data = try backup.encoded()
+        database = nil
+        database = try Database(path: path)
+        XCTAssertEqual(Set(try database!.reviews().map(\.date)), effective)
+        let destination = try Database(path: ":memory:")
+        XCTAssertEqual(try destination.importBackup(ReviaBackup.decode(data)), 1)
+        XCTAssertEqual(Set(try destination.reviews().map(\.date)), effective)
+        let newID = try XCTUnwrap(destination.sentences().first?.id)
+        XCTAssertEqual(try destination.resetCycles(sentenceID: newID).count, 2)
+        XCTAssertEqual(try destination.exportBackup().sentences.first?.reviewDates, try Schedule.reviews(for: "2026-10-01"))
+        let malformed = BackupSentence(text: "Invalid", translation: "", learningDate: "2026-10-01", createdAt: Date(), reviewDates: try Schedule.reviews(for: "2026-10-01"), resetCycles: [BackupCycle(startedOn: "2026-10-10", createdAt: Date(), reviewDates: ["2026-10-11"])])
+        XCTAssertThrowsError(try destination.importBackup(ReviaBackup(sentences: [malformed])))
+        XCTAssertEqual(try destination.sentences().count, 1)
+    }
+    func testResetOnOriginalLearningDayDoesNotDuplicateDailyCard() throws {
+        let database = try Database(path: ":memory:")
+        let id = try database.add(text: "Today", translation: "", date: "2026-10-01")
+        try database.resetReviews(sentenceID: id, on: "2026-10-01")
+        XCTAssertFalse(try database.reviews().contains { $0.date == "2026-10-01" })
+        XCTAssertEqual(try database.reviews().count, 15)
+    }
+}
+
+final class StudyPlanTests: XCTestCase {
+    func testBlocksAccumulateAndRequirePositiveSpacingWithAtMostFifteenNodes() throws {
+        XCTAssertEqual(try StudyPlan.offsets(for: [1, 0, 2, 0]), [1, 3])
+        XCTAssertEqual(try StudyPlan.offsets(for: [3, 0, 7, 0, 30, 0]), [3, 10, 40])
+        XCTAssertEqual(try StudyPlan.offsets(for: [1, 2, 0]), [3])
+        XCTAssertThrowsError(try StudyPlan.offsets(for: [0]))
+        XCTAssertThrowsError(try StudyPlan.offsets(for: [1, 0, 0]))
+        XCTAssertThrowsError(try StudyPlan.offsets(for: [1, 0, 2]))
+        XCTAssertThrowsError(try StudyPlan.offsets(for: Array(repeating: [1, 0], count: 16).flatMap { $0 }))
+        XCTAssertEqual(try StudyPlan.offsets(for: Array(repeating: [1, 0], count: 15).flatMap { $0 }).count, 15)
+    }
+    @MainActor
+    func testCatalogLimitsTotalToThreeAndPersistsChanges() throws {
+        let suite = "PlansTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let catalog = PlanCatalog(defaults: defaults)
+        let first = StudyPlan(id: "first", name: "Short", offsets: [1, 3])
+        try catalog.save(first)
+        try catalog.save(StudyPlan(id: "second", name: "Long", offsets: [7, 30]))
+        XCTAssertEqual(catalog.all.count, 3)
+        XCTAssertFalse(catalog.canAdd)
+        XCTAssertThrowsError(try catalog.save(StudyPlan(id: "third", name: "Extra", offsets: [1])))
+        try catalog.save(StudyPlan(id: first.id, name: "Renamed", offsets: [1, 4]))
+        let restored = PlanCatalog(defaults: defaults)
+        XCTAssertEqual(restored.custom.first?.name, "Renamed")
+        XCTAssertEqual(restored.custom.first?.offsets, [1, 4])
+        restored.delete(IndexSet(integer: 0))
+        XCTAssertTrue(restored.canAdd)
+        XCTAssertEqual(restored.all.count, 2)
+    }
+    func testCustomPlanPersistsAndResetUsesOriginalSnapshot() throws {
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).path
+        defer { for suffix in ["", "-wal", "-shm"] { try? FileManager.default.removeItem(atPath: path + suffix) } }
+        let plan = StudyPlan(id: "custom", name: "My plan", offsets: [1, 3])
+        var database: Database? = try Database(path: path)
+        let id = try database!.add(text: "Custom sentence", translation: "", date: "2026-10-01", plan: plan)
+        XCTAssertEqual(try database!.reviews().map(\.date), ["2026-10-02", "2026-10-04"])
+        database = nil
+        database = try Database(path: path)
+        XCTAssertEqual(try database!.sentences().first?.studyPlan, plan)
+        XCTAssertEqual(try database!.reviews().count, 2)
+        try database!.resetReviews(sentenceID: id, on: "2026-10-10")
+        XCTAssertEqual(try database!.resetCycles(sentenceID: id).first?.reviewDates, ["2026-10-11", "2026-10-13"])
+        let backup = try database!.exportBackup()
+        XCTAssertEqual(backup.version, 3)
+        let restored = try Database(path: ":memory:")
+        try restored.importBackup(ReviaBackup.decode(backup.encoded()))
+        XCTAssertEqual(try restored.sentences().first?.studyPlan, plan)
+        XCTAssertEqual(try restored.reviews().map(\.date), try database!.reviews().map(\.date))
+        let newID = try XCTUnwrap(restored.sentences().first?.id)
+        try restored.resetReviews(sentenceID: newID, on: "2026-10-20")
+        XCTAssertEqual(try restored.resetCycles(sentenceID: newID).last?.reviewDates, ["2026-10-21", "2026-10-23"])
+    }
+    func testInvalidPlanDoesNotPartiallyInsertSentence() throws {
+        let database = try Database(path: ":memory:")
+        let plan = StudyPlan(id: "invalid", name: "Broken", offsets: [3, 1])
+        XCTAssertThrowsError(try database.add(text: "Bad plan", translation: "", date: "2026-10-01", plan: plan))
+        XCTAssertTrue(try database.sentences().isEmpty)
+        XCTAssertTrue(try database.reviews().isEmpty)
+    }
+}

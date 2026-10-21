@@ -22,6 +22,10 @@ final class Database {
                   learning_date TEXT NOT NULL,
                   created_at TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS sentence_plans (
+                  sentence_id INTEGER PRIMARY KEY REFERENCES sentences(id) ON DELETE CASCADE,
+                  plan_json TEXT NOT NULL
+                );
                 CREATE TABLE IF NOT EXISTS reviews (
                   sentence_id INTEGER NOT NULL REFERENCES sentences(id) ON DELETE CASCADE,
                   review_date TEXT NOT NULL,
@@ -37,6 +41,19 @@ final class Database {
                   created_at TEXT NOT NULL,
                   PRIMARY KEY(sentence_id, voice_id, model_id, version)
                 );
+                CREATE TABLE IF NOT EXISTS review_cycles (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  sentence_id INTEGER NOT NULL REFERENCES sentences(id) ON DELETE CASCADE,
+                  started_on TEXT NOT NULL,
+                  created_at TEXT NOT NULL,
+                  UNIQUE(sentence_id, started_on)
+                );
+                CREATE TABLE IF NOT EXISTS cycle_reviews (
+                  cycle_id INTEGER NOT NULL REFERENCES review_cycles(id) ON DELETE CASCADE,
+                  review_date TEXT NOT NULL,
+                  PRIMARY KEY(cycle_id, review_date)
+                );
+                CREATE INDEX IF NOT EXISTS cycles_sentence ON review_cycles(sentence_id);
                 CREATE INDEX IF NOT EXISTS audio_filename ON audio_records(filename);
                 CREATE INDEX IF NOT EXISTS reviews_date ON reviews(review_date);
                 CREATE INDEX IF NOT EXISTS sentences_date ON sentences(learning_date);
@@ -54,7 +71,7 @@ final class Database {
                         }
                     }
                 }
-                try execute("PRAGMA user_version = 3")
+                try execute("PRAGMA user_version = 5")
             }
         } catch {
             sqlite3_close(connection); connection = nil
@@ -97,20 +114,31 @@ final class Database {
         return formatter.date(from: value)
     }
     func sentences() throws -> [Sentence] {
-        let statement = try statement("SELECT id, japanese, translation, learning_date, created_at FROM sentences ORDER BY learning_date DESC, id DESC")
+        let statement = try statement("SELECT s.id, s.japanese, s.translation, s.learning_date, s.created_at, p.plan_json FROM sentences s LEFT JOIN sentence_plans p ON p.sentence_id = s.id ORDER BY s.learning_date DESC, s.id DESC")
         defer { sqlite3_finalize(statement) }
         var results: [Sentence] = []
         var result = sqlite3_step(statement)
         while result == SQLITE_ROW {
             func text(_ index: Int32) -> String { String(cString: sqlite3_column_text(statement, index)) }
-            results.append(Sentence(id: sqlite3_column_int64(statement, 0), text: text(1), translation: text(2), learningDate: text(3), createdAt: Self.timestamp(text(4))))
+            let plan = sqlite3_column_type(statement, 5) == SQLITE_NULL ? nil : try JSONDecoder().decode(StudyPlan.self, from: Data(text(5).utf8))
+            results.append(Sentence(id: sqlite3_column_int64(statement, 0), text: text(1), translation: text(2), learningDate: text(3), createdAt: Self.timestamp(text(4)), studyPlan: plan))
             result = sqlite3_step(statement)
         }
         guard result == SQLITE_DONE else { throw failure }
         return results
     }
     func reviews() throws -> [Review] {
-        let statement = try statement("SELECT sentence_id, review_date FROM reviews ORDER BY review_date")
+        let statement = try statement("""
+            SELECT r.sentence_id, r.review_date FROM reviews r
+            WHERE NOT EXISTS (SELECT 1 FROM review_cycles c WHERE c.sentence_id = r.sentence_id AND c.started_on < r.review_date)
+            UNION
+            SELECT c.sentence_id, r.review_date FROM cycle_reviews r JOIN review_cycles c ON c.id = r.cycle_id
+            WHERE NOT EXISTS (SELECT 1 FROM review_cycles newer WHERE newer.sentence_id = c.sentence_id AND newer.id > c.id AND newer.started_on < r.review_date)
+            UNION
+            SELECT c.sentence_id, c.started_on AS review_date FROM review_cycles c
+            JOIN sentences s ON s.id = c.sentence_id WHERE c.started_on <> s.learning_date
+            ORDER BY review_date
+            """)
         defer { sqlite3_finalize(statement) }
         var results: [Review] = []
         var result = sqlite3_step(statement)
@@ -122,26 +150,38 @@ final class Database {
         return results
     }
     @discardableResult
-    func add(text: String, translation: String, date: String) throws -> Int64 {
+    func add(text: String, translation: String, date: String, plan: StudyPlan = .defaultPlan) throws -> Int64 {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { throw ReviaError.message(L("enter_sentence")) }
-        let dates = try Schedule.reviews(for: date)
+        let dates = try plan.dates(from: date)
         var insertedID: Int64 = 0
         try transaction {
             try run("INSERT INTO sentences (japanese, translation, learning_date, created_at) VALUES (?, ?, ?, ?)", [.text(text), .text(translation.trimmingCharacters(in: .whitespacesAndNewlines)), .text(date), .text(ISO8601DateFormatter().string(from: Date()))])
             let id = sqlite3_last_insert_rowid(connection)
             insertedID = id
+            try savePlan(plan, sentenceID: id)
             for day in dates { try run("INSERT INTO reviews VALUES (?, ?)", [.integer(id), .text(day)]) }
         }
     return insertedID
     }
     func exportBackup() throws -> ReviaBackup {
-        let grouped = Dictionary(grouping: try reviews(), by: \.sentenceID)
+        let query = try statement("SELECT sentence_id, review_date FROM reviews ORDER BY review_date")
+        defer { sqlite3_finalize(query) }
+        var originals: [Review] = []
+        var result = sqlite3_step(query)
+        while result == SQLITE_ROW {
+            originals.append(Review(sentenceID: sqlite3_column_int64(query, 0), date: String(cString: sqlite3_column_text(query, 1))))
+            result = sqlite3_step(query)
+        }
+        guard result == SQLITE_DONE else { throw failure }
+        let grouped = Dictionary(grouping: originals, by: \.sentenceID)
         return ReviaBackup(sentences: try sentences().map { sentence in
             guard let created = sentence.createdAt else { throw ReviaError.message(L("backup_invalid")) }
+            let cycles = try resetCycles(sentenceID: sentence.id)
             return BackupSentence(text: sentence.text, translation: sentence.translation,
                                   learningDate: sentence.learningDate, createdAt: created,
-                                  reviewDates: (grouped[sentence.id] ?? []).map(\.date).sorted())
+                                  reviewDates: (grouped[sentence.id] ?? []).map(\.date).sorted(),
+                                  resetCycles: cycles.isEmpty ? nil : cycles, studyPlan: sentence.studyPlan)
         })
     }
     @discardableResult
@@ -154,12 +194,64 @@ final class Database {
                 try run("INSERT INTO sentences (japanese, translation, learning_date, created_at) VALUES (?, ?, ?, ?)",
                         [.text(sentence.text), .text(sentence.translation), .text(sentence.learningDate), .text(formatter.string(from: sentence.createdAt))])
                 let id = sqlite3_last_insert_rowid(connection)
+                if let plan = sentence.studyPlan { try savePlan(plan, sentenceID: id) }
                 for day in sentence.reviewDates {
                     try run("INSERT INTO reviews VALUES (?, ?)", [.integer(id), .text(day)])
                 }
+                for cycle in sentence.resetCycles ?? [] { try insertCycle(sentenceID: id, cycle: cycle) }
             }
         }
         return backup.sentences.count
+    }
+    func resetReviews(sentenceID: Int64, on day: String) throws {
+        guard let sentence = try sentences().first(where: { $0.id == sentenceID }) else { throw ReviaError.message(L("sentence_read_failed")) }
+        let dates = try (sentence.studyPlan ?? .defaultPlan).dates(from: day)
+        try transaction {
+            let existing = try resetCycles(sentenceID: sentenceID)
+            if existing.last?.startedOn == day { return }
+            if let previous = existing.last, day < previous.startedOn { throw ReviaError.message(L("reset_date_error")) }
+            try insertCycle(sentenceID: sentenceID, cycle: BackupCycle(startedOn: day, createdAt: Date(), reviewDates: dates))
+        }
+    }
+    private func savePlan(_ plan: StudyPlan, sentenceID: Int64) throws {
+        try plan.validate()
+        guard !plan.isDefault else { return }
+        let json = String(decoding: try JSONEncoder().encode(plan), as: UTF8.self)
+        try run("INSERT INTO sentence_plans VALUES (?, ?)", [.integer(sentenceID), .text(json)])
+    }
+    private func insertCycle(sentenceID: Int64, cycle: BackupCycle) throws {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions.insert(.withFractionalSeconds)
+        try run("INSERT INTO review_cycles (sentence_id, started_on, created_at) VALUES (?, ?, ?)",
+                [.integer(sentenceID), .text(cycle.startedOn), .text(formatter.string(from: cycle.createdAt))])
+        let id = sqlite3_last_insert_rowid(connection)
+        for day in cycle.reviewDates {
+            try run("INSERT INTO cycle_reviews VALUES (?, ?)", [.integer(id), .text(day)])
+        }
+    }
+    func resetCycles(sentenceID: Int64) throws -> [BackupCycle] {
+        let query = try statement("SELECT id, started_on, created_at FROM review_cycles WHERE sentence_id = ? ORDER BY id", [.integer(sentenceID)])
+        defer { sqlite3_finalize(query) }
+        var cycles: [BackupCycle] = []
+        var result = sqlite3_step(query)
+        while result == SQLITE_ROW {
+            let id = sqlite3_column_int64(query, 0)
+            let started = String(cString: sqlite3_column_text(query, 1))
+            guard let created = Self.timestamp(String(cString: sqlite3_column_text(query, 2))) else { throw ReviaError.message(L("backup_invalid")) }
+            let days = try statement("SELECT review_date FROM cycle_reviews WHERE cycle_id = ? ORDER BY review_date", [.integer(id)])
+            var dates: [String] = []
+            var step = sqlite3_step(days)
+            while step == SQLITE_ROW {
+                dates.append(String(cString: sqlite3_column_text(days, 0)))
+                step = sqlite3_step(days)
+            }
+            sqlite3_finalize(days)
+            guard step == SQLITE_DONE else { throw failure }
+            cycles.append(BackupCycle(startedOn: started, createdAt: created, reviewDates: dates))
+            result = sqlite3_step(query)
+        }
+        guard result == SQLITE_DONE else { throw failure }
+        return cycles
     }
     func delete(id: Int64) throws { try run("DELETE FROM sentences WHERE id = ?", [.integer(id)]) }
     func audioRecords(sentenceID: Int64? = nil) throws -> [AudioRecord] {

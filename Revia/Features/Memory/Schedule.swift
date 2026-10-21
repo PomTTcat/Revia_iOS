@@ -65,9 +65,10 @@ struct Sentence: Identifiable, Equatable {
     let translation: String
     let learningDate: String
     let createdAt: Date?
-    init(id: Int64, text: String, translation: String, learningDate: String, createdAt: Date? = nil) {
+    let studyPlan: StudyPlan?
+    init(id: Int64, text: String, translation: String, learningDate: String, createdAt: Date? = nil, studyPlan: StudyPlan? = nil) {
         self.id = id; self.text = text; self.translation = translation
-        self.learningDate = learningDate; self.createdAt = createdAt
+        self.learningDate = learningDate; self.createdAt = createdAt; self.studyPlan = studyPlan
     }
 }
 
