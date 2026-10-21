@@ -1,0 +1,746 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		07629C95EDFFA17A9D93DD97 /* Schedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 316137D4BDE065274DB28CD1 /* Schedule.swift */; };
+		0C4781C930C03FDC352A2F5F /* ReviaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72739D0FE780E43DE3DBF832 /* ReviaTests.swift */; };
+		0E5359F31BE48EF52CCB446F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9935B3AEBC14A8BC278502E9 /* Localizable.strings */; };
+		1EFFD7735E2EBADF2621144B /* AudioCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C016601A93E6AC48B5524D3A /* AudioCache.swift */; };
+		29B01AD3A99143DD122C7B78 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B73E9C15F547C178BFDAAED6 /* RootView.swift */; };
+		2CACD8270B99E4FE6C5A47E8 /* SpeechController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99A8046F745895EB3FFE4F06 /* SpeechController.swift */; };
+		75D3284DD55AB825C2339758 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D04CF18977B141F97AEBAC30 /* Foundation.framework */; };
+		775C80384BE956EE74CA735B /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8C266AF53772C5280B83D4 /* CredentialStore.swift */; };
+		7B23C4204836815774A93376 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 88F8DD11FC0491DD6A68DCAF /* RxRelay */; };
+		86D069D0DB4EFCEABAD3C6DB /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9250DD2A047CF39FFCA906B5 /* RxSwift */; };
+		871E281F0C94E9CD8FF0582E /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D7D17B1B3E0FF072DC7D59 /* Store.swift */; };
+		8BC425D9FBAFAF7DD56B3CB8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D04CF18977B141F97AEBAC30 /* Foundation.framework */; };
+		8E62938453989C337294EB62 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C133678F11F8C5D43ED05B8 /* libsqlite3.tbd */; };
+		93EBED19F111E1C05F1A58B1 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 27E1FEFCB616FA7F81FD4A08 /* RxSwift */; };
+		94E08B751BFAE51EEF932437 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A792F1401B26B1182D95E7 /* Components.swift */; };
+		9CBAF5033F711A9C15C4537B /* ReviaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055FE25678505CF90F046578 /* ReviaApp.swift */; };
+		A2C8DA0B08ACE2F6E537D817 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE065ED8C5005F8CA868FC9 /* TodayView.swift */; };
+		B13DB1D5B7E09D7AA7D250EC /* DayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0596104D45C685738C809E0B /* DayView.swift */; };
+		B19341B3D04BFD25EADD6CB3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 237EA0486E58599701F54C48 /* Assets.xcassets */; };
+		B5D59FB334B95F2096507728 /* AddSentenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD0FE5746DD1C10FAE5940F /* AddSentenceView.swift */; };
+		BDFD1C9EF99D62CAD42880A9 /* ElevenLabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39BCC3E6069BC23C3AB45114 /* ElevenLabs.swift */; };
+		C52C7979FF04406189B9816F /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6061403F78245DC96CD705C3 /* LocalizationTests.swift */; };
+		CA893196EA6CC9BEBC4E8D9C /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = E701DA702CED0EA084C83A2D /* Localization.swift */; };
+		CA947700ACEBB92238588AD5 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 324CCA5D2338C8DCA5866165 /* CalendarView.swift */; };
+		CE05A20D5B1E5E13114FACB8 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEB447666036EADD9493EE0 /* Database.swift */; };
+		D78D3CF6DE6B6C8F4550F193 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E648457BB85E9017903F1890 /* SettingsView.swift */; };
+		E4F80C56D51E493BCD889D12 /* ElevenLabsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1883EBBB6B7327C6E3165C7 /* ElevenLabsTests.swift */; };
+		F80D783E90802E0C17EDFED6 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 765495EE2A3FD0EE2F557C52 /* RxRelay */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		21703D31F22036294E2DC3DB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 549A4D5CBFAB7F259D9951EE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A8F577B5C0F03F45F4BD5122;
+			remoteInfo = Revia;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		055FE25678505CF90F046578 /* ReviaApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviaApp.swift; sourceTree = "<group>"; };
+		0596104D45C685738C809E0B /* DayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DayView.swift; sourceTree = "<group>"; };
+		0C133678F11F8C5D43ED05B8 /* libsqlite3.tbd */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		1DE065ED8C5005F8CA868FC9 /* TodayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		237EA0486E58599701F54C48 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		316137D4BDE065274DB28CD1 /* Schedule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Schedule.swift; sourceTree = "<group>"; };
+		324CCA5D2338C8DCA5866165 /* CalendarView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		39BCC3E6069BC23C3AB45114 /* ElevenLabs.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ElevenLabs.swift; sourceTree = "<group>"; };
+		4D6DDB38E5746713DF698C60 /* zh-Hans */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		586EADB2B8A5B13F83CEDC48 /* en */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		6061403F78245DC96CD705C3 /* LocalizationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
+		66A792F1401B26B1182D95E7 /* Components.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		6DD0FE5746DD1C10FAE5940F /* AddSentenceView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddSentenceView.swift; sourceTree = "<group>"; };
+		72739D0FE780E43DE3DBF832 /* ReviaTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviaTests.swift; sourceTree = "<group>"; };
+		7BDBF795823E0CCDF3BBFC62 /* ReviaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReviaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7C85E6FF96ED5F61890F74A6 /* ja */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		99A8046F745895EB3FFE4F06 /* SpeechController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeechController.swift; sourceTree = "<group>"; };
+		B1883EBBB6B7327C6E3165C7 /* ElevenLabsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ElevenLabsTests.swift; sourceTree = "<group>"; };
+		B73E9C15F547C178BFDAAED6 /* RootView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		BB488E8E4E54A9DF7678B7A6 /* Revia.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Revia.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C016601A93E6AC48B5524D3A /* AudioCache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AudioCache.swift; sourceTree = "<group>"; };
+		CEEB447666036EADD9493EE0 /* Database.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
+		D04CF18977B141F97AEBAC30 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		D4D7D17B1B3E0FF072DC7D59 /* Store.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+		DA8C266AF53772C5280B83D4 /* CredentialStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CredentialStore.swift; sourceTree = "<group>"; };
+		E648457BB85E9017903F1890 /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		E701DA702CED0EA084C83A2D /* Localization.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		23BAEE0EB276984FEEAC6513 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8BC425D9FBAFAF7DD56B3CB8 /* Foundation.framework in Frameworks */,
+				93EBED19F111E1C05F1A58B1 /* RxSwift in Frameworks */,
+				7B23C4204836815774A93376 /* RxRelay in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D532F59EE77A15B151D5311 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				75D3284DD55AB825C2339758 /* Foundation.framework in Frameworks */,
+				8E62938453989C337294EB62 /* libsqlite3.tbd in Frameworks */,
+				86D069D0DB4EFCEABAD3C6DB /* RxSwift in Frameworks */,
+				F80D783E90802E0C17EDFED6 /* RxRelay in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08E7C5308869C276D73011DF /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				9935B3AEBC14A8BC278502E9 /* Localizable.strings */,
+			);
+			name = Localization;
+			path = Localization;
+			sourceTree = "<group>";
+		};
+		0D3989D2B6096047FCDD1EED /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				B1883EBBB6B7327C6E3165C7 /* ElevenLabsTests.swift */,
+			);
+			name = Networking;
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		193CABBE6B1161868F91839C /* Revia */ = {
+			isa = PBXGroup;
+			children = (
+				F19EFD033A0767DE848DC85F /* App */,
+				D75F4994A1D4CCB804383843 /* Pages */,
+				D518E485767ABE29EAA6646C /* Features */,
+				BABBF89D19CC7F724CD259AF /* Networking */,
+				28029E3EA4E8CEA7C1DAC666 /* Data */,
+				E94B27E1F0AC61C7DCE67B22 /* Security */,
+				3A7D2FAB68058E2337F23D34 /* Shared */,
+				4212E68778D8645D1AC79FC7 /* Resources */,
+			);
+			path = Revia;
+			sourceTree = "<group>";
+		};
+		28029E3EA4E8CEA7C1DAC666 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				CEEB447666036EADD9493EE0 /* Database.swift */,
+			);
+			name = Data;
+			path = Data;
+			sourceTree = "<group>";
+		};
+		31625926C6F0A91F7B140B2B /* Memory */ = {
+			isa = PBXGroup;
+			children = (
+				316137D4BDE065274DB28CD1 /* Schedule.swift */,
+				D4D7D17B1B3E0FF072DC7D59 /* Store.swift */,
+			);
+			name = Memory;
+			path = Memory;
+			sourceTree = "<group>";
+		};
+		3A7D2FAB68058E2337F23D34 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				66A792F1401B26B1182D95E7 /* Components.swift */,
+			);
+			name = Shared;
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		4212E68778D8645D1AC79FC7 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				237EA0486E58599701F54C48 /* Assets.xcassets */,
+				08E7C5308869C276D73011DF /* Localization */,
+			);
+			name = Resources;
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		4F38A76DA1C4B3E3FE932613 /* ReviaTests */ = {
+			isa = PBXGroup;
+			children = (
+				ACBC7A3F0E7681BB867F0172 /* Integration */,
+				0D3989D2B6096047FCDD1EED /* Networking */,
+				9FBA0CFCA391AA157E34D633 /* Localization */,
+			);
+			path = ReviaTests;
+			sourceTree = "<group>";
+		};
+		68402D6F3A14E833FCBD51B6 /* Speech */ = {
+			isa = PBXGroup;
+			children = (
+				99A8046F745895EB3FFE4F06 /* SpeechController.swift */,
+				C016601A93E6AC48B5524D3A /* AudioCache.swift */,
+			);
+			name = Speech;
+			path = Speech;
+			sourceTree = "<group>";
+		};
+		7C1567E22E1CFC7DBA1A230C /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				D04CF18977B141F97AEBAC30 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		95E47E6095913A69EF0798F6 = {
+			isa = PBXGroup;
+			children = (
+				A0B19EBA6D3FDE6DA50EC64D /* Products */,
+				AF02BBC7ACD60F91052C3052 /* Frameworks */,
+				193CABBE6B1161868F91839C /* Revia */,
+				4F38A76DA1C4B3E3FE932613 /* ReviaTests */,
+			);
+			sourceTree = "<group>";
+		};
+		9FBA0CFCA391AA157E34D633 /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				6061403F78245DC96CD705C3 /* LocalizationTests.swift */,
+			);
+			name = Localization;
+			path = Localization;
+			sourceTree = "<group>";
+		};
+		A0B19EBA6D3FDE6DA50EC64D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BB488E8E4E54A9DF7678B7A6 /* Revia.app */,
+				7BDBF795823E0CCDF3BBFC62 /* ReviaTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ACBC7A3F0E7681BB867F0172 /* Integration */ = {
+			isa = PBXGroup;
+			children = (
+				72739D0FE780E43DE3DBF832 /* ReviaTests.swift */,
+			);
+			name = Integration;
+			path = Integration;
+			sourceTree = "<group>";
+		};
+		AF02BBC7ACD60F91052C3052 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7C1567E22E1CFC7DBA1A230C /* iOS */,
+				0C133678F11F8C5D43ED05B8 /* libsqlite3.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BABBF89D19CC7F724CD259AF /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				39BCC3E6069BC23C3AB45114 /* ElevenLabs.swift */,
+			);
+			name = Networking;
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		D518E485767ABE29EAA6646C /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				31625926C6F0A91F7B140B2B /* Memory */,
+				68402D6F3A14E833FCBD51B6 /* Speech */,
+				DA6D04E75CB5C841DAE8D27C /* Localization */,
+			);
+			name = Features;
+			path = Features;
+			sourceTree = "<group>";
+		};
+		D75F4994A1D4CCB804383843 /* Pages */ = {
+			isa = PBXGroup;
+			children = (
+				324CCA5D2338C8DCA5866165 /* CalendarView.swift */,
+				0596104D45C685738C809E0B /* DayView.swift */,
+				6DD0FE5746DD1C10FAE5940F /* AddSentenceView.swift */,
+				E648457BB85E9017903F1890 /* SettingsView.swift */,
+				1DE065ED8C5005F8CA868FC9 /* TodayView.swift */,
+			);
+			name = Pages;
+			path = Pages;
+			sourceTree = "<group>";
+		};
+		DA6D04E75CB5C841DAE8D27C /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				E701DA702CED0EA084C83A2D /* Localization.swift */,
+			);
+			name = Localization;
+			path = Localization;
+			sourceTree = "<group>";
+		};
+		E94B27E1F0AC61C7DCE67B22 /* Security */ = {
+			isa = PBXGroup;
+			children = (
+				DA8C266AF53772C5280B83D4 /* CredentialStore.swift */,
+			);
+			name = Security;
+			path = Security;
+			sourceTree = "<group>";
+		};
+		F19EFD033A0767DE848DC85F /* App */ = {
+			isa = PBXGroup;
+			children = (
+				055FE25678505CF90F046578 /* ReviaApp.swift */,
+				B73E9C15F547C178BFDAAED6 /* RootView.swift */,
+			);
+			name = App;
+			path = App;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		629F3F18E30D4EC983F3C479 /* ReviaTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A6419E6BC3237D66955AD043 /* Build configuration list for PBXNativeTarget "ReviaTests" */;
+			buildPhases = (
+				ED5CEFA5C0D56295699645FE /* Sources */,
+				23BAEE0EB276984FEEAC6513 /* Frameworks */,
+				6AA64D87FB744BF2633A41B4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				79C64E9C119C7431CE5DBFB1 /* PBXTargetDependency */,
+			);
+			name = ReviaTests;
+			packageProductDependencies = (
+				27E1FEFCB616FA7F81FD4A08 /* RxSwift */,
+				88F8DD11FC0491DD6A68DCAF /* RxRelay */,
+			);
+			productName = ReviaTests;
+			productReference = 7BDBF795823E0CCDF3BBFC62 /* ReviaTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A8F577B5C0F03F45F4BD5122 /* Revia */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BA9F48AD4976E01F13DC1B44 /* Build configuration list for PBXNativeTarget "Revia" */;
+			buildPhases = (
+				D3B385F9480B3D65A0379BE0 /* Sources */,
+				9D532F59EE77A15B151D5311 /* Frameworks */,
+				78BCB716903FA32C9FC2A0F2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Revia;
+			packageProductDependencies = (
+				9250DD2A047CF39FFCA906B5 /* RxSwift */,
+				765495EE2A3FD0EE2F557C52 /* RxRelay */,
+			);
+			productName = Revia;
+			productReference = BB488E8E4E54A9DF7678B7A6 /* Revia.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		549A4D5CBFAB7F259D9951EE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					629F3F18E30D4EC983F3C479 = {
+						ProvisioningStyle = Automatic;
+					};
+					A8F577B5C0F03F45F4BD5122 = {
+						DevelopmentTeam = RP9288PULU;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 25766A53F0A8AC7B79D02F8D /* Build configuration list for PBXProject "Revia" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				"zh-Hans",
+				ja,
+				Base,
+			);
+			mainGroup = 95E47E6095913A69EF0798F6;
+			packageReferences = (
+				DBA233CAA3811430F95FE0C6 /* XCRemoteSwiftPackageReference "RxSwift" */,
+			);
+			productRefGroup = A0B19EBA6D3FDE6DA50EC64D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A8F577B5C0F03F45F4BD5122 /* Revia */,
+				629F3F18E30D4EC983F3C479 /* ReviaTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6AA64D87FB744BF2633A41B4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		78BCB716903FA32C9FC2A0F2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B19341B3D04BFD25EADD6CB3 /* Assets.xcassets in Resources */,
+				0E5359F31BE48EF52CCB446F /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D3B385F9480B3D65A0379BE0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5D59FB334B95F2096507728 /* AddSentenceView.swift in Sources */,
+				CA947700ACEBB92238588AD5 /* CalendarView.swift in Sources */,
+				94E08B751BFAE51EEF932437 /* Components.swift in Sources */,
+				CE05A20D5B1E5E13114FACB8 /* Database.swift in Sources */,
+				B13DB1D5B7E09D7AA7D250EC /* DayView.swift in Sources */,
+				9CBAF5033F711A9C15C4537B /* ReviaApp.swift in Sources */,
+				29B01AD3A99143DD122C7B78 /* RootView.swift in Sources */,
+				07629C95EDFFA17A9D93DD97 /* Schedule.swift in Sources */,
+				871E281F0C94E9CD8FF0582E /* Store.swift in Sources */,
+				1EFFD7735E2EBADF2621144B /* AudioCache.swift in Sources */,
+				775C80384BE956EE74CA735B /* CredentialStore.swift in Sources */,
+				BDFD1C9EF99D62CAD42880A9 /* ElevenLabs.swift in Sources */,
+				D78D3CF6DE6B6C8F4550F193 /* SettingsView.swift in Sources */,
+				2CACD8270B99E4FE6C5A47E8 /* SpeechController.swift in Sources */,
+				CA893196EA6CC9BEBC4E8D9C /* Localization.swift in Sources */,
+				A2C8DA0B08ACE2F6E537D817 /* TodayView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ED5CEFA5C0D56295699645FE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C4781C930C03FDC352A2F5F /* ReviaTests.swift in Sources */,
+				E4F80C56D51E493BCD889D12 /* ElevenLabsTests.swift in Sources */,
+				C52C7979FF04406189B9816F /* LocalizationTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		79C64E9C119C7431CE5DBFB1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Revia;
+			target = A8F577B5C0F03F45F4BD5122 /* Revia */;
+			targetProxy = 21703D31F22036294E2DC3DB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		9935B3AEBC14A8BC278502E9 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				586EADB2B8A5B13F83CEDC48 /* en */,
+				4D6DDB38E5746713DF698C60 /* zh-Hans */,
+				7C85E6FF96ED5F61890F74A6 /* ja */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		1AA361BCAA16BFF0F1CCDED9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		2A0BBB04237E5DC61AD824DD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3C93A68CFBA4546C4CB05628 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RP9288PULU;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Revia;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jeffkann.revia.native;
+				PRODUCT_NAME = Revia;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7D21DE7EAA29632675B28059 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jeffkann.revia.native.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Revia.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Revia";
+			};
+			name = Debug;
+		};
+		BE0AD1D4E3558197841F0248 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RP9288PULU;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Revia;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jeffkann.revia.native;
+				PRODUCT_NAME = Revia;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E874370A977DE3E041F75FCE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jeffkann.revia.native.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Revia.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Revia";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		25766A53F0A8AC7B79D02F8D /* Build configuration list for PBXProject "Revia" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A0BBB04237E5DC61AD824DD /* Debug */,
+				1AA361BCAA16BFF0F1CCDED9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A6419E6BC3237D66955AD043 /* Build configuration list for PBXNativeTarget "ReviaTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E874370A977DE3E041F75FCE /* Release */,
+				7D21DE7EAA29632675B28059 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BA9F48AD4976E01F13DC1B44 /* Build configuration list for PBXNativeTarget "Revia" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3C93A68CFBA4546C4CB05628 /* Release */,
+				BE0AD1D4E3558197841F0248 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DBA233CAA3811430F95FE0C6 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 6.10.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		27E1FEFCB616FA7F81FD4A08 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBA233CAA3811430F95FE0C6 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		765495EE2A3FD0EE2F557C52 /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBA233CAA3811430F95FE0C6 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
+		};
+		88F8DD11FC0491DD6A68DCAF /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBA233CAA3811430F95FE0C6 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
+		};
+		9250DD2A047CF39FFCA906B5 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBA233CAA3811430F95FE0C6 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 549A4D5CBFAB7F259D9951EE /* Project object */;
+}
