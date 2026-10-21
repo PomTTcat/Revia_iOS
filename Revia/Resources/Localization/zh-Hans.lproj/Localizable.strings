@@ -120,9 +120,9 @@
 
 "backup" = "数据备份";
 
-"export_json" = "导出 JSON";
+"export_json" = "导出";
 
-"import_json" = "导入 JSON";
+"import_json" = "导入";
 
 "backup_note" = "导出后可通过系统分享发送或存储到文件。备份包含句子、释义、学习日期、添加时间及全部复习日期，不含音频和 API Key。导入会一次性新增全部内容，保留原计划，不覆盖已有数据；重复导入会重复添加。";
 

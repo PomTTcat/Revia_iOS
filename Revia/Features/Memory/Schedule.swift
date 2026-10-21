@@ -19,6 +19,16 @@ enum Schedule {
               self.key(date) == key else { throw ReviaError.message(L("invalid_date")) }
         return date
     }
+    static func monthDays(_ month: Date, fixedRows: Bool = false) -> [Date?] {
+        let start = monthStart(month)
+        let count = calendar.range(of: .day, in: .month, for: start)!.count
+        let padding = (calendar.component(.weekday, from: start) + 5) % 7
+        let cells = fixedRows ? 42 : ((padding + count + 6) / 7) * 7
+        return (0..<cells).map { index in
+            guard index >= padding, index < padding + count else { return nil }
+            return calendar.date(byAdding: .day, value: index - padding, to: start)
+        }
+    }
     static func isFresh(learningDate: String, on day: Date, now: Date) -> Bool {
         learningDate == key(day) && key(day) == key(now)
     }

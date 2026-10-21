@@ -9,16 +9,7 @@ struct CalendarView: View {
     @State private var month = Schedule.monthStart(Date())
     @State private var adding = false
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
-    private var days: [Date?] {
-        let calendar = Schedule.calendar
-        let count = calendar.range(of: .day, in: .month, for: month)!.count
-        let padding = (calendar.component(.weekday, from: month) + 5) % 7
-        let cells = ((padding + count + 6) / 7) * 7
-        return (0..<cells).map { index in
-            guard index >= padding, index < padding + count else { return nil }
-            return calendar.date(byAdding: .day, value: index - padding, to: month)
-        }
-    }
+    private var days: [Date?] { Schedule.monthDays(month) }
     private var monthTitle: String {
         Localization.date(month, template: "yMMMM")
     }
@@ -48,13 +39,19 @@ struct CalendarView: View {
                         } else { Color.clear.frame(height: 52) }
                     }
                 }
-                PrimaryButton(title: L("add_today")) { adding = true }
-                Divider().padding(.top, 8)
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(L("memory_title")).font(.system(size: 16, weight: .semibold)).foregroundStyle(Palette.ink)
-                    Text(L("review_plan"))
-                        .font(.system(size: 14)).foregroundStyle(Palette.muted).lineSpacing(5)
-                }
+                HStack {
+                    Spacer()
+                    Button { adding = true } label: {
+                        Image(systemName: "plus")
+                            .font(.system(size: 26, weight: .medium))
+                            .foregroundStyle(.white)
+                            .frame(width: 60, height: 60)
+                            .background(Palette.green, in: Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(L("add_today"))
+                    Spacer()
+                }.padding(.top, 8)
             }.padding(24)
         }
         .background(Palette.background).navigationTitle("").navigationBarTitleDisplayMode(.inline)

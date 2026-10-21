@@ -120,9 +120,9 @@
 
 "backup" = "Data backup";
 
-"export_json" = "Export JSON";
+"export_json" = "Export";
 
-"import_json" = "Import JSON";
+"import_json" = "Import";
 
 "backup_note" = "Export using the system share sheet or save to Files. Includes sentences, meanings, learning dates, creation times and all review dates. Audio and API keys are excluded. Import appends every sentence and preserves its schedule without replacing existing data. Importing again adds duplicates.";
 
