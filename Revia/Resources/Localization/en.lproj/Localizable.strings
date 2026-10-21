@@ -55,7 +55,7 @@
 "activate_key" = "Validate & activate";
 "remove_key" = "Remove API key";
 "key_note" = "Only Text to Speech permission is required. Validation generates “Hi.” with the selected voice (George by default) and uses a small amount of credits. Voices read access is optional. Your key is stored in this device’s Keychain.";
-"voices_hint" = "TTS-only keys use George by default. You can enter another Voice ID below.";
+"voices_hint" = "Choose Male or Female, or enter a Voice ID below. Voices read permission is optional.";
 "voice" = "Voice";
 "model" = "Model";
 "speech" = "Text to speech";
@@ -93,3 +93,13 @@
 "voice_id" = "Voice ID";
 
 "use_voice" = "Use this voice";
+
+"voice_type" = "Voice type";
+
+"male_voice" = "Male";
+
+"female_voice" = "Female";
+
+"custom_voice" = "Custom";
+
+"voice_note" = "Male: George. Female: Sarah. The selected voice is used for new audio. Existing recordings are kept; switching does not generate audio or use credits.";

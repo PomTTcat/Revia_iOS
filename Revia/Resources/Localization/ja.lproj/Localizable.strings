@@ -55,7 +55,7 @@
 "activate_key" = "確認して有効化";
 "remove_key" = "APIキーを削除";
 "key_note" = "Text to Speech権限のみ必要です。確認時は選択した声（既定はGeorge）で「Hi.」を生成し、少量のクレジットを消費します。Voicesの読み取り権限は任意です。キーは端末のKeychainにのみ保存されます。";
-"voices_hint" = "TTS権限のみの場合はGeorgeを使用します。別のVoice IDも入力できます。";
+"voices_hint" = "男性・女性を選ぶか、Voice IDを入力できます。Voicesの読み取り権限は任意です。";
 "voice" = "声";
 "model" = "モデル";
 "speech" = "音声読み上げ";
@@ -93,3 +93,13 @@
 "voice_id" = "Voice ID";
 
 "use_voice" = "この声を使用";
+
+"voice_type" = "声の種類";
+
+"male_voice" = "男性";
+
+"female_voice" = "女性";
+
+"custom_voice" = "カスタム";
+
+"voice_note" = "男性はGeorge、女性はSarahです。選択した声は新しい音声に使われます。既存の録音は保持され、切り替えだけでは音声生成やクレジット消費は発生しません。";

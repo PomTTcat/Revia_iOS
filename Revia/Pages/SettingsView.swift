@@ -33,6 +33,14 @@ struct SettingsView: View {
                 Text(L("key_note"))
             }
             Section {
+                Picker(L("voice_type"), selection: Binding(get: { speech.selectedVoiceID }, set: { speech.selectCustomVoice($0) })) {
+                    Text(L("male_voice")).tag(ElevenLabs.defaultVoice.id)
+                    Text(L("female_voice")).tag(ElevenLabs.femaleVoice.id)
+                    if !ElevenLabs.presetVoices.contains(where: { $0.id == speech.selectedVoiceID }) {
+                        Text(L("custom_voice")).tag(speech.selectedVoiceID)
+                    }
+                }.pickerStyle(.segmented).disabled(speech.validating)
+                Text(L("voice_note")).font(.footnote).foregroundStyle(Palette.muted)
                 if speech.voices.isEmpty {
                     Text(L("voices_hint")).foregroundStyle(Palette.muted)
                 } else {

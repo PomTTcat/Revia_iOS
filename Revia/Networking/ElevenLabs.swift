@@ -27,6 +27,8 @@ enum SpeechFailure: LocalizedError {
 
 final class ElevenLabs {
     static let defaultVoice = Voice(voice_id: "JBFqnCBsd6RMkjVDRZzb", name: "George")
+    static let femaleVoice = Voice(voice_id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah")
+    static let presetVoices = [defaultVoice, femaleVoice]
     static let model = "eleven_v3"
     private let session: URLSession
     init(session: URLSession = .shared) { self.session = session }

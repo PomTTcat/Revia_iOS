@@ -35,6 +35,7 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
         super.init()
         selectedVoiceID = defaults.string(forKey: "speech.voice") ?? ElevenLabs.defaultVoice.id
         if let data = defaults.data(forKey: "speech.voices"), let saved = try? JSONDecoder().decode([Voice].self, from: data) { voices = saved }
+        for voice in ElevenLabs.presetVoices where !voices.contains(where: { $0.id == voice.id }) { voices.append(voice) }
         do {
             activeKey = try credentials.read()
             draft = activeKey ?? ""
@@ -82,7 +83,7 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
                 do {
                     try self.credentials.save(key)
                     self.activeKey = key; self.draft = key; self.active = true
-                    self.voices = Dictionary(list.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }).values.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+                    self.voices = Dictionary((list + ElevenLabs.presetVoices).map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }).values.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
                     self.defaults.set(try JSONEncoder().encode(self.voices), forKey: "speech.voices")
                     let selected = self.voices.contains { $0.id == self.selectedVoiceID } ? self.selectedVoiceID : (self.voices.first?.id ?? "")
                     self.selectVoice(selected)
@@ -104,7 +105,7 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
         let id = value.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !id.isEmpty else { return }
         if !voices.contains(where: { $0.id == id }) {
-            voices.append(id == ElevenLabs.defaultVoice.id ? ElevenLabs.defaultVoice : Voice(voice_id: id, name: id))
+            voices.append(ElevenLabs.presetVoices.first(where: { $0.id == id }) ?? Voice(voice_id: id, name: id))
         }
         if let data = try? JSONEncoder().encode(voices) { defaults.set(data, forKey: "speech.voices") }
         selectVoice(id)
@@ -134,6 +135,11 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
             let matching = records.first { $0.text == sentence.text && $0.voiceID == selectedVoiceID && $0.modelID == ElevenLabs.model && $0.version == AudioCache.version }
             // Always use a matching local file before considering a paid request.
             if let record = matching, let url = cache.existing(record.filename) {
+                if play && requestedPlaybackID == sentence.id { try startPlayer(url, sentenceID: sentence.id) }
+                completion(.success(())); return
+            }
+            // Changing the voice affects new recordings; existing audio stays playable without a paid regeneration.
+            if let record = records.first(where: { $0.text == sentence.text && cache.existing($0.filename) != nil }), let url = cache.existing(record.filename) {
                 if play && requestedPlaybackID == sentence.id { try startPlayer(url, sentenceID: sentence.id) }
                 completion(.success(())); return
             }

@@ -55,7 +55,7 @@
 "activate_key" = "验证并激活";
 "remove_key" = "移除 API Key";
 "key_note" = "仅需 Text to Speech 权限。验证会用所选音色（默认 George）生成“Hi.”，消耗少量额度。Voices 读取权限可选。Key 仅保存在本机 Keychain。";
-"voices_hint" = "仅有 TTS 权限时默认使用 George，也可在下方填写其他 Voice ID。";
+"voices_hint" = "可选择男声、女声，或在下方填写音色 ID，无需 Voices 读取权限。";
 "voice" = "音色";
 "model" = "模型";
 "speech" = "语音朗读";
@@ -93,3 +93,13 @@
 "voice_id" = "音色 ID";
 
 "use_voice" = "使用此音色";
+
+"voice_type" = "声音类型";
+
+"male_voice" = "男声";
+
+"female_voice" = "女声";
+
+"custom_voice" = "自定义";
+
+"voice_note" = "男声为 George，女声为 Sarah。所选音色用于新生成的语音；已有录音保留。切换本身不会生成语音或消耗额度。";
