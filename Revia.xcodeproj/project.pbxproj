@@ -17,6 +17,7 @@
 		29B01AD3A99143DD122C7B78 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B73E9C15F547C178BFDAAED6 /* RootView.swift */; };
 		2CACD8270B99E4FE6C5A47E8 /* SpeechController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99A8046F745895EB3FFE4F06 /* SpeechController.swift */; };
 		45E7DDBF33B638EBB70F498E /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D874DC24CF9C03C122E83F /* ShareSheet.swift */; };
+		54A8CB47A384209245EFF7B3 /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067FC8AEAB96DD6CDE021207 /* LaunchView.swift */; };
 		7326667BA1045E9715044BA3 /* ReminderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2E02C3319E4AECCC7D7B72 /* ReminderController.swift */; };
 		75D3284DD55AB825C2339758 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D04CF18977B141F97AEBAC30 /* Foundation.framework */; };
 		775C80384BE956EE74CA735B /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8C266AF53772C5280B83D4 /* CredentialStore.swift */; };
@@ -27,6 +28,7 @@
 		8E62938453989C337294EB62 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C133678F11F8C5D43ED05B8 /* libsqlite3.tbd */; };
 		93EBED19F111E1C05F1A58B1 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 27E1FEFCB616FA7F81FD4A08 /* RxSwift */; };
 		94E08B751BFAE51EEF932437 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A792F1401B26B1182D95E7 /* Components.swift */; };
+		95CBF769BBDC68A41F6DA647 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45D3539471ED1374DD09FEBF /* LaunchScreen.storyboard */; };
 		9CBAF5033F711A9C15C4537B /* ReviaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055FE25678505CF90F046578 /* ReviaApp.swift */; };
 		A2C8DA0B08ACE2F6E537D817 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE065ED8C5005F8CA868FC9 /* TodayView.swift */; };
 		B13DB1D5B7E09D7AA7D250EC /* DayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0596104D45C685738C809E0B /* DayView.swift */; };
@@ -59,6 +61,7 @@
 /* Begin PBXFileReference section */
 		055FE25678505CF90F046578 /* ReviaApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviaApp.swift; sourceTree = "<group>"; };
 		0596104D45C685738C809E0B /* DayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DayView.swift; sourceTree = "<group>"; };
+		067FC8AEAB96DD6CDE021207 /* LaunchView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LaunchView.swift; sourceTree = "<group>"; };
 		0C133678F11F8C5D43ED05B8 /* libsqlite3.tbd */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		103D5F231FDA04CFB7DD9A92 /* SentencesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SentencesView.swift; sourceTree = "<group>"; };
 		137C1C896A92E703BBF10833 /* APIKeyView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = APIKeyView.swift; sourceTree = "<group>"; };
@@ -70,6 +73,7 @@
 		39BCC3E6069BC23C3AB45114 /* ElevenLabs.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ElevenLabs.swift; sourceTree = "<group>"; };
 		39D874DC24CF9C03C122E83F /* ShareSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		451FDD53A356C9111358B568 /* ReminderTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReminderTests.swift; sourceTree = "<group>"; };
+		45D3539471ED1374DD09FEBF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4C2E02C3319E4AECCC7D7B72 /* ReminderController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReminderController.swift; sourceTree = "<group>"; };
 		4D6DDB38E5746713DF698C60 /* zh-Hans */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		4FEF02186EE75ED40A86C908 /* ReminderView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReminderView.swift; sourceTree = "<group>"; };
@@ -206,6 +210,7 @@
 			children = (
 				237EA0486E58599701F54C48 /* Assets.xcassets */,
 				08E7C5308869C276D73011DF /* Localization */,
+				45D3539471ED1374DD09FEBF /* LaunchScreen.storyboard */,
 			);
 			name = Resources;
 			path = Resources;
@@ -357,6 +362,7 @@
 			children = (
 				055FE25678505CF90F046578 /* ReviaApp.swift */,
 				B73E9C15F547C178BFDAAED6 /* RootView.swift */,
+				067FC8AEAB96DD6CDE021207 /* LaunchView.swift */,
 			);
 			name = App;
 			path = App;
@@ -464,6 +470,7 @@
 			files = (
 				B19341B3D04BFD25EADD6CB3 /* Assets.xcassets in Resources */,
 				0E5359F31BE48EF52CCB446F /* Localizable.strings in Resources */,
+				95CBF769BBDC68A41F6DA647 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -498,6 +505,7 @@
 				01687E0234EAA60FCC980AE2 /* BackupView.swift in Sources */,
 				7326667BA1045E9715044BA3 /* ReminderController.swift in Sources */,
 				FBE4C06F34BDF3BB3EBEB5F6 /* ReminderView.swift in Sources */,
+				54A8CB47A384209245EFF7B3 /* LaunchView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -664,7 +672,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Revia;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -708,7 +716,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Revia;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

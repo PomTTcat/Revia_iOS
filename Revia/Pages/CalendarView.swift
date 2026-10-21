@@ -3,6 +3,8 @@ import SwiftUI
 struct CalendarView: View {
     @EnvironmentObject private var language: AppLanguage
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Namespace private var addTransition
     @State private var now = Date()
     private let clock = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
     @EnvironmentObject private var store: Store
@@ -41,15 +43,15 @@ struct CalendarView: View {
                 }
                 HStack {
                     Spacer()
-                    Button { adding = true } label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 26, weight: .medium))
-                            .foregroundStyle(.white)
-                            .frame(width: 60, height: 60)
-                            .background(Palette.green, in: Circle())
+                    if #available(iOS 18.0, *), !reduceMotion {
+                        addButton
+                            .matchedTransitionSource(id: "add-sentence", in: addTransition) { source in
+                                source.background(Palette.green)
+                                    .clipShape(RoundedRectangle(cornerRadius: 30))
+                            }
+                    } else {
+                        addButton
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(L("add_today"))
                     Spacer()
                 }.padding(.top, 8)
             }.padding(24)
@@ -60,7 +62,26 @@ struct CalendarView: View {
         .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in now = Date() }
         .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in now = Date() }
         .onChange(of: scenePhase) { _, phase in if phase == .active { now = Date() } }
-        .sheet(isPresented: $adding) { AddSentenceView(date: Date()) }
+        .sheet(isPresented: $adding) {
+            if #available(iOS 18.0, *), !reduceMotion {
+                AddSentenceView(date: Date())
+                    .navigationTransition(.zoom(sourceID: "add-sentence", in: addTransition))
+                    .presentationCornerRadius(28)
+            } else {
+                AddSentenceView(date: Date())
+            }
+        }
+    }
+    private var addButton: some View {
+        Button { adding = true } label: {
+            Image(systemName: "plus")
+                .font(.system(size: 26, weight: .medium))
+                .foregroundStyle(.white)
+                .frame(width: 60, height: 60)
+                .background(Palette.green, in: Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(L("add_today"))
     }
     private func move(_ offset: Int) { month = Schedule.calendar.date(byAdding: .month, value: offset, to: month)! }
     private func dayCell(_ date: Date) -> some View {
