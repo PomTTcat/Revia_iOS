@@ -11,7 +11,7 @@
 "next_month" = "Next month";
 "add_today" = "＋ Add today’s sentence";
 "memory_title" = "Give memory time";
-"review_plan" = "15 reviews: after 1, 3, 7, 14 and 30 days, then monthly for 10 more reviews. Tap a date to see its sentences.";
+"review_plan" = "Each sentence has 15 reviews. The first 5 fall 1, 3, 7, 14 and 30 days after the learning date. Another 10 follow at calendar-month intervals from the fifth review date. If a month has no matching day, use its last day; later months still follow the original anchor day. All dates are fixed when you save and do not change when you view or play a sentence. Deleting a sentence removes all its reviews.";
 "has_new" = ", new sentences";
 "has_review" = ", reviews";
 "day_counts" = "New: %d · Review: %d";
@@ -36,7 +36,6 @@
 "sentence_hint" = "Enter a sentence you want to remember";
 "meaning_hint" = "Add a translation or your own explanation";
 "learning_date" = "Learning date";
-"review_dates" = "Review dates: %@.";
 "generate_audio" = "Generate audio";
 "enable_audio_note" = "Activate an API key and select a voice in Settings to enable audio.";
 "saving_sentence" = "Saving / generating audio…";

@@ -12,11 +12,6 @@ struct AddSentenceView: View {
     @State private var generateSpeech = false
     @State private var saving = false
     @State private var saved = false
-    private var schedule: String {
-        ((try? Schedule.reviews(for: Schedule.key(date))) ?? []).map { key in
-            (try? Schedule.date(key)).map { Localization.date($0, template: "yMMMd") } ?? key
-        }.joined(separator: language.selection == .english ? ", " : "、")
-    }
     var body: some View {
         let _ = language.code
         NavigationStack {
@@ -27,7 +22,7 @@ struct AddSentenceView: View {
                     field(title: L("sentence"), text: $text, placeholder: L("sentence_hint"), height: 120)
                     field(title: L("meaning"), text: $translation, placeholder: L("meaning_hint"), height: 90)
                     DatePicker(L("learning_date"), selection: $date, displayedComponents: .date).datePickerStyle(.compact)
-                    Text(L("review_dates", schedule)).font(.system(size: 13)).foregroundStyle(Palette.muted).lineSpacing(4)
+                    Text(L("review_plan")).font(.system(size: 13)).foregroundStyle(Palette.muted).lineSpacing(4)
                     Button {
                         if speech.canGenerate { generateSpeech.toggle() }
                     } label: {
