@@ -42,6 +42,7 @@
 		CA893196EA6CC9BEBC4E8D9C /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = E701DA702CED0EA084C83A2D /* Localization.swift */; };
 		CA947700ACEBB92238588AD5 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 324CCA5D2338C8DCA5866165 /* CalendarView.swift */; };
 		CE05A20D5B1E5E13114FACB8 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEB447666036EADD9493EE0 /* Database.swift */; };
+		CFE0F0BDD3C01AF9176C8070 /* BrainCircuit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4274F86B9DA0E6B4406926CD /* BrainCircuit.swift */; };
 		D78D3CF6DE6B6C8F4550F193 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E648457BB85E9017903F1890 /* SettingsView.swift */; };
 		DB4EB93C1FFF46997EA10B7F /* APIKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137C1C896A92E703BBF10833 /* APIKeyView.swift */; };
 		E4F80C56D51E493BCD889D12 /* ElevenLabsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1883EBBB6B7327C6E3165C7 /* ElevenLabsTests.swift */; };
@@ -75,6 +76,7 @@
 		324CCA5D2338C8DCA5866165 /* CalendarView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		39BCC3E6069BC23C3AB45114 /* ElevenLabs.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ElevenLabs.swift; sourceTree = "<group>"; };
 		39D874DC24CF9C03C122E83F /* ShareSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		4274F86B9DA0E6B4406926CD /* BrainCircuit.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BrainCircuit.swift; sourceTree = "<group>"; };
 		451FDD53A356C9111358B568 /* ReminderTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReminderTests.swift; sourceTree = "<group>"; };
 		45D3539471ED1374DD09FEBF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4C2E02C3319E4AECCC7D7B72 /* ReminderController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReminderController.swift; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 				EEC21C53DFE7CD0D218811FE /* KeyboardDismiss.swift */,
 				39D874DC24CF9C03C122E83F /* ShareSheet.swift */,
 				FA1372721EA3AD0C42C876E9 /* Palette.swift */,
+				4274F86B9DA0E6B4406926CD /* BrainCircuit.swift */,
 			);
 			name = Shared;
 			path = Shared;
@@ -523,6 +526,7 @@
 				54A8CB47A384209245EFF7B3 /* LaunchView.swift in Sources */,
 				8EB2E8A1407195E9BB4029B5 /* AppAppearance.swift in Sources */,
 				78322090ABE49987FAB54FD9 /* Palette.swift in Sources */,
+				CFE0F0BDD3C01AF9176C8070 /* BrainCircuit.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

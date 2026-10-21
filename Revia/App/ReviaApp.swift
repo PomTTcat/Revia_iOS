@@ -13,15 +13,21 @@ struct ReviaApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .disabled(showingLaunch)
+                .accessibilityHidden(showingLaunch)
                 .overlay {
                     if showingLaunch {
-                        LaunchView().opacity(launchFading ? 0 : 1)
+                        LaunchView(animated: !reduceMotion).opacity(launchFading ? 0 : 1)
                             .allowsHitTesting(false)
                     }
                 }
                 .task {
-                    // Fade straight into the ready interface, without a timer or artificial loading delay.
-                    withAnimation(.easeOut(duration: reduceMotion ? 0.1 : 0.4), completionCriteria: .logicallyComplete) {
+                    guard showingLaunch else { return }
+                    if !reduceMotion {
+                        do { try await Task.sleep(for: .seconds(1)) }
+                        catch { return }
+                    }
+                    withAnimation(.easeOut(duration: reduceMotion ? 0.1 : 0.18), completionCriteria: .logicallyComplete) {
                         launchFading = true
                     } completion: {
                         showingLaunch = false
