@@ -33,7 +33,7 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
     init(api: ElevenLabs = ElevenLabs(), defaults: UserDefaults = .standard, credentials: CredentialStorage = CredentialStore()) {
         self.api = api; self.defaults = defaults; self.credentials = credentials
         super.init()
-        selectedVoiceID = defaults.string(forKey: "speech.voice") ?? ""
+        selectedVoiceID = defaults.string(forKey: "speech.voice") ?? ElevenLabs.defaultVoice.id
         if let data = defaults.data(forKey: "speech.voices"), let saved = try? JSONDecoder().decode([Voice].self, from: data) { voices = saved }
         do {
             activeKey = try credentials.read()
@@ -75,7 +75,7 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
         let key = draft.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !key.isEmpty, !validating else { return }
         validation?.dispose(); validating = true
-        validation = api.validate(key: key).observe(on: MainScheduler.instance)
+        validation = api.validate(key: key, voice: selectedVoiceID).observe(on: MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] list in
                 guard let self else { return }
                 self.validating = false
@@ -99,6 +99,15 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
                 if case SpeechFailure.authentication = error { self.deactivate() }
                 self.alert = error.localizedDescription
             })
+    }
+    func selectCustomVoice(_ value: String) {
+        let id = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !id.isEmpty else { return }
+        if !voices.contains(where: { $0.id == id }) {
+            voices.append(id == ElevenLabs.defaultVoice.id ? ElevenLabs.defaultVoice : Voice(voice_id: id, name: id))
+        }
+        if let data = try? JSONEncoder().encode(voices) { defaults.set(data, forKey: "speech.voices") }
+        selectVoice(id)
     }
     func selectVoice(_ id: String) {
         selectedVoiceID = id

@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var speech: SpeechController
+    @State private var customVoice = ""
     var body: some View {
         let _ = language.code
         Form {
@@ -37,9 +38,13 @@ struct SettingsView: View {
                 } else {
                     Picker(L("voice"), selection: Binding(get: { speech.selectedVoiceID }, set: { speech.selectVoice($0) })) {
                         ForEach(speech.voices) { voice in Text(voice.name).tag(voice.id) }
-                    }.disabled(!speech.active)
+                    }.disabled(!speech.active || speech.validating)
                 }
-                LabeledContent(L("model"), value: "Multilingual v2")
+                TextField(L("voice_id"), text: $customVoice)
+                    .textInputAutocapitalization(.never).autocorrectionDisabled()
+                Button(L("use_voice")) { speech.selectCustomVoice(customVoice) }
+                    .disabled(customVoice.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || speech.validating)
+                LabeledContent(L("model"), value: "Eleven v3")
             } header: { Text(L("speech")) } footer: {
                 Text(L("audio_note"))
             }

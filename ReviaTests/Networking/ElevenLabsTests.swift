@@ -27,24 +27,55 @@ final class ElevenLabsTests: XCTestCase {
         api = ElevenLabs(session: session)
     }
     override func tearDown() { session.invalidateAndCancel(); MockElevenProtocol.handle = nil }
-    func testValidationUsesAccountAndPaginatedVoicesWithoutGeneratingSpeech() {
+    func testValidationChecksTTSAndLoadsPaginatedVoices() {
         let done = expectation(description: "validated")
         var paths: [String] = []
         MockElevenProtocol.handle = { request in
             XCTAssertEqual(request.value(forHTTPHeaderField: "xi-api-key"), "test-key")
-            XCTAssertNotEqual(request.httpMethod, "POST")
             paths.append(request.url!.path)
             let body: String
-            if request.url!.path == "/v1/user" { body = #"{"user_id":"example"}"# }
+            if request.url!.path.hasPrefix("/v1/text-to-speech/") {
+                XCTAssertEqual(request.httpMethod, "POST")
+                return (200, "audio/mpeg", Data([1, 2, 3]))
+            }
             else if request.url!.query?.contains("next_page_token") == true { body = #"{"voices":[{"voice_id":"B","name":"Beta"}],"has_more":false}"# }
             else { body = #"{"voices":[{"voice_id":"A","name":"Alpha"}],"has_more":true,"next_page_token":"second"}"# }
             return (200, "application/json", Data(body.utf8))
         }
         let disposable = api.validate(key: "test-key").subscribe(onSuccess: { voices in
-            XCTAssertEqual(voices.map(\.id), ["A", "B"])
-            XCTAssertEqual(paths, ["/v1/user", "/v2/voices", "/v2/voices"])
+            XCTAssertEqual(voices.map(\.id), [ElevenLabs.defaultVoice.id, "A", "B"])
+            XCTAssertEqual(paths, ["/v1/text-to-speech/" + ElevenLabs.defaultVoice.id, "/v2/voices", "/v2/voices"])
             done.fulfill()
         }, onFailure: { error in XCTFail(error.localizedDescription); done.fulfill() })
+        wait(for: [done], timeout: 10); disposable.dispose()
+    }
+    func testTTSOnlyKeyActivatesWithoutAccountOrVoicesReadPermission() {
+        let done = expectation(description: "tts-only")
+        MockElevenProtocol.handle = { request in
+            XCTAssertNotEqual(request.url!.path, "/v1/user")
+            if request.url!.path == "/v2/voices" {
+                return (401, "application/json", Data(#"{"detail":{"status":"missing_permissions"}}"#.utf8))
+            }
+            XCTAssertEqual(request.url!.path, "/v1/text-to-speech/customVoice")
+            return (200, "audio/mpeg", Data([1, 2, 3]))
+        }
+        let disposable = api.validate(key: "tts-only", voice: "customVoice").subscribe(onSuccess: { voices in
+            XCTAssertEqual(voices.map(\.id), ["customVoice"])
+            done.fulfill()
+        }, onFailure: { error in XCTFail(error.localizedDescription); done.fulfill() })
+        wait(for: [done], timeout: 10); disposable.dispose()
+    }
+    func testMissingTTSPermissionIsNotInvalidKey() {
+        let done = expectation(description: "permission")
+        MockElevenProtocol.handle = { _ in
+            (401, "application/json", Data(#"{"detail":{"status":"missing_permissions"}}"#.utf8))
+        }
+        let disposable = api.validate(key: "restricted").subscribe(onSuccess: { _ in
+            XCTFail("key without TTS activated"); done.fulfill()
+        }, onFailure: { error in
+            guard case SpeechFailure.permission = error else { XCTFail("wrong error"); done.fulfill(); return }
+            done.fulfill()
+        })
         wait(for: [done], timeout: 10); disposable.dispose()
     }
     func testInvalidKeyIsRejected() {
@@ -103,8 +134,8 @@ extension ElevenLabsTests {
         let controller = SpeechController(api: api, defaults: defaults, credentials: credentials)
         XCTAssertFalse(controller.canGenerate)
         MockElevenProtocol.handle = { request in
-            let body = request.url!.path == "/v1/user" ? #"{"user_id":"example"}"# : #"{"voices":[{"voice_id":"A","name":"Alpha"}],"has_more":false}"#
-            return (200, "application/json", Data(body.utf8))
+            if request.url!.path.hasPrefix("/v1/text-to-speech/") { return (200, "audio/mpeg", Data([1, 2, 3])) }
+            return (200, "application/json", Data(#"{"voices":[{"voice_id":"A","name":"Alpha"}],"has_more":false}"#.utf8))
         }
         controller.changeKey("test-key")
         controller.validate()

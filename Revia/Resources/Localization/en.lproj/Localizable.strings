@@ -55,8 +55,8 @@
 "validating_key" = "Validating…";
 "activate_key" = "Validate & activate";
 "remove_key" = "Remove API key";
-"key_note" = "Your key is stored only in this device’s Keychain. User and Voices read permissions and Text to Speech permission are required. Changed keys must be revalidated. Validation does not generate audio; synthesis uses your ElevenLabs credits.";
-"voices_hint" = "Validate your key to load available voices.";
+"key_note" = "Only Text to Speech permission is required. Validation generates “Hi.” with the selected voice (George by default) and uses a small amount of credits. Voices read access is optional. Your key is stored in this device’s Keychain.";
+"voices_hint" = "TTS-only keys use George by default. You can enter another Voice ID below.";
 "voice" = "Voice";
 "model" = "Model";
 "speech" = "Text to speech";
@@ -66,7 +66,7 @@
 "local_storage" = "Local storage";
 "storage_note" = "Audio is stored in Application Support/Speech. Text, filenames, voices and versions are recorded in SQLite. Deleting a sentence also deletes its audio; removing a key keeps saved audio.";
 "invalid_key" = "The API key is invalid or has expired. Revalidate it in Settings.";
-"key_permission" = "The API key lacks permission. Check User and Voices read access and Text to Speech permission.";
+"key_permission" = "This API key lacks the required permission. Enable Text to Speech and check access to the selected voice.";
 "low_credits" = "Not enough ElevenLabs credits. Check your account balance.";
 "rate_limited" = "Too many requests. Please try again later.";
 "service_unavailable" = "ElevenLabs couldn’t complete the request. Please try again later.";
@@ -90,3 +90,7 @@
 "playback_failed" = "Audio playback failed. Please try again.";
 "db_open_failed" = "Unable to open the database.";
 "network_failed" = "Connection failed. Check your network and try again.";
+
+"voice_id" = "Voice ID";
+
+"use_voice" = "Use this voice";

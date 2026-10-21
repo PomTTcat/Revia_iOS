@@ -26,7 +26,8 @@ enum SpeechFailure: LocalizedError {
 }
 
 final class ElevenLabs {
-    static let model = "eleven_multilingual_v2"
+    static let defaultVoice = Voice(voice_id: "JBFqnCBsd6RMkjVDRZzb", name: "George")
+    static let model = "eleven_v3"
     private let session: URLSession
     init(session: URLSession = .shared) { self.session = session }
     private func request(path: String, key: String, query: [URLQueryItem] = [], body: Data? = nil) -> URLRequest {
@@ -50,6 +51,16 @@ final class ElevenLabs {
                     observer(.failure(SpeechFailure.unavailable)); return
                 }
                 guard (200..<300).contains(response.statusCode) else {
+                    let object = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
+                    let detail = object?["detail"] as? [String: Any]
+                    let status = detail?["status"] as? String
+                    // ElevenLabs can report missing permissions with HTTP 401.
+                    if status == "missing_permissions" {
+                        observer(.failure(SpeechFailure.permission)); return
+                    }
+                    if status == "quota_exceeded" {
+                        observer(.failure(SpeechFailure.quota)); return
+                    }
                     let failure: SpeechFailure
                     switch response.statusCode {
                     case 401: failure = .authentication
@@ -58,9 +69,7 @@ final class ElevenLabs {
                     case 429: failure = .rateLimited
                     default: failure = .unavailable
                     }
-                    let object = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
-                    let detail = object?["detail"] as? [String: Any]
-                    observer(.failure(detail?["status"] as? String == "quota_exceeded" ? SpeechFailure.quota : failure)); return
+                    observer(.failure(failure)); return
                 }
                 if audio && (data.isEmpty || !(response.mimeType?.hasPrefix("audio/") ?? false)) {
                     observer(.failure(SpeechFailure.invalidAudio)); return
@@ -71,13 +80,14 @@ final class ElevenLabs {
             return Disposables.create { task.cancel() }
         }
     }
-    func validate(key: String) -> Single<[Voice]> {
-        // Account and voice reads do not synthesize audio or spend TTS credits.
-        send(request(path: "/v1/user", key: key)).flatMap { data in
-            guard let object = try JSONSerialization.jsonObject(with: data) as? [String: Any], object["user_id"] as? String != nil else {
-                throw SpeechFailure.unavailable
+    func validate(key: String, voice: String = ElevenLabs.defaultVoice.id) -> Single<[Voice]> {
+        // Verify the permission we actually need, using a short, billable TTS request.
+        // Voice enumeration is optional: TTS-only keys can use a known voice ID.
+        generate(text: "Hi.", voice: voice, key: key).flatMap { _ in
+            self.voices(key: key).catchAndReturn([]).map { list in
+                let selected = voice == Self.defaultVoice.id ? Self.defaultVoice : Voice(voice_id: voice, name: voice)
+                return list.contains(where: { $0.id == voice }) ? list : [selected] + list
             }
-            return self.voices(key: key)
         }
     }
     private func voices(key: String, token: String? = nil, seen: Set<String> = []) -> Single<[Voice]> {

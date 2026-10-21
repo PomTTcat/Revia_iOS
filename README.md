@@ -44,9 +44,9 @@ ReviaTests/
 
 ## ElevenLabs 语音
 
-第三个 Tab「设置」中输入 ElevenLabs API Key，点击「验证并激活」。Key 安全保存在本机 Keychain（WhenUnlockedThisDeviceOnly），不写入 SQLite 或日志。修改/移除 Key 会立即停用生成；重新验证后恢复。验证调用 `/v1/user` 和分页 `/v2/voices`，需要 User/Voices 读取权限；真正合成还需要 Text to Speech 权限及足够额度，验证不会通过付费合成试音。
+第三个 Tab「设置」中输入 ElevenLabs API Key，点击「验证并激活」。Key 安全保存在本机 Keychain（WhenUnlockedThisDeviceOnly），不写入 SQLite 或日志。修改/移除 Key 会立即停用生成；重新验证后恢复。验证仅要求 Text to Speech 权限，使用所选音色（默认 George）合成短句 `Hi.`，会消耗少量额度，不自动播放或保存试音。随后尝试分页 `/v2/voices` 获取音色，列表读取失败不阻止已通过 TTS 验证的 Key 激活。仅 TTS 权限时可使用默认音色或手动填写 Voice ID（填写后点击「使用此音色」）；验证失败时可检查音色访问权限与账户额度。HTTP 401 的 `missing_permissions` 会显示权限错误，而非误判 Key 无效。
 
-可从账户可用音色中选择，默认选择第一个。模型为 `eleven_multilingual_v2`，输出 `mp3_44100_128`。请求使用 HTTPS 和 `xi-api-key`；仅在保存勾选生成或播放本地缺失的语音时，将句子原文发送给 ElevenLabs。释义不发送。
+可从账户可用音色中选择，默认使用 George。模型为 `eleven_v3`，输出 `mp3_44100_128`。请求使用 HTTPS 和 `xi-api-key`；仅在保存勾选生成或播放本地缺失的语音时，将句子原文发送给 ElevenLabs。释义不发送。
 
 激活 Key 且有可用音色时，添加页的「生成语音」默认勾选，可取消；未激活时禁用且不选中。句子先保存，生成失败弹窗提示，退出后可点击播放重试，不会重复添加句子。
 
@@ -62,7 +62,7 @@ RxSwift / RxRelay 6.10.2 通过 Swift Package Manager 引入，用于激活条�
 
 `Features/Localization/Localization.swift` 管理语言偏好与格式化，`Resources/Localization/` 下的 `en.lproj`、`zh-Hans.lproj`、`ja.lproj` 中的 `Localizable.strings` 包含三语文案。日期、星期、数量、存储容量以及应用自己的错误提示均按所选语言显示。学习日期仍按本地公历存储，复习规则不随界面语言变化。
 
-界面采用“句子”“释义”“生成语音”等中性文案。界面语言不会翻译学习内容，也不会改变/重新生成已有音频。Swift 模型和接口统一使用 `text`；SQLite 仅保留旧 `japanese` 列名以兼容已有数据，实际可保存任意语言的句子；ElevenLabs Multilingual v2 根据原文生成语音。
+界面采用“句子”“释义”“生成语音”等中性文案。界面语言不会翻译学习内容，也不会改变/重新生成已有音频。Swift 模型和接口统一使用 `text`；SQLite 仅保留旧 `japanese` 列名以兼容已有数据，实际可保存任意语言的句子；ElevenLabs Eleven v3 根据原文生成语音。
 
 验证：iOS Debug 与测试目标编译通过，12 项核心回归测试通过；所有三语资源键及格式占位符一致性检查通过。仍需在手机上检查三种语言的实际布局与即时切换交互。
 

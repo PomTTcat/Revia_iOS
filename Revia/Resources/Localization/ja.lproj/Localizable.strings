@@ -55,8 +55,8 @@
 "validating_key" = "確認中…";
 "activate_key" = "確認して有効化";
 "remove_key" = "APIキーを削除";
-"key_note" = "キーはこの端末のKeychainにのみ保存されます。User・Voicesの読み取りとText to Speechの権限が必要です。変更後は再確認してください。確認では音声を生成しません。音声生成にはElevenLabsのクレジットを使用します。";
-"voices_hint" = "キーの確認後、利用できる声を読み込みます。";
+"key_note" = "Text to Speech権限のみ必要です。確認時は選択した声（既定はGeorge）で「Hi.」を生成し、少量のクレジットを消費します。Voicesの読み取り権限は任意です。キーは端末のKeychainにのみ保存されます。";
+"voices_hint" = "TTS権限のみの場合はGeorgeを使用します。別のVoice IDも入力できます。";
 "voice" = "声";
 "model" = "モデル";
 "speech" = "音声読み上げ";
@@ -66,7 +66,7 @@
 "local_storage" = "ローカルストレージ";
 "storage_note" = "音声はApplication Support/Speech、文章・ファイル名・声・バージョンはSQLiteに保存されます。文章を削除すると音声も削除されます。キーを削除しても保存済みの音声は残ります。";
 "invalid_key" = "APIキーが無効、または期限切れです。設定で再確認してください。";
-"key_permission" = "APIキーに必要な権限がありません。User・Voicesの読み取りとText to Speechの権限を確認してください。";
+"key_permission" = "APIキーに必要な権限がありません。Text to Speechと、選択した声の利用権限を確認してください。";
 "low_credits" = "ElevenLabsのクレジットが不足しています。残高をご確認ください。";
 "rate_limited" = "リクエストが多すぎます。しばらくしてからお試しください。";
 "service_unavailable" = "ElevenLabsでリクエストを完了できませんでした。しばらくしてからお試しください。";
@@ -90,3 +90,7 @@
 "playback_failed" = "音声を再生できませんでした。もう一度お試しください。";
 "db_open_failed" = "データベースを開けませんでした。";
 "network_failed" = "接続できませんでした。ネットワークを確認して再試行してください。";
+
+"voice_id" = "Voice ID";
+
+"use_voice" = "この声を使用";

@@ -19,6 +19,9 @@ enum Schedule {
               self.key(date) == key else { throw ReviaError.message(L("invalid_date")) }
         return date
     }
+    static func isFresh(learningDate: String, on day: Date, now: Date) -> Bool {
+        learningDate == key(day) && key(day) == key(now)
+    }
     static func reviews(for key: String) throws -> [String] {
         let origin = try date(key)
         let initial = [1, 3, 7, 14, 30].map { calendar.date(byAdding: .day, value: $0, to: origin)! }

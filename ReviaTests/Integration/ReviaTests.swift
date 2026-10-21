@@ -72,3 +72,20 @@ extension ReviaTests {
         XCTAssertEqual(try database.reviews().count, 45)
     }
 }
+
+final class CalendarFreshnessTests: XCTestCase {
+    func testLearningDayTurnsGrayAfterMidnight() throws {
+        let learned = try Schedule.date("2026-10-20")
+        let today = try Schedule.date("2026-10-21")
+        XCTAssertTrue(Schedule.isFresh(learningDate: "2026-10-20", on: learned, now: learned))
+        XCTAssertFalse(Schedule.isFresh(learningDate: "2026-10-20", on: learned, now: today))
+        XCTAssertFalse(Schedule.isFresh(learningDate: "2026-10-20", on: today, now: today))
+        XCTAssertTrue(Schedule.isFresh(learningDate: "2026-10-21", on: today, now: today))
+    }
+    func testBackfilledAndFutureDatesAreNotGreen() throws {
+        let today = try Schedule.date("2026-10-21")
+        for day in ["2026-10-19", "2026-10-22"] {
+            XCTAssertFalse(Schedule.isFresh(learningDate: day, on: try Schedule.date(day), now: today))
+        }
+    }
+}

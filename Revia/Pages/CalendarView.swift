@@ -2,6 +2,9 @@ import SwiftUI
 
 struct CalendarView: View {
     @EnvironmentObject private var language: AppLanguage
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var now = Date()
+    private let clock = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
     @EnvironmentObject private var store: Store
     @State private var month = Schedule.monthStart(Date())
     @State private var adding = false
@@ -55,12 +58,17 @@ struct CalendarView: View {
             }.padding(24)
         }
         .background(Palette.background).navigationTitle("").navigationBarTitleDisplayMode(.inline)
+        .onAppear { now = Date() }
+        .onReceive(clock) { now = $0 }
+        .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in now = Date() }
+        .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in now = Date() }
+        .onChange(of: scenePhase) { _, phase in if phase == .active { now = Date() } }
         .sheet(isPresented: $adding) { AddSentenceView(date: Date()) }
     }
     private func move(_ offset: Int) { month = Schedule.calendar.date(byAdding: .month, value: offset, to: month)! }
     private func dayCell(_ date: Date) -> some View {
         let key = Schedule.key(date)
-        let today = Schedule.calendar.isDateInToday(date)
+        let today = Schedule.key(date) == Schedule.key(now)
         let fresh = store.sentences.contains { $0.learningDate == key }
         let review = store.reviews.contains { $0.date == key }
         return VStack(spacing: 4) {
@@ -69,7 +77,7 @@ struct CalendarView: View {
                 .foregroundStyle(today ? .white : Palette.ink)
                 .background(today ? Palette.green : .clear, in: Circle())
             HStack(spacing: 3) {
-                if fresh { Circle().fill(Palette.green).frame(width: 5, height: 5) }
+                if fresh { Circle().fill(Schedule.isFresh(learningDate: key, on: date, now: now) ? Palette.green : Color.gray.opacity(0.6)).frame(width: 5, height: 5) }
                 if review { Circle().fill(Color.gray.opacity(0.6)).frame(width: 5, height: 5) }
             }.frame(height: 6)
         }.frame(maxWidth: .infinity).frame(height: 52)
