@@ -154,3 +154,11 @@
 "reminder_failed" = "无法保存提醒：%@";
 
 "open_settings" = "打开系统设置";
+
+"appearance" = "外观";
+
+"theme_system" = "跟随系统";
+
+"theme_light" = "浅色";
+
+"theme_dark" = "深色";

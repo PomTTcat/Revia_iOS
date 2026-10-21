@@ -4,6 +4,7 @@ struct SettingsView: View {
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var reminder: ReminderController
     @EnvironmentObject private var speech: SpeechController
+    @AppStorage("app.appearance") private var appearance = AppAppearance.system.rawValue
     @AppStorage("notes.collapsed") private var collapseNotes = false
     var body: some View {
         let _ = language.code
@@ -11,6 +12,9 @@ struct SettingsView: View {
             Section {
                 Picker(L("language"), selection: Binding(get: { language.selection }, set: { language.select($0) })) {
                     ForEach(AppLocale.allCases) { option in Text(verbatim: option.name).tag(option) }
+                }
+                Picker(L("appearance"), selection: $appearance) {
+                    ForEach(AppAppearance.allCases) { mode in Text(mode.title).tag(mode.rawValue) }
                 }
                 Toggle(L("collapse_notes"), isOn: $collapseNotes)
                 NavigationLink { ReminderView() } label: {
@@ -21,7 +25,7 @@ struct SettingsView: View {
                             .foregroundStyle(Palette.muted).font(.subheadline)
                     }
                 }
-            }
+            }.listRowBackground(Palette.surface)
             Section {
                 Picker(L("voice_type"), selection: Binding(get: { speech.selectedVoiceID }, set: { speech.selectCustomVoice($0) })) {
                     Text(L("male_voice")).tag(ElevenLabs.defaultVoice.id)
@@ -38,13 +42,16 @@ struct SettingsView: View {
                     }
                 }
             } header: { Text(L("speech")) } footer: { Text(L("voice_note")) }
+            .listRowBackground(Palette.surface)
             Section {
                 NavigationLink { BackupView() } label: {
                     Label(L("backup_menu"), systemImage: "arrow.up.arrow.down")
                 }
                 LabeledContent(L("audio_storage"), value: ByteCountFormatStyle(style: .file, allowedUnits: .all, spellsOutZero: false).locale(language.locale).format(speech.storageBytes))
-            }
+            }.listRowBackground(Palette.surface)
         }
+        .scrollContentBackground(.hidden)
+        .background(Palette.background)
         .navigationTitle(L("settings"))
         .onAppear { speech.refreshStorage() }
     }

@@ -76,7 +76,7 @@ struct CalendarView: View {
         Button { adding = true } label: {
             Image(systemName: "plus")
                 .font(.system(size: 26, weight: .medium))
-                .foregroundStyle(.white)
+                .foregroundStyle(Palette.onAccent)
                 .frame(width: 60, height: 60)
                 .background(Palette.green, in: Circle())
         }
@@ -92,11 +92,11 @@ struct CalendarView: View {
         return VStack(spacing: 4) {
             Text("\(Schedule.calendar.component(.day, from: date))")
                 .font(.system(size: 16)).frame(width: 36, height: 36)
-                .foregroundStyle(today ? .white : Palette.ink)
+                .foregroundStyle(today ? Palette.onAccent : Palette.ink)
                 .background(today ? Palette.green : .clear, in: Circle())
             HStack(spacing: 3) {
-                if fresh { Circle().fill(Schedule.isFresh(learningDate: key, on: date, now: now) ? Palette.green : Color.gray.opacity(0.6)).frame(width: 5, height: 5) }
-                if review { Circle().fill(Color.gray.opacity(0.6)).frame(width: 5, height: 5) }
+                if fresh { Circle().fill(Schedule.isFresh(learningDate: key, on: date, now: now) ? Palette.green : Palette.marker).frame(width: 5, height: 5) }
+                if review { Circle().fill(Palette.marker).frame(width: 5, height: 5) }
             }.frame(height: 6)
         }.frame(maxWidth: .infinity).frame(height: 52)
             .accessibilityLabel("\(key)\(fresh ? L("has_new") : "")\(review ? L("has_review") : "")")

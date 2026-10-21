@@ -154,3 +154,11 @@
 "reminder_failed" = "Could not save the reminder: %@";
 
 "open_settings" = "Open Settings";
+
+"appearance" = "Appearance";
+
+"theme_system" = "System";
+
+"theme_light" = "Light";
+
+"theme_dark" = "Dark";

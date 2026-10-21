@@ -15,6 +15,7 @@ struct ReminderView: View {
                     Task { await reminder.setTime(value) }
                 }), displayedComponents: .hourAndMinute)
             } footer: { Text(L("reminder_note")) }
+            .listRowBackground(Palette.surface)
             .disabled(reminder.busy)
             if reminder.denied {
                 Section {
@@ -22,8 +23,11 @@ struct ReminderView: View {
                         if let url = URL(string: UIApplication.openNotificationSettingsURLString) { openURL(url) }
                     }
                 } footer: { Text(L("reminder_denied")) }
+                .listRowBackground(Palette.surface)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Palette.background)
         .navigationTitle(L("daily_reminder"))
         .navigationBarTitleDisplayMode(.inline)
         .alert(L("daily_reminder"), isPresented: Binding(get: { reminder.message != nil }, set: { if !$0 { reminder.message = nil } })) {

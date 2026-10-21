@@ -23,8 +23,10 @@ struct APIKeyView: View {
                 }
             } header: { Text("ElevenLabs") } footer: {
                 Text(L("key_note"))
-            }
+            }.listRowBackground(Palette.surface)
         }
+        .scrollContentBackground(.hidden)
+        .background(Palette.background)
         .background(KeyboardDismiss())
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle("API Key")

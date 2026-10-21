@@ -1,13 +1,5 @@
 import SwiftUI
 
-enum Palette {
-    static let ink = Color(red: 0.14, green: 0.23, blue: 0.20)
-    static let green = Color(red: 0.20, green: 0.46, blue: 0.36)
-    static let muted = Color(red: 0.47, green: 0.52, blue: 0.49)
-    static let background = Color(red: 0.98, green: 0.985, blue: 0.97)
-    static let fresh = Color(red: 0.886, green: 0.941, blue: 0.871)
-    static let review = Color(red: 0.925, green: 0.933, blue: 0.922)
-}
 struct PrimaryButton: View {
     @EnvironmentObject private var language: AppLanguage
     let title: String
@@ -17,7 +9,7 @@ struct PrimaryButton: View {
         Button(action: action) {
             Text(title).font(.system(size: 16, weight: .semibold))
                 .frame(maxWidth: .infinity).padding(17)
-                .foregroundStyle(.white).background(Palette.green, in: RoundedRectangle(cornerRadius: 16))
+                .foregroundStyle(Palette.onAccent).background(Palette.green, in: RoundedRectangle(cornerRadius: 16))
         }.buttonStyle(.plain)
     }
 }

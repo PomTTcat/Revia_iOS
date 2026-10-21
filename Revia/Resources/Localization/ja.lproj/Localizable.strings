@@ -154,3 +154,11 @@
 "reminder_failed" = "リマインダーを保存できませんでした：%@";
 
 "open_settings" = "システム設定を開く";
+
+"appearance" = "外観";
+
+"theme_system" = "システムに合わせる";
+
+"theme_light" = "ライト";
+
+"theme_dark" = "ダーク";

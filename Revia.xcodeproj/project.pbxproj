@@ -21,11 +21,13 @@
 		7326667BA1045E9715044BA3 /* ReminderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2E02C3319E4AECCC7D7B72 /* ReminderController.swift */; };
 		75D3284DD55AB825C2339758 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D04CF18977B141F97AEBAC30 /* Foundation.framework */; };
 		775C80384BE956EE74CA735B /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8C266AF53772C5280B83D4 /* CredentialStore.swift */; };
+		78322090ABE49987FAB54FD9 /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1372721EA3AD0C42C876E9 /* Palette.swift */; };
 		7B23C4204836815774A93376 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 88F8DD11FC0491DD6A68DCAF /* RxRelay */; };
 		86D069D0DB4EFCEABAD3C6DB /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9250DD2A047CF39FFCA906B5 /* RxSwift */; };
 		871E281F0C94E9CD8FF0582E /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D7D17B1B3E0FF072DC7D59 /* Store.swift */; };
 		8BC425D9FBAFAF7DD56B3CB8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D04CF18977B141F97AEBAC30 /* Foundation.framework */; };
 		8E62938453989C337294EB62 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C133678F11F8C5D43ED05B8 /* libsqlite3.tbd */; };
+		8EB2E8A1407195E9BB4029B5 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1748F98A98535DF1F6EA9B4E /* AppAppearance.swift */; };
 		93EBED19F111E1C05F1A58B1 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 27E1FEFCB616FA7F81FD4A08 /* RxSwift */; };
 		94E08B751BFAE51EEF932437 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A792F1401B26B1182D95E7 /* Components.swift */; };
 		95CBF769BBDC68A41F6DA647 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45D3539471ED1374DD09FEBF /* LaunchScreen.storyboard */; };
@@ -65,6 +67,7 @@
 		0C133678F11F8C5D43ED05B8 /* libsqlite3.tbd */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		103D5F231FDA04CFB7DD9A92 /* SentencesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SentencesView.swift; sourceTree = "<group>"; };
 		137C1C896A92E703BBF10833 /* APIKeyView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = APIKeyView.swift; sourceTree = "<group>"; };
+		1748F98A98535DF1F6EA9B4E /* AppAppearance.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
 		1DE065ED8C5005F8CA868FC9 /* TodayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
 		237EA0486E58599701F54C48 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2DCFA9C73E57CBB8F5D5F932 /* Backup.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Backup.swift; sourceTree = "<group>"; };
@@ -97,6 +100,7 @@
 		E648457BB85E9017903F1890 /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E701DA702CED0EA084C83A2D /* Localization.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 		EEC21C53DFE7CD0D218811FE /* KeyboardDismiss.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyboardDismiss.swift; sourceTree = "<group>"; };
+		FA1372721EA3AD0C42C876E9 /* Palette.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,6 +204,7 @@
 				66A792F1401B26B1182D95E7 /* Components.swift */,
 				EEC21C53DFE7CD0D218811FE /* KeyboardDismiss.swift */,
 				39D874DC24CF9C03C122E83F /* ShareSheet.swift */,
+				FA1372721EA3AD0C42C876E9 /* Palette.swift */,
 			);
 			name = Shared;
 			path = Shared;
@@ -225,6 +230,15 @@
 				1C444B5211C1B0E75F031E90 /* Reminders */,
 			);
 			path = ReviaTests;
+			sourceTree = "<group>";
+		};
+		680CDBA6601238BFBB39B3AF /* Appearance */ = {
+			isa = PBXGroup;
+			children = (
+				1748F98A98535DF1F6EA9B4E /* AppAppearance.swift */,
+			);
+			name = Appearance;
+			path = Appearance;
 			sourceTree = "<group>";
 		};
 		68402D6F3A14E833FCBD51B6 /* Speech */ = {
@@ -308,6 +322,7 @@
 				DA6D04E75CB5C841DAE8D27C /* Localization */,
 				D66B768B39EB86897D1FB3B0 /* Backup */,
 				353FAD4905F320A22DBB6A2E /* Reminders */,
+				680CDBA6601238BFBB39B3AF /* Appearance */,
 			);
 			name = Features;
 			path = Features;
@@ -506,6 +521,8 @@
 				7326667BA1045E9715044BA3 /* ReminderController.swift in Sources */,
 				FBE4C06F34BDF3BB3EBEB5F6 /* ReminderView.swift in Sources */,
 				54A8CB47A384209245EFF7B3 /* LaunchView.swift in Sources */,
+				8EB2E8A1407195E9BB4029B5 /* AppAppearance.swift in Sources */,
+				78322090ABE49987FAB54FD9 /* Palette.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

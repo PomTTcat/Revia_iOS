@@ -15,7 +15,10 @@ struct BackupView: View {
                 Button { exportBackup() } label: { Label(L("export_json"), systemImage: "square.and.arrow.up") }
                 Button { importing = true } label: { Label(L("import_json"), systemImage: "square.and.arrow.down") }
             } header: { Text(L("backup")) } footer: { Text(L("backup_note")) }
+            .listRowBackground(Palette.surface)
         }
+        .scrollContentBackground(.hidden)
+        .background(Palette.background)
         .navigationTitle(L("backup_menu"))
         .navigationBarTitleDisplayMode(.inline)
         .fileImporter(isPresented: $importing, allowedContentTypes: [.json]) { result in

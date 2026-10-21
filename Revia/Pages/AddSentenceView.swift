@@ -74,8 +74,8 @@ struct AddSentenceView: View {
                 if text.wrappedValue.isEmpty { Text(placeholder).foregroundStyle(Palette.muted).padding(.horizontal, 13).padding(.vertical, 15).allowsHitTesting(false) }
                 TextEditor(text: text).scrollContentBackground(.hidden).frame(minHeight: height).padding(8)
                     .accessibilityLabel(title)
-            }.font(.system(size: 17)).background(.white, in: RoundedRectangle(cornerRadius: 14))
-                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.gray.opacity(0.2)))
+            }.font(.system(size: 17)).foregroundStyle(Palette.ink).background(Palette.surface, in: RoundedRectangle(cornerRadius: 14))
+                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Palette.border))
         }
     }
 }

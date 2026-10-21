@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct ReviaApp: App {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @AppStorage("app.appearance") private var appearance = AppAppearance.system.rawValue
     @State private var showingLaunch = true
     @State private var launchFading = false
     @StateObject private var store = Store()
@@ -37,7 +38,7 @@ struct ReviaApp: App {
                 .environment(\.locale, language.locale)
                 .environment(\.calendar, Schedule.calendar)
                 .tint(Palette.green)
-                .preferredColorScheme(.light)
+                .preferredColorScheme((AppAppearance(rawValue: appearance) ?? .system).colorScheme)
         }
     }
 }
