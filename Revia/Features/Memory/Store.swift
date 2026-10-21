@@ -45,6 +45,16 @@ final class Store: ObservableObject {
             if let deletionError { throw deletionError }
         } catch { self.error = error.localizedDescription }
     }
+    func exportBackup() throws -> Data {
+        guard let database else { throw ReviaError.message(L("db_not_ready")) }
+        return try database.exportBackup().encoded()
+    }
+    func importBackup(_ data: Data) throws -> Int {
+        guard let database else { throw ReviaError.message(L("db_not_ready")) }
+        let count = try database.importBackup(ReviaBackup.decode(data))
+        try refresh()
+        return count
+    }
     func newSentences(on day: String) -> [Sentence] { sentences.filter { $0.learningDate == day } }
     func reviewSentences(on day: String) -> [Sentence] {
         let ids = Set(reviews.filter { $0.date == day }.map(\.sentenceID))

@@ -43,9 +43,15 @@ final class Database {
                 """)
             // Also accepts the existing Revia SQLite structure if manually restored.
             try transaction {
-                for sentence in try sentences() {
-                    for date in try Schedule.reviews(for: sentence.learningDate) {
-                        try run("INSERT OR IGNORE INTO reviews VALUES (?, ?)", [.integer(sentence.id), .text(date)])
+                let versionQuery = try statement("PRAGMA user_version")
+                let schemaVersion = sqlite3_step(versionQuery) == SQLITE_ROW ? sqlite3_column_int(versionQuery, 0) : 0
+                sqlite3_finalize(versionQuery)
+                // Backfill only legacy databases. Imported schedules must survive reopening unchanged.
+                if schemaVersion < 3 {
+                    for sentence in try sentences() {
+                        for date in try Schedule.reviews(for: sentence.learningDate) {
+                            try run("INSERT OR IGNORE INTO reviews VALUES (?, ?)", [.integer(sentence.id), .text(date)])
+                        }
                     }
                 }
                 try execute("PRAGMA user_version = 3")
@@ -84,14 +90,20 @@ final class Database {
         do { try body(); try execute("COMMIT") }
         catch { try? execute("ROLLBACK"); throw error }
     }
+    private static func timestamp(_ value: String) -> Date? {
+        let formatter = ISO8601DateFormatter()
+        if let date = formatter.date(from: value) { return date }
+        formatter.formatOptions.insert(.withFractionalSeconds)
+        return formatter.date(from: value)
+    }
     func sentences() throws -> [Sentence] {
-        let statement = try statement("SELECT id, japanese, translation, learning_date FROM sentences ORDER BY learning_date DESC, id DESC")
+        let statement = try statement("SELECT id, japanese, translation, learning_date, created_at FROM sentences ORDER BY learning_date DESC, id DESC")
         defer { sqlite3_finalize(statement) }
         var results: [Sentence] = []
         var result = sqlite3_step(statement)
         while result == SQLITE_ROW {
             func text(_ index: Int32) -> String { String(cString: sqlite3_column_text(statement, index)) }
-            results.append(Sentence(id: sqlite3_column_int64(statement, 0), text: text(1), translation: text(2), learningDate: text(3)))
+            results.append(Sentence(id: sqlite3_column_int64(statement, 0), text: text(1), translation: text(2), learningDate: text(3), createdAt: Self.timestamp(text(4))))
             result = sqlite3_step(statement)
         }
         guard result == SQLITE_DONE else { throw failure }
@@ -122,6 +134,32 @@ final class Database {
             for day in dates { try run("INSERT INTO reviews VALUES (?, ?)", [.integer(id), .text(day)]) }
         }
     return insertedID
+    }
+    func exportBackup() throws -> ReviaBackup {
+        let grouped = Dictionary(grouping: try reviews(), by: \.sentenceID)
+        return ReviaBackup(sentences: try sentences().map { sentence in
+            guard let created = sentence.createdAt else { throw ReviaError.message(L("backup_invalid")) }
+            return BackupSentence(text: sentence.text, translation: sentence.translation,
+                                  learningDate: sentence.learningDate, createdAt: created,
+                                  reviewDates: (grouped[sentence.id] ?? []).map(\.date).sorted())
+        })
+    }
+    @discardableResult
+    func importBackup(_ backup: ReviaBackup) throws -> Int {
+        try backup.validate()
+        try transaction {
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions.insert(.withFractionalSeconds)
+            for sentence in backup.sentences {
+                try run("INSERT INTO sentences (japanese, translation, learning_date, created_at) VALUES (?, ?, ?, ?)",
+                        [.text(sentence.text), .text(sentence.translation), .text(sentence.learningDate), .text(formatter.string(from: sentence.createdAt))])
+                let id = sqlite3_last_insert_rowid(connection)
+                for day in sentence.reviewDates {
+                    try run("INSERT INTO reviews VALUES (?, ?)", [.integer(id), .text(day)])
+                }
+            }
+        }
+        return backup.sentences.count
     }
     func delete(id: Int64) throws { try run("DELETE FROM sentences WHERE id = ?", [.integer(id)]) }
     func audioRecords(sentenceID: Int64? = nil) throws -> [AudioRecord] {

@@ -5,7 +5,7 @@ struct AddSentenceView: View {
     @EnvironmentObject private var store: Store
     @EnvironmentObject private var speech: SpeechController
     @Environment(\.dismiss) private var dismiss
-    @State var date: Date
+    let date: Date
     @State private var text = ""
     @State private var translation = ""
     @State private var error: String?
@@ -21,7 +21,7 @@ struct AddSentenceView: View {
                     Text(L("sentence_subtitle")).font(.system(size: 14)).foregroundStyle(Palette.muted)
                     field(title: L("sentence"), text: $text, placeholder: L("sentence_hint"), height: 120)
                     field(title: L("meaning"), text: $translation, placeholder: L("meaning_hint"), height: 90)
-                    DatePicker(L("learning_date"), selection: $date, displayedComponents: .date).datePickerStyle(.compact)
+                    LabeledContent(L("learning_date"), value: Localization.date(date, template: "yMMMd"))
                     Text(L("review_plan")).font(.system(size: 13)).foregroundStyle(Palette.muted).lineSpacing(4)
                     Button {
                         if speech.canGenerate { generateSpeech.toggle() }

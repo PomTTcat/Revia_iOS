@@ -102,4 +102,34 @@
 
 "custom_voice" = "自定义";
 
-"voice_note" = "男声为 George，女声为 Sarah。所选音色用于新生成的语音；已有录音保留。切换本身不会生成语音或消耗额度。";
+"voice_note" = "音色仅影响新生成的语音，已有录音保留。";
+
+"all_sentences" = "全部句子";
+
+"search_sentences" = "搜索句子或释义";
+
+"newest_first" = "按添加时间排序 · 最新在前";
+
+"no_sentences" = "还没有添加句子";
+
+"no_results" = "没有找到匹配的句子";
+
+"created_on" = "添加时间：%@";
+
+"unknown_time" = "时间未知";
+
+"backup" = "数据备份";
+
+"export_json" = "导出 JSON";
+
+"import_json" = "导入 JSON";
+
+"backup_note" = "导出后可通过系统分享发送或存储到文件。备份包含句子、释义、学习日期、添加时间及全部复习日期，不含音频和 API Key。导入会一次性新增全部内容，保留原计划，不覆盖已有数据；重复导入会重复添加。";
+
+"backup_format" = "不支持此备份格式或版本。";
+
+"backup_invalid" = "备份内容不完整或格式有误，未导入任何句子。";
+
+"import_done" = "已导入 %d 条句子，原复习计划已保留。";
+
+"backup_menu" = "导入与导出";

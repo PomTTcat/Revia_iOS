@@ -102,4 +102,34 @@
 
 "custom_voice" = "Custom";
 
-"voice_note" = "Male: George. Female: Sarah. The selected voice is used for new audio. Existing recordings are kept; switching does not generate audio or use credits.";
+"voice_note" = "The selected voice applies to new audio. Existing recordings are kept.";
+
+"all_sentences" = "Sentences";
+
+"search_sentences" = "Search sentences or meanings";
+
+"newest_first" = "Newest added first";
+
+"no_sentences" = "No sentences yet";
+
+"no_results" = "No matching sentences";
+
+"created_on" = "Added: %@";
+
+"unknown_time" = "Unknown time";
+
+"backup" = "Data backup";
+
+"export_json" = "Export JSON";
+
+"import_json" = "Import JSON";
+
+"backup_note" = "Export using the system share sheet or save to Files. Includes sentences, meanings, learning dates, creation times and all review dates. Audio and API keys are excluded. Import appends every sentence and preserves its schedule without replacing existing data. Importing again adds duplicates.";
+
+"backup_format" = "This backup format or version is not supported.";
+
+"backup_invalid" = "The backup is incomplete or invalid. No sentences were imported.";
+
+"import_done" = "Imported %d sentences with their original review schedules.";
+
+"backup_menu" = "Import & Export";

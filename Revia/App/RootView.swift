@@ -13,6 +13,8 @@ struct RootView: View {
                         .tabItem { Label(L("calendar"), systemImage: "calendar") }
                     NavigationStack { TodayView() }
                         .tabItem { Label(L("today"), systemImage: "sun.max") }
+                    NavigationStack { SentencesView() }
+                        .tabItem { Label(L("all_sentences"), systemImage: "text.alignleft") }
                     NavigationStack { SettingsView() }
                         .tabItem { Label(L("settings"), systemImage: "gearshape") }
                 }

@@ -54,6 +54,24 @@ struct Sentence: Identifiable, Equatable {
     let text: String
     let translation: String
     let learningDate: String
+    let createdAt: Date?
+    init(id: Int64, text: String, translation: String, learningDate: String, createdAt: Date? = nil) {
+        self.id = id; self.text = text; self.translation = translation
+        self.learningDate = learningDate; self.createdAt = createdAt
+    }
+}
+
+enum SentenceLibrary {
+    static func results(_ sentences: [Sentence], query: String) -> [Sentence] {
+        let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        return sentences.filter {
+            query.isEmpty || $0.text.localizedStandardContains(query) || $0.translation.localizedStandardContains(query)
+        }.sorted {
+            let left = $0.createdAt ?? (try? Schedule.date($0.learningDate)) ?? .distantPast
+            let right = $1.createdAt ?? (try? Schedule.date($1.learningDate)) ?? .distantPast
+            return left == right ? $0.id > $1.id : left > right
+        }
+    }
 }
 struct Review: Equatable {
     let sentenceID: Int64

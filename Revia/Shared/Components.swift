@@ -36,6 +36,7 @@ struct SentenceCard: View {
     @EnvironmentObject private var speech: SpeechController
     let sentence: Sentence
     let fresh: Bool
+    var showTimestamp = false
     @State private var confirming = false
     var body: some View {
         let _ = language.code
@@ -45,6 +46,10 @@ struct SentenceCard: View {
                 Spacer()
                 Button(L("delete"), role: .destructive) { confirming = true }
                     .font(.system(size: 12)).padding(.vertical, 5)
+            }
+            if showTimestamp {
+                Text(L("created_on", sentence.createdAt.map { Localization.date($0, template: "yMMMdjms") } ?? L("unknown_time")))
+                    .font(.system(size: 12)).foregroundStyle(Palette.muted)
             }
             Text(sentence.text).font(.system(size: 21, weight: .medium))
                 .lineSpacing(6).textSelection(.enabled).foregroundStyle(Palette.ink)
