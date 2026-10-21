@@ -136,3 +136,21 @@
 
 "collapse_notes" = "默认折叠备注";
 "notes" = "备注";
+
+"daily_reminder" = "每日学习提醒";
+
+"reminder_time" = "提醒时间";
+
+"reminder_off" = "未开启";
+
+"reminder_note" = "开启后每天按手机本地时间提醒，默认晚上 7:00。无需网络，关闭 App 后也有效。通知的显示和声音受系统通知设置、专注模式和通知摘要影响。";
+
+"reminder_title" = "到复习时间了";
+
+"reminder_body" = "打开 Revia，学习新句子，回顾今天的内容。";
+
+"reminder_denied" = "通知权限未开启，请前往系统设置允许 Revia 发送通知，然后回来开启每日提醒。";
+
+"reminder_failed" = "无法保存提醒：%@";
+
+"open_settings" = "打开系统设置";

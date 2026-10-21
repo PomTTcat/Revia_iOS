@@ -17,6 +17,7 @@
 		29B01AD3A99143DD122C7B78 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B73E9C15F547C178BFDAAED6 /* RootView.swift */; };
 		2CACD8270B99E4FE6C5A47E8 /* SpeechController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99A8046F745895EB3FFE4F06 /* SpeechController.swift */; };
 		45E7DDBF33B638EBB70F498E /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D874DC24CF9C03C122E83F /* ShareSheet.swift */; };
+		7326667BA1045E9715044BA3 /* ReminderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2E02C3319E4AECCC7D7B72 /* ReminderController.swift */; };
 		75D3284DD55AB825C2339758 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D04CF18977B141F97AEBAC30 /* Foundation.framework */; };
 		775C80384BE956EE74CA735B /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8C266AF53772C5280B83D4 /* CredentialStore.swift */; };
 		7B23C4204836815774A93376 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 88F8DD11FC0491DD6A68DCAF /* RxRelay */; };
@@ -40,7 +41,9 @@
 		D78D3CF6DE6B6C8F4550F193 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E648457BB85E9017903F1890 /* SettingsView.swift */; };
 		DB4EB93C1FFF46997EA10B7F /* APIKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137C1C896A92E703BBF10833 /* APIKeyView.swift */; };
 		E4F80C56D51E493BCD889D12 /* ElevenLabsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1883EBBB6B7327C6E3165C7 /* ElevenLabsTests.swift */; };
+		F549FB9E21F403E44081B587 /* ReminderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451FDD53A356C9111358B568 /* ReminderTests.swift */; };
 		F80D783E90802E0C17EDFED6 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 765495EE2A3FD0EE2F557C52 /* RxRelay */; };
+		FBE4C06F34BDF3BB3EBEB5F6 /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FEF02186EE75ED40A86C908 /* ReminderView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,7 +69,10 @@
 		324CCA5D2338C8DCA5866165 /* CalendarView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		39BCC3E6069BC23C3AB45114 /* ElevenLabs.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ElevenLabs.swift; sourceTree = "<group>"; };
 		39D874DC24CF9C03C122E83F /* ShareSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		451FDD53A356C9111358B568 /* ReminderTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReminderTests.swift; sourceTree = "<group>"; };
+		4C2E02C3319E4AECCC7D7B72 /* ReminderController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReminderController.swift; sourceTree = "<group>"; };
 		4D6DDB38E5746713DF698C60 /* zh-Hans */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		4FEF02186EE75ED40A86C908 /* ReminderView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReminderView.swift; sourceTree = "<group>"; };
 		586EADB2B8A5B13F83CEDC48 /* en */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6061403F78245DC96CD705C3 /* LocalizationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
 		66A792F1401B26B1182D95E7 /* Components.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
@@ -147,6 +153,15 @@
 			path = Revia;
 			sourceTree = "<group>";
 		};
+		1C444B5211C1B0E75F031E90 /* Reminders */ = {
+			isa = PBXGroup;
+			children = (
+				451FDD53A356C9111358B568 /* ReminderTests.swift */,
+			);
+			name = Reminders;
+			path = Reminders;
+			sourceTree = "<group>";
+		};
 		28029E3EA4E8CEA7C1DAC666 /* Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -164,6 +179,15 @@
 			);
 			name = Memory;
 			path = Memory;
+			sourceTree = "<group>";
+		};
+		353FAD4905F320A22DBB6A2E /* Reminders */ = {
+			isa = PBXGroup;
+			children = (
+				4C2E02C3319E4AECCC7D7B72 /* ReminderController.swift */,
+			);
+			name = Reminders;
+			path = Reminders;
 			sourceTree = "<group>";
 		};
 		3A7D2FAB68058E2337F23D34 /* Shared */ = {
@@ -193,6 +217,7 @@
 				ACBC7A3F0E7681BB867F0172 /* Integration */,
 				0D3989D2B6096047FCDD1EED /* Networking */,
 				9FBA0CFCA391AA157E34D633 /* Localization */,
+				1C444B5211C1B0E75F031E90 /* Reminders */,
 			);
 			path = ReviaTests;
 			sourceTree = "<group>";
@@ -277,6 +302,7 @@
 				68402D6F3A14E833FCBD51B6 /* Speech */,
 				DA6D04E75CB5C841DAE8D27C /* Localization */,
 				D66B768B39EB86897D1FB3B0 /* Backup */,
+				353FAD4905F320A22DBB6A2E /* Reminders */,
 			);
 			name = Features;
 			path = Features;
@@ -302,6 +328,7 @@
 				103D5F231FDA04CFB7DD9A92 /* SentencesView.swift */,
 				137C1C896A92E703BBF10833 /* APIKeyView.swift */,
 				7BC99F3F1D8295E39CA88A85 /* BackupView.swift */,
+				4FEF02186EE75ED40A86C908 /* ReminderView.swift */,
 			);
 			name = Pages;
 			path = Pages;
@@ -469,6 +496,8 @@
 				45E7DDBF33B638EBB70F498E /* ShareSheet.swift in Sources */,
 				DB4EB93C1FFF46997EA10B7F /* APIKeyView.swift in Sources */,
 				01687E0234EAA60FCC980AE2 /* BackupView.swift in Sources */,
+				7326667BA1045E9715044BA3 /* ReminderController.swift in Sources */,
+				FBE4C06F34BDF3BB3EBEB5F6 /* ReminderView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -479,6 +508,7 @@
 				0C4781C930C03FDC352A2F5F /* ReviaTests.swift in Sources */,
 				E4F80C56D51E493BCD889D12 /* ElevenLabsTests.swift in Sources */,
 				C52C7979FF04406189B9816F /* LocalizationTests.swift in Sources */,
+				F549FB9E21F403E44081B587 /* ReminderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

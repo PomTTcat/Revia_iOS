@@ -136,3 +136,21 @@
 
 "collapse_notes" = "Collapse notes by default";
 "notes" = "Notes";
+
+"daily_reminder" = "Daily study reminder";
+
+"reminder_time" = "Reminder time";
+
+"reminder_off" = "Off";
+
+"reminder_note" = "Reminds you every day at your phone’s local time, initially 7:00 PM. Works offline and when the app is closed. Appearance and sound depend on notification settings, Focus and Scheduled Summary.";
+
+"reminder_title" = "Time to review";
+
+"reminder_body" = "Open Revia to learn a sentence and revisit today’s content.";
+
+"reminder_denied" = "Notifications are disabled. Allow notifications for Revia in system Settings, then return and enable the daily reminder.";
+
+"reminder_failed" = "Could not save the reminder: %@";
+
+"open_settings" = "Open Settings";

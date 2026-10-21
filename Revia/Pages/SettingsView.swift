@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject private var language: AppLanguage
+    @EnvironmentObject private var reminder: ReminderController
     @EnvironmentObject private var speech: SpeechController
     @AppStorage("notes.collapsed") private var collapseNotes = false
     var body: some View {
@@ -12,6 +13,14 @@ struct SettingsView: View {
                     ForEach(AppLocale.allCases) { option in Text(verbatim: option.name).tag(option) }
                 }
                 Toggle(L("collapse_notes"), isOn: $collapseNotes)
+                NavigationLink { ReminderView() } label: {
+                    HStack {
+                        Text(L("daily_reminder"))
+                        Spacer()
+                        Text(reminder.enabled ? reminder.time.formatted(.dateTime.hour().minute().locale(language.locale)) : L("reminder_off"))
+                            .foregroundStyle(Palette.muted).font(.subheadline)
+                    }
+                }
             }
             Section {
                 Picker(L("voice_type"), selection: Binding(get: { speech.selectedVoiceID }, set: { speech.selectCustomVoice($0) })) {
