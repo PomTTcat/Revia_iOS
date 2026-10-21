@@ -38,6 +38,8 @@ struct SentenceCard: View {
     let fresh: Bool
     var showTimestamp = false
     @State private var confirming = false
+    @AppStorage("notes.collapsed") private var collapseNotes = false
+    @State private var notesExpanded: Bool?
     var body: some View {
         let _ = language.code
         VStack(alignment: .leading, spacing: 14) {
@@ -61,12 +63,18 @@ struct SentenceCard: View {
                 }.font(.system(size: 14, weight: .medium)).foregroundStyle(Palette.green).padding(.vertical, 6)
             }.buttonStyle(.plain).disabled(speech.busyIDs.contains(sentence.id))
             if !sentence.translation.isEmpty {
-                Text(sentence.translation).font(.system(size: 15)).lineSpacing(5)
-                    .foregroundStyle(Palette.muted).textSelection(.enabled)
+                DisclosureGroup(isExpanded: Binding(get: { notesExpanded ?? !collapseNotes }, set: { notesExpanded = $0 })) {
+                    Text(sentence.translation).font(.system(size: 15)).lineSpacing(5)
+                        .foregroundStyle(Palette.muted).textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 6)
+                } label: {
+                    Text(L("notes")).font(.system(size: 14)).foregroundStyle(Palette.muted)
+                }.tint(Palette.green)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading).padding(20)
         .background(fresh ? Palette.fresh : Palette.review, in: RoundedRectangle(cornerRadius: 20))
+        .onChange(of: collapseNotes) { _, _ in notesExpanded = nil }
         .alert(L("delete_title"), isPresented: $confirming) {
             Button(L("cancel"), role: .cancel) {}
             Button(L("delete_all"), role: .destructive) { store.delete(sentence) }

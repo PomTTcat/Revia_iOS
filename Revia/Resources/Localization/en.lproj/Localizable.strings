@@ -133,3 +133,6 @@
 "import_done" = "Imported %d sentences with their original review schedules.";
 
 "backup_menu" = "Import & Export";
+
+"collapse_notes" = "Collapse notes by default";
+"notes" = "Notes";

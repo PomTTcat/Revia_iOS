@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var speech: SpeechController
+    @AppStorage("notes.collapsed") private var collapseNotes = false
     var body: some View {
         let _ = language.code
         Form {
@@ -10,6 +11,7 @@ struct SettingsView: View {
                 Picker(L("language"), selection: Binding(get: { language.selection }, set: { language.select($0) })) {
                     ForEach(AppLocale.allCases) { option in Text(verbatim: option.name).tag(option) }
                 }
+                Toggle(L("collapse_notes"), isOn: $collapseNotes)
             }
             Section {
                 Picker(L("voice_type"), selection: Binding(get: { speech.selectedVoiceID }, set: { speech.selectCustomVoice($0) })) {

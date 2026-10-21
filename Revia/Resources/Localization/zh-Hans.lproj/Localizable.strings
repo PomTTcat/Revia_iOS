@@ -133,3 +133,6 @@
 "import_done" = "已导入 %d 条句子，原复习计划已保留。";
 
 "backup_menu" = "导入与导出";
+
+"collapse_notes" = "默认折叠备注";
+"notes" = "备注";
