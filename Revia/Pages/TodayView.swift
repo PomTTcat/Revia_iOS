@@ -7,7 +7,7 @@ struct TodayView: View {
     private let timer = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
     var body: some View {
         let _ = language.code
-        DayView(date: today)
+        DayView(date: today, allowsAdding: false)
             .onAppear { today = Date() }
             .onReceive(timer) { today = $0 }
             .onChange(of: scenePhase) { _, phase in if phase == .active { today = Date() } }

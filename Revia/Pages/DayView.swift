@@ -7,6 +7,7 @@ struct DayView: View {
     private let clock = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
     @EnvironmentObject private var store: Store
     let date: Date
+    var allowsAdding = true
     @State private var adding = false
     private var fresh: [Sentence] { store.newSentences(on: Schedule.key(date)) }
     private var reviews: [Sentence] { store.reviewSentences(on: Schedule.key(date)) }
@@ -19,7 +20,9 @@ struct DayView: View {
                 Text(L("new_count", fresh.count)).font(.system(size: 18, weight: .semibold)).foregroundStyle(Palette.ink).padding(.top, 20)
                 if fresh.isEmpty { EmptyViewMessage(text: L("no_new")) }
                 ForEach(fresh) { SentenceCard(sentence: $0, fresh: Schedule.isFresh(learningDate: $0.learningDate, on: date, now: now)) }
-                PrimaryButton(title: L("add_for_day")) { adding = true }
+                if allowsAdding {
+                    PrimaryButton(title: L("add_for_day")) { adding = true }
+                }
                 Text(L("review_count", reviews.count)).font(.system(size: 18, weight: .semibold)).foregroundStyle(Palette.ink).padding(.top, 20)
                 if reviews.isEmpty { EmptyViewMessage(text: L("no_reviews")) }
                 ForEach(reviews) { SentenceCard(sentence: $0, fresh: false) }
