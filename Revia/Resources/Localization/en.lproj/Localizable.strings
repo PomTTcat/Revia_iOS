@@ -163,7 +163,7 @@
 
 "theme_dark" = "Dark";
 
-"reset_reviews" = "Reset review schedule";
+"reset_reviews" = "Reset plan";
 
 
 "reset_note" = "The study schedule for this sentence has been refreshed.\n\nStarting today: review after 1, 3, 7, 14 and 30 days, then monthly, for 15 reviews in total. The old future schedule is deactivated. Past dates, the original learning date and existing audio are kept. Refreshing again today does not duplicate the schedule.";
@@ -186,7 +186,7 @@
 
 "plan_invalid" = "Enter a name and arrange 1–15 valid review nodes. Add at least one day before each node and end with a review node.";
 
-"plan_limit" = "Up to 3 plans, including the default. Editing or deleting templates does not change existing sentences.";
+"plan_limit" = "Up to 3 custom plans plus the default plan. Editing or deleting templates does not change existing sentences.";
 
 "plan_builder_note" = "Add day blocks to accumulate time, then place a Review node. Example: 1 day → Review → 2 days → Review schedules days 1 and 3 after learning. Tap a block below to remove it.";
 
@@ -207,3 +207,7 @@
 "plan_finish_node" = "Add days and finish with a review node. Up to 15 nodes.";
 
 "reset_custom_note" = "The study schedule has been refreshed. Starting today, reviews fall on days %@. Old future dates are deactivated. Past dates, the original learning date and audio are kept. Refreshing again today does not add duplicates.";
+
+"preferences" = "Preferences";
+
+"reset_choose_note" = "Choose a plan to restart reviews from today. Past dates and original records are kept; old future dates are deactivated.";

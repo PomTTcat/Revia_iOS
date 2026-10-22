@@ -45,8 +45,7 @@ final class Database {
                   id INTEGER PRIMARY KEY AUTOINCREMENT,
                   sentence_id INTEGER NOT NULL REFERENCES sentences(id) ON DELETE CASCADE,
                   started_on TEXT NOT NULL,
-                  created_at TEXT NOT NULL,
-                  UNIQUE(sentence_id, started_on)
+                  created_at TEXT NOT NULL
                 );
                 CREATE TABLE IF NOT EXISTS cycle_reviews (
                   cycle_id INTEGER NOT NULL REFERENCES review_cycles(id) ON DELETE CASCADE,
@@ -71,7 +70,14 @@ final class Database {
                         }
                     }
                 }
-                try execute("PRAGMA user_version = 5")
+                try migrateCycles()
+                try execute("""
+                    CREATE TABLE IF NOT EXISTS cycle_plans (
+                      cycle_id INTEGER PRIMARY KEY REFERENCES review_cycles(id) ON DELETE CASCADE,
+                      plan_json TEXT NOT NULL
+                    );
+                    PRAGMA user_version = 6;
+                    """)
             }
         } catch {
             sqlite3_close(connection); connection = nil
@@ -106,6 +112,31 @@ final class Database {
         try execute("BEGIN IMMEDIATE")
         do { try body(); try execute("COMMIT") }
         catch { try? execute("ROLLBACK"); throw error }
+    }
+    private func migrateCycles() throws {
+        let query = try statement("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'review_cycles'")
+        let sql = sqlite3_step(query) == SQLITE_ROW ? String(cString: sqlite3_column_text(query, 0)) : ""
+        sqlite3_finalize(query)
+        guard sql.uppercased().filter({ !$0.isWhitespace }).contains("UNIQUE(SENTENCE_ID,STARTED_ON)") else { return }
+        // Preserve IDs and dates while allowing a different plan to start again on the same day.
+        try execute("""
+            CREATE TABLE review_cycles_v6 (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              sentence_id INTEGER NOT NULL REFERENCES sentences(id) ON DELETE CASCADE,
+              started_on TEXT NOT NULL, created_at TEXT NOT NULL
+            );
+            INSERT INTO review_cycles_v6 SELECT id, sentence_id, started_on, created_at FROM review_cycles;
+            CREATE TABLE cycle_reviews_v6 (
+              cycle_id INTEGER NOT NULL REFERENCES review_cycles_v6(id) ON DELETE CASCADE,
+              review_date TEXT NOT NULL, PRIMARY KEY(cycle_id, review_date)
+            );
+            INSERT INTO cycle_reviews_v6 SELECT cycle_id, review_date FROM cycle_reviews;
+            DROP TABLE cycle_reviews;
+            DROP TABLE review_cycles;
+            ALTER TABLE review_cycles_v6 RENAME TO review_cycles;
+            ALTER TABLE cycle_reviews_v6 RENAME TO cycle_reviews;
+            CREATE INDEX cycles_sentence ON review_cycles(sentence_id);
+            """)
     }
     private static func timestamp(_ value: String) -> Date? {
         let formatter = ISO8601DateFormatter()
@@ -203,14 +234,18 @@ final class Database {
         }
         return backup.sentences.count
     }
-    func resetReviews(sentenceID: Int64, on day: String) throws {
+    func resetReviews(sentenceID: Int64, on day: String, plan: StudyPlan? = nil) throws {
         guard let sentence = try sentences().first(where: { $0.id == sentenceID }) else { throw ReviaError.message(L("sentence_read_failed")) }
-        let dates = try (sentence.studyPlan ?? .defaultPlan).dates(from: day)
         try transaction {
             let existing = try resetCycles(sentenceID: sentenceID)
-            if existing.last?.startedOn == day { return }
+            let current = existing.last?.studyPlan ?? sentence.studyPlan ?? .defaultPlan
+            let selected = plan ?? current
+            let dates = try selected.dates(from: day)
+            if existing.last?.startedOn == day && selected == current { return }
             if let previous = existing.last, day < previous.startedOn { throw ReviaError.message(L("reset_date_error")) }
-            try insertCycle(sentenceID: sentenceID, cycle: BackupCycle(startedOn: day, createdAt: Date(), reviewDates: dates))
+            // Legacy calls preserve their previous backup format; explicit selections save a cycle snapshot.
+            let snapshot = plan != nil || existing.last?.studyPlan != nil ? selected : nil
+            try insertCycle(sentenceID: sentenceID, cycle: BackupCycle(startedOn: day, createdAt: Date(), reviewDates: dates, studyPlan: snapshot))
         }
     }
     private func savePlan(_ plan: StudyPlan, sentenceID: Int64) throws {
@@ -225,12 +260,16 @@ final class Database {
         try run("INSERT INTO review_cycles (sentence_id, started_on, created_at) VALUES (?, ?, ?)",
                 [.integer(sentenceID), .text(cycle.startedOn), .text(formatter.string(from: cycle.createdAt))])
         let id = sqlite3_last_insert_rowid(connection)
+        if let plan = cycle.studyPlan {
+            let json = String(decoding: try JSONEncoder().encode(plan), as: UTF8.self)
+            try run("INSERT INTO cycle_plans VALUES (?, ?)", [.integer(id), .text(json)])
+        }
         for day in cycle.reviewDates {
             try run("INSERT INTO cycle_reviews VALUES (?, ?)", [.integer(id), .text(day)])
         }
     }
     func resetCycles(sentenceID: Int64) throws -> [BackupCycle] {
-        let query = try statement("SELECT id, started_on, created_at FROM review_cycles WHERE sentence_id = ? ORDER BY id", [.integer(sentenceID)])
+        let query = try statement("SELECT c.id, c.started_on, c.created_at, p.plan_json FROM review_cycles c LEFT JOIN cycle_plans p ON p.cycle_id = c.id WHERE c.sentence_id = ? ORDER BY c.id", [.integer(sentenceID)])
         defer { sqlite3_finalize(query) }
         var cycles: [BackupCycle] = []
         var result = sqlite3_step(query)
@@ -247,7 +286,8 @@ final class Database {
             }
             sqlite3_finalize(days)
             guard step == SQLITE_DONE else { throw failure }
-            cycles.append(BackupCycle(startedOn: started, createdAt: created, reviewDates: dates))
+            let plan = sqlite3_column_type(query, 3) == SQLITE_NULL ? nil : try JSONDecoder().decode(StudyPlan.self, from: Data(String(cString: sqlite3_column_text(query, 3)).utf8))
+            cycles.append(BackupCycle(startedOn: started, createdAt: created, reviewDates: dates, studyPlan: plan))
             result = sqlite3_step(query)
         }
         guard result == SQLITE_DONE else { throw failure }

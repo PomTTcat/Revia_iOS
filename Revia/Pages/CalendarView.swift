@@ -94,9 +94,11 @@ struct CalendarView: View {
                 .font(.system(size: 16)).frame(width: 36, height: 36)
                 .foregroundStyle(today ? Palette.onAccent : Palette.ink)
                 .background(today ? Palette.green : .clear, in: Circle())
-            HStack(spacing: 3) {
-                if fresh { Circle().fill(Schedule.isFresh(learningDate: key, on: date, now: now) ? Palette.green : Palette.marker).frame(width: 5, height: 5) }
-                if review { Circle().fill(Palette.marker).frame(width: 5, height: 5) }
+            ZStack {
+                if fresh || review {
+                    Circle().fill(today && fresh ? Palette.green : Palette.marker)
+                        .frame(width: 5, height: 5)
+                }
             }.frame(height: 6)
         }.frame(maxWidth: .infinity).frame(height: 52)
             .accessibilityLabel("\(key)\(fresh ? L("has_new") : "")\(review ? L("has_review") : "")")

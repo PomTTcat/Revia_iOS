@@ -47,12 +47,12 @@ final class Store: ObservableObject {
         } catch { self.error = error.localizedDescription }
     }
     @discardableResult
-    func resetReviews(_ sentence: Sentence) -> Bool {
+    func resetReviews(_ sentence: Sentence, plan: StudyPlan? = nil) -> Bool {
         do {
             guard let database else { throw ReviaError.message(L("db_not_ready")) }
-            try database.resetReviews(sentenceID: sentence.id, on: Schedule.key(Date()))
+            try database.resetReviews(sentenceID: sentence.id, on: Schedule.key(Date()), plan: plan)
             try refresh()
-            notice = sentence.studyPlan?.offsets.map { L("reset_custom_note", $0.map(String.init).joined(separator: "、")) } ?? L("reset_note")
+            notice = (plan ?? sentence.studyPlan)?.offsets.map { L("reset_custom_note", $0.map(String.init).joined(separator: "、")) } ?? L("reset_note")
             return true
         } catch {
             self.error = error.localizedDescription

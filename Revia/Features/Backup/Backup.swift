@@ -6,10 +6,16 @@ struct ReviaBackup: Codable {
     let exportedAt: Date
     let sentences: [BackupSentence]
     init(sentences: [BackupSentence]) {
-        format = "revia"; version = sentences.contains { $0.studyPlan != nil } ? 3 : (sentences.contains { !($0.resetCycles ?? []).isEmpty } ? 2 : 1); exportedAt = Date(); self.sentences = sentences
+        format = "revia"
+        if sentences.contains(where: { ($0.resetCycles ?? []).contains { $0.studyPlan != nil } }) { version = 4 }
+        else if sentences.contains(where: { $0.studyPlan != nil }) { version = 3 }
+        else if sentences.contains(where: { !($0.resetCycles ?? []).isEmpty }) { version = 2 }
+        else { version = 1 }
+        exportedAt = Date()
+        self.sentences = sentences
     }
     func validate() throws {
-        guard format == "revia", (1...3).contains(version) else { throw ReviaError.message(L("backup_format")) }
+        guard format == "revia", (1...4).contains(version) else { throw ReviaError.message(L("backup_format")) }
         for sentence in sentences {
             if let plan = sentence.studyPlan {
                 guard version >= 3 else { throw ReviaError.message(L("backup_invalid")) }
@@ -29,8 +35,13 @@ struct ReviaBackup: Codable {
             var previous: String?
             for cycle in cycles {
                 _ = try Schedule.date(cycle.startedOn)
-                guard previous.map({ cycle.startedOn > $0 }) ?? true,
-                      cycle.reviewDates.count == count, Set(cycle.reviewDates).count == count else { throw ReviaError.message(L("backup_invalid")) }
+                if let plan = cycle.studyPlan {
+                    guard version >= 4 else { throw ReviaError.message(L("backup_invalid")) }
+                    try plan.validate()
+                }
+                let cycleCount = cycle.studyPlan.map { $0.offsets?.count ?? 15 } ?? count
+                guard previous.map({ cycle.startedOn >= $0 }) ?? true,
+                      cycle.reviewDates.count == cycleCount, Set(cycle.reviewDates).count == cycleCount else { throw ReviaError.message(L("backup_invalid")) }
                 for day in cycle.reviewDates {
                     _ = try Schedule.date(day)
                     guard day > cycle.startedOn else { throw ReviaError.message(L("backup_invalid")) }
@@ -84,4 +95,5 @@ struct BackupCycle: Codable {
     let startedOn: String
     let createdAt: Date
     let reviewDates: [String]
+    var studyPlan: StudyPlan? = nil
 }

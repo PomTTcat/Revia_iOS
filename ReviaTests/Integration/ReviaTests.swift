@@ -1,4 +1,5 @@
 import XCTest
+import SQLite3
 @testable import Revia
 
 final class ReviaTests: XCTestCase {
@@ -239,7 +240,7 @@ final class StudyPlanTests: XCTestCase {
         XCTAssertEqual(try StudyPlan.offsets(for: Array(repeating: [1, 0], count: 15).flatMap { $0 }).count, 15)
     }
     @MainActor
-    func testCatalogLimitsTotalToThreeAndPersistsChanges() throws {
+    func testCatalogAllowsThreeCustomPlansAndPersistsChanges() throws {
         let suite = "PlansTests.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite)!
         defer { defaults.removePersistentDomain(forName: suite) }
@@ -247,16 +248,18 @@ final class StudyPlanTests: XCTestCase {
         let first = StudyPlan(id: "first", name: "Short", offsets: [1, 3])
         try catalog.save(first)
         try catalog.save(StudyPlan(id: "second", name: "Long", offsets: [7, 30]))
-        XCTAssertEqual(catalog.all.count, 3)
+        XCTAssertTrue(catalog.canAdd)
+        try catalog.save(StudyPlan(id: "third", name: "Extra", offsets: [1]))
+        XCTAssertEqual(catalog.all.count, 4)
         XCTAssertFalse(catalog.canAdd)
-        XCTAssertThrowsError(try catalog.save(StudyPlan(id: "third", name: "Extra", offsets: [1])))
+        XCTAssertThrowsError(try catalog.save(StudyPlan(id: "fourth", name: "Too many", offsets: [1])))
         try catalog.save(StudyPlan(id: first.id, name: "Renamed", offsets: [1, 4]))
         let restored = PlanCatalog(defaults: defaults)
         XCTAssertEqual(restored.custom.first?.name, "Renamed")
         XCTAssertEqual(restored.custom.first?.offsets, [1, 4])
         restored.delete(IndexSet(integer: 0))
         XCTAssertTrue(restored.canAdd)
-        XCTAssertEqual(restored.all.count, 2)
+        XCTAssertEqual(restored.all.count, 3)
     }
     func testCustomPlanPersistsAndResetUsesOriginalSnapshot() throws {
         let path = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).path
@@ -287,5 +290,83 @@ final class StudyPlanTests: XCTestCase {
         XCTAssertThrowsError(try database.add(text: "Bad plan", translation: "", date: "2026-10-01", plan: plan))
         XCTAssertTrue(try database.sentences().isEmpty)
         XCTAssertTrue(try database.reviews().isEmpty)
+    }
+}
+
+final class PlanSelectionTests: XCTestCase {
+    @MainActor
+    func testLastSelectedPlanPersistsAndFallsBackAfterDeletion() throws {
+        let suite = "PlanSelection.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let catalog = PlanCatalog(defaults: defaults)
+        let plan = StudyPlan(id: "last", name: "Remember me", offsets: [1, 3])
+        try catalog.save(plan)
+        catalog.remember(plan.id)
+        let restored = PlanCatalog(defaults: defaults)
+        XCTAssertEqual(restored.preferredPlan, plan)
+        restored.delete(IndexSet(integer: 0))
+        XCTAssertEqual(restored.preferredPlan, .defaultPlan)
+        XCTAssertEqual(PlanCatalog(defaults: defaults).preferredPlan, .defaultPlan)
+    }
+    func testDifferentPlansOnSameDayAreArchivedAndRoundTripCorrectly() throws {
+        let database = try Database(path: ":memory:")
+        let original = StudyPlan(id: "original", name: "Original", offsets: [1, 5, 8])
+        let first = StudyPlan(id: "first", name: "First", offsets: [1, 3])
+        let second = StudyPlan(id: "second", name: "Second", offsets: [7])
+        let id = try database.add(text: "Change my plan", translation: "", date: "2026-10-01", plan: original)
+        try database.resetReviews(sentenceID: id, on: "2026-10-10", plan: first)
+        try database.resetReviews(sentenceID: id, on: "2026-10-10", plan: second)
+        XCTAssertEqual(try database.resetCycles(sentenceID: id).count, 2)
+        XCTAssertFalse(try database.reviews().contains { $0.date == "2026-10-11" })
+        XCTAssertTrue(try database.reviews().contains { $0.date == "2026-10-17" })
+        try database.resetReviews(sentenceID: id, on: "2026-10-10", plan: .defaultPlan)
+        try database.resetReviews(sentenceID: id, on: "2026-10-10", plan: .defaultPlan)
+        XCTAssertEqual(try database.resetCycles(sentenceID: id).count, 3)
+        try database.resetReviews(sentenceID: id, on: "2026-10-20")
+        XCTAssertEqual(try database.resetCycles(sentenceID: id).last?.reviewDates.count, 15)
+        XCTAssertEqual(try database.sentences().first?.studyPlan, original)
+        let backup = try database.exportBackup()
+        XCTAssertEqual(backup.version, 4)
+        let restored = try Database(path: ":memory:")
+        try restored.importBackup(ReviaBackup.decode(backup.encoded()))
+        XCTAssertEqual(try restored.reviews().map(\.date), try database.reviews().map(\.date))
+        let restoredID = try XCTUnwrap(restored.sentences().first?.id)
+        XCTAssertEqual(try restored.resetCycles(sentenceID: restoredID).map { $0.reviewDates.count }, [2, 1, 15, 15])
+        try restored.delete(id: restoredID)
+        XCTAssertTrue(try restored.resetCycles(sentenceID: restoredID).isEmpty)
+    }
+    func testVersionFiveMigrationPreservesCyclesAndAllowsSameDayPlanChange() throws {
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).path
+        defer { for suffix in ["", "-wal", "-shm"] { try? FileManager.default.removeItem(atPath: path + suffix) } }
+        var database: Database? = try Database(path: path)
+        let id = try database!.add(text: "Legacy", translation: "", date: "2026-10-01")
+        database = nil
+        var raw: OpaquePointer?
+        XCTAssertEqual(sqlite3_open(path, &raw), SQLITE_OK)
+        let legacyDates = try Schedule.reviews(for: "2026-10-10")
+        let rows = legacyDates.map { "INSERT INTO cycle_reviews VALUES (42, '\($0)');" }.joined(separator: "\n")
+        let sql = """
+            PRAGMA foreign_keys = OFF;
+            DROP TABLE cycle_plans;
+            DROP TABLE cycle_reviews;
+            DROP TABLE review_cycles;
+            CREATE TABLE review_cycles (id INTEGER PRIMARY KEY AUTOINCREMENT, sentence_id INTEGER NOT NULL REFERENCES sentences(id) ON DELETE CASCADE, started_on TEXT NOT NULL, created_at TEXT NOT NULL, UNIQUE(sentence_id, started_on));
+            CREATE TABLE cycle_reviews (cycle_id INTEGER NOT NULL REFERENCES review_cycles(id) ON DELETE CASCADE, review_date TEXT NOT NULL, PRIMARY KEY(cycle_id, review_date));
+            INSERT INTO review_cycles VALUES (42, \(id), '2026-10-10', '2026-10-10T09:00:00Z');
+            \(rows)
+            PRAGMA user_version = 5;
+            """
+        let result = sqlite3_exec(raw, sql, nil, nil, nil)
+        sqlite3_close(raw)
+        XCTAssertEqual(result, SQLITE_OK)
+        database = try Database(path: path)
+        XCTAssertEqual(try database!.resetCycles(sentenceID: id).first?.reviewDates, legacyDates)
+        let plan = StudyPlan(id: "short", name: "Short", offsets: [2])
+        try database!.resetReviews(sentenceID: id, on: "2026-10-10", plan: plan)
+        XCTAssertEqual(try database!.resetCycles(sentenceID: id).count, 2)
+        XCTAssertTrue(try database!.reviews().contains { $0.date == "2026-10-12" })
+        try database!.delete(id: id)
+        XCTAssertTrue(try database!.resetCycles(sentenceID: id).isEmpty)
     }
 }

@@ -50,7 +50,8 @@ struct AddSentenceView: View {
                 .navigationTitle(L("add_sentence")).navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button(L("cancel")) { dismiss() }.disabled(saving) } }
                 .interactiveDismissDisabled(saving)
-                .onAppear { generateSpeech = speech.canGenerate }
+                .onAppear { generateSpeech = speech.canGenerate; selectedPlanID = plans.preferredPlan.id }
+                .onChange(of: selectedPlanID) { _, id in plans.remember(id) }
                 .onChange(of: speech.canGenerate) { _, enabled in generateSpeech = enabled }
                 .alert(saved ? L("audio_failed_saved") : L("save_failed"), isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
                     Button(L("ok"), role: .cancel) { error = nil; if saved { dismiss() } }

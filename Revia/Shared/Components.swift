@@ -25,10 +25,12 @@ struct EmptyViewMessage: View {
 struct SentenceCard: View {
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var store: Store
+    @EnvironmentObject private var plans: PlanCatalog
     @EnvironmentObject private var speech: SpeechController
     let sentence: Sentence
     let fresh: Bool
     @State private var confirming = false
+    @State private var choosingPlan = false
     @AppStorage("notes.collapsed") private var collapseNotes = false
     @State private var notesExpanded: Bool?
     var body: some View {
@@ -62,9 +64,9 @@ struct SentenceCard: View {
                 .buttonStyle(.plain).foregroundStyle(Palette.green).disabled(speech.busyIDs.contains(sentence.id))
                 .accessibilityLabel(L(speech.busyIDs.contains(sentence.id) ? "generating_audio" : (speech.playingID == sentence.id ? "stop_audio" : "play_audio")))
                 Spacer()
-                Button { store.resetReviews(sentence) } label: {
-                    Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 18, weight: .medium)).frame(width: 44, height: 44, alignment: .trailing)
+                Button { choosingPlan = true } label: {
+                    Text(L("reset_reviews"))
+                        .font(.system(size: 14, weight: .medium)).frame(minHeight: 44)
                         .contentShape(Rectangle())
                 }.buttonStyle(.plain).foregroundStyle(Palette.green)
                     .accessibilityLabel(L("reset_reviews"))
@@ -84,6 +86,12 @@ struct SentenceCard: View {
         .padding(.horizontal, 20).padding(.top, 6).padding(.bottom, 8)
         .background(fresh ? Palette.fresh : Palette.review, in: RoundedRectangle(cornerRadius: 12))
         .onChange(of: collapseNotes) { _, _ in notesExpanded = nil }
+        .alert(L("reset_reviews"), isPresented: $choosingPlan) {
+            ForEach(plans.all) { plan in
+                Button(plan.title) { store.resetReviews(sentence, plan: plan) }
+            }
+            Button(L("cancel"), role: .cancel) {}
+        } message: { Text(L("reset_choose_note")) }
         .alert(L("delete_title"), isPresented: $confirming) {
             Button(L("cancel"), role: .cancel) {}
             Button(L("delete_all"), role: .destructive) { store.delete(sentence) }

@@ -35,6 +35,7 @@
 		95CBF769BBDC68A41F6DA647 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45D3539471ED1374DD09FEBF /* LaunchScreen.storyboard */; };
 		9CBAF5033F711A9C15C4537B /* ReviaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055FE25678505CF90F046578 /* ReviaApp.swift */; };
 		A2C8DA0B08ACE2F6E537D817 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE065ED8C5005F8CA868FC9 /* TodayView.swift */; };
+		AF7DE0875E1F784C63FE2863 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89C62DAA210CB38D1DDB32A /* PreferencesView.swift */; };
 		B13DB1D5B7E09D7AA7D250EC /* DayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0596104D45C685738C809E0B /* DayView.swift */; };
 		B19341B3D04BFD25EADD6CB3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 237EA0486E58599701F54C48 /* Assets.xcassets */; };
 		B5D59FB334B95F2096507728 /* AddSentenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD0FE5746DD1C10FAE5940F /* AddSentenceView.swift */; };
@@ -101,6 +102,7 @@
 		BB488E8E4E54A9DF7678B7A6 /* Revia.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Revia.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC58591AB756549EBF8DBE13 /* PlanCatalog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlanCatalog.swift; sourceTree = "<group>"; };
 		C016601A93E6AC48B5524D3A /* AudioCache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AudioCache.swift; sourceTree = "<group>"; };
+		C89C62DAA210CB38D1DDB32A /* PreferencesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		CEEB447666036EADD9493EE0 /* Database.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		D04CF18977B141F97AEBAC30 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		D4D7D17B1B3E0FF072DC7D59 /* Store.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
@@ -360,6 +362,7 @@
 				7BC99F3F1D8295E39CA88A85 /* BackupView.swift */,
 				4FEF02186EE75ED40A86C908 /* ReminderView.swift */,
 				4FBCCBD33ED544961B2833A9 /* PlansView.swift */,
+				C89C62DAA210CB38D1DDB32A /* PreferencesView.swift */,
 			);
 			name = Pages;
 			path = Pages;
@@ -548,6 +551,7 @@
 				D2815D08BA481CD693CC288C /* StudyPlan.swift in Sources */,
 				585EE80BBE5CF450B95BED82 /* PlanCatalog.swift in Sources */,
 				7AC0A1FEDDAF52B07F855311 /* PlansView.swift in Sources */,
+				AF7DE0875E1F784C63FE2863 /* PreferencesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
