@@ -440,3 +440,75 @@ final class SentenceEditTests: XCTestCase {
         XCTAssertTrue(try database.resetCycles(sentenceID: id).isEmpty)
     }
 }
+
+final class FavoriteTests: XCTestCase {
+    func testFavoritePersistsWithoutChangingScheduleAndCanBeRemoved() throws {
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).path
+        defer { for suffix in ["", "-wal", "-shm"] { try? FileManager.default.removeItem(atPath: path + suffix) } }
+        var database: Database? = try Database(path: path)
+        let id = try database!.add(text: "Favorite sentence", translation: "Note", date: "2026-10-01")
+        let created = try database!.sentences().first?.createdAt
+        let reviews = try database!.reviews()
+        try database!.setFavorite(id: id, value: true)
+        try database!.setFavorite(id: id, value: true)
+        database = nil
+        database = try Database(path: path)
+        XCTAssertEqual(try database!.sentences().first?.isFavorite, true)
+        XCTAssertEqual(try database!.sentences().first?.createdAt, created)
+        XCTAssertEqual(try database!.reviews(), reviews)
+        XCTAssertEqual(try database!.sentences().count, 1)
+        try database!.setFavorite(id: id, value: false)
+        XCTAssertEqual(try database!.sentences().first?.isFavorite, false)
+        XCTAssertEqual(try database!.reviews(), reviews)
+        try database!.delete(id: id)
+        XCTAssertThrowsError(try database!.setFavorite(id: id, value: true))
+    }
+    func testFavoriteSurvivesEditResetAndBackup() throws {
+        let database = try Database(path: ":memory:")
+        let id = try database.add(text: "Before", translation: "", date: "2026-10-01")
+        try database.setFavorite(id: id, value: true)
+        let plan = StudyPlan(id: "favorite-plan", name: "Favorite plan", offsets: [1, 3])
+        try database.editSentence(id: id, text: "After", translation: "Note", on: "2026-10-10", plan: plan, keepHistory: false)
+        try database.resetReviews(sentenceID: id, on: "2026-10-20", plan: .defaultPlan)
+        XCTAssertEqual(try database.sentences().first?.isFavorite, true)
+        let backup = try database.exportBackup()
+        XCTAssertEqual(backup.version, 5)
+        let restored = try Database(path: ":memory:")
+        try restored.importBackup(ReviaBackup.decode(backup.encoded()))
+        XCTAssertEqual(try restored.sentences().first?.isFavorite, true)
+        XCTAssertEqual(try restored.reviews().map(\.date), try database.reviews().map(\.date))
+        let restoredID = try XCTUnwrap(restored.sentences().first?.id)
+        try restored.delete(id: restoredID)
+        XCTAssertTrue(try restored.sentences().isEmpty)
+        XCTAssertTrue(try restored.reviews().isEmpty)
+        XCTAssertThrowsError(try restored.setFavorite(id: restoredID, value: true))
+    }
+    func testFavoriteFilterCombinesWithSearchAndKeepsNewestFirst() {
+        let early = Sentence(id: 1, text: "Early", translation: "Note", learningDate: "2026-10-01", createdAt: Date(timeIntervalSince1970: 1), isFavorite: true)
+        let latest = Sentence(id: 2, text: "Latest", translation: "Note", learningDate: "2026-10-01", createdAt: Date(timeIntervalSince1970: 3))
+        let recent = Sentence(id: 3, text: "Recent", translation: "Favorite note", learningDate: "2026-10-01", createdAt: Date(timeIntervalSince1970: 2), isFavorite: true)
+        let all = [early, latest, recent]
+        XCTAssertEqual(SentenceLibrary.results(all, query: "").map(\.id), [2, 3, 1])
+        XCTAssertEqual(SentenceLibrary.results(all, query: "", favoritesOnly: true).map(\.id), [3, 1])
+        XCTAssertEqual(SentenceLibrary.results(all, query: "favorite NOTE", favoritesOnly: true).map(\.id), [3])
+        XCTAssertTrue(SentenceLibrary.results(all, query: "Latest", favoritesOnly: true).isEmpty)
+    }
+    func testVersionSixDatabaseGetsUnfavoritedDefaultWithoutDataLoss() throws {
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).path
+        defer { for suffix in ["", "-wal", "-shm"] { try? FileManager.default.removeItem(atPath: path + suffix) } }
+        var database: Database? = try Database(path: path)
+        let id = try database!.add(text: "Legacy favorite", translation: "", date: "2026-10-01")
+        let reviews = try database!.reviews()
+        database = nil
+        var raw: OpaquePointer?
+        XCTAssertEqual(sqlite3_open(path, &raw), SQLITE_OK)
+        XCTAssertEqual(sqlite3_exec(raw, "DROP TABLE sentence_favorites; PRAGMA user_version = 6;", nil, nil, nil), SQLITE_OK)
+        sqlite3_close(raw)
+        database = try Database(path: path)
+        XCTAssertEqual(try database!.sentences().first?.id, id)
+        XCTAssertEqual(try database!.sentences().first?.isFavorite, false)
+        XCTAssertEqual(try database!.reviews(), reviews)
+        try database!.setFavorite(id: id, value: true)
+        XCTAssertEqual(try database!.sentences().first?.isFavorite, true)
+    }
+}

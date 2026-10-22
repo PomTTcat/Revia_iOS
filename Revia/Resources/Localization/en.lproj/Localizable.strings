@@ -231,3 +231,15 @@
 "copy" = "Copy";
 
 "share" = "Share";
+
+"favorite" = "Add to favorites";
+
+"unfavorite" = "Remove from favorites";
+
+"favorites" = "Favorites";
+
+"all_items" = "All";
+
+"sentence_filter" = "Filter sentences";
+
+"no_favorites" = "No favorites yet. Tap the bookmark on a sentence card to save it here.";

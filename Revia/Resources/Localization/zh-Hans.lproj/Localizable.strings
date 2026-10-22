@@ -231,3 +231,15 @@
 "copy" = "拷贝";
 
 "share" = "分享";
+
+"favorite" = "收藏";
+
+"unfavorite" = "取消收藏";
+
+"favorites" = "收藏";
+
+"all_items" = "全部";
+
+"sentence_filter" = "句子筛选";
+
+"no_favorites" = "还没有收藏的句子，点击卡片右上角的书签即可收藏。";

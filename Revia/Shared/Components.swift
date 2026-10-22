@@ -40,16 +40,34 @@ struct SentenceCard: View {
             HStack {
                 Text(L("added_on", (try? Schedule.date(sentence.learningDate)).map { Localization.date($0, template: "yMMMd") } ?? sentence.learningDate)).font(.system(size: 12)).foregroundStyle(Palette.muted)
                 Spacer()
-                Button(role: .destructive) { confirming = true } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 14, weight: .medium))
-                        .frame(width: 44, height: 44, alignment: .trailing)
-                        .contentShape(Rectangle())
+                HStack(spacing: 0) {
+                    Button { store.toggleFavorite(sentence) } label: {
+                        Image(systemName: sentence.isFavorite ? "bookmark.fill" : "bookmark")
+                            .resizable().scaledToFit()
+                            .frame(width: 20, height: 20)
+                            .frame(width: 30, height: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .foregroundStyle(sentence.isFavorite ? Palette.green : Palette.muted)
+                    .accessibilityLabel(L(sentence.isFavorite ? "unfavorite" : "favorite"))
+                    Button(role: .destructive) { confirming = true } label: {
+                        Image(systemName: "xmark")
+                            .resizable().scaledToFit()
+                            .frame(width: 14, height: 14)
+                            .frame(width: 30, height: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .foregroundStyle(Palette.muted)
+                    .accessibilityLabel(L("delete"))
+        .alert(L("delete_title"), isPresented: $confirming) {
+            Button(L("cancel"), role: .cancel) {}
+            Button(L("delete_all"), role: .destructive) { store.delete(sentence) }
+        } message: { Text(L("delete_note")) }
                 }
                 .buttonStyle(.plain)
-                .foregroundStyle(Palette.muted)
-                .accessibilityLabel(L("delete"))
-                .padding(.vertical, -12.5)
+                .fontWeight(.regular)
+                .symbolRenderingMode(.monochrome)
+                .padding(.trailing, -5)
             }
             Text(sentence.text).font(.system(size: 21, weight: .medium))
                 .lineSpacing(6).foregroundStyle(Palette.ink)
@@ -71,6 +89,12 @@ struct SentenceCard: View {
                         .contentShape(Rectangle())
                 }.buttonStyle(.plain).foregroundStyle(Palette.green)
                     .accessibilityLabel(L("reset_reviews"))
+        .alert(L("reset_reviews"), isPresented: $choosingPlan) {
+            ForEach(plans.all) { plan in
+                Button(plan.title) { store.resetReviews(sentence, plan: plan) }
+            }
+            Button(L("cancel"), role: .cancel) {}
+        } message: { Text(L("reset_choose_note")) }
             }
             .padding(.vertical, -6.5)
             if !sentence.translation.isEmpty {
@@ -94,15 +118,7 @@ struct SentenceCard: View {
             Button { store.beginEditing(sentence) } label: { Label(L("edit"), systemImage: "pencil") }
         }
         .onChange(of: collapseNotes) { _, _ in notesExpanded = nil }
-        .alert(L("reset_reviews"), isPresented: $choosingPlan) {
-            ForEach(plans.all) { plan in
-                Button(plan.title) { store.resetReviews(sentence, plan: plan) }
-            }
-            Button(L("cancel"), role: .cancel) {}
-        } message: { Text(L("reset_choose_note")) }
-        .alert(L("delete_title"), isPresented: $confirming) {
-            Button(L("cancel"), role: .cancel) {}
-            Button(L("delete_all"), role: .destructive) { store.delete(sentence) }
-        } message: { Text(L("delete_note")) }
+
+
     }
 }

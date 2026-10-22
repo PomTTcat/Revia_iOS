@@ -22,6 +22,9 @@ final class Database {
                   learning_date TEXT NOT NULL,
                   created_at TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS sentence_favorites (
+                  sentence_id INTEGER PRIMARY KEY REFERENCES sentences(id) ON DELETE CASCADE
+                );
                 CREATE TABLE IF NOT EXISTS sentence_plans (
                   sentence_id INTEGER PRIMARY KEY REFERENCES sentences(id) ON DELETE CASCADE,
                   plan_json TEXT NOT NULL
@@ -76,7 +79,7 @@ final class Database {
                       cycle_id INTEGER PRIMARY KEY REFERENCES review_cycles(id) ON DELETE CASCADE,
                       plan_json TEXT NOT NULL
                     );
-                    PRAGMA user_version = 6;
+                    PRAGMA user_version = 7;
                     """)
             }
         } catch {
@@ -145,14 +148,14 @@ final class Database {
         return formatter.date(from: value)
     }
     func sentences() throws -> [Sentence] {
-        let statement = try statement("SELECT s.id, s.japanese, s.translation, s.learning_date, s.created_at, p.plan_json FROM sentences s LEFT JOIN sentence_plans p ON p.sentence_id = s.id ORDER BY s.learning_date DESC, s.id DESC")
+        let statement = try statement("SELECT s.id, s.japanese, s.translation, s.learning_date, s.created_at, p.plan_json, f.sentence_id FROM sentences s LEFT JOIN sentence_plans p ON p.sentence_id = s.id LEFT JOIN sentence_favorites f ON f.sentence_id = s.id ORDER BY s.learning_date DESC, s.id DESC")
         defer { sqlite3_finalize(statement) }
         var results: [Sentence] = []
         var result = sqlite3_step(statement)
         while result == SQLITE_ROW {
             func text(_ index: Int32) -> String { String(cString: sqlite3_column_text(statement, index)) }
             let plan = sqlite3_column_type(statement, 5) == SQLITE_NULL ? nil : try JSONDecoder().decode(StudyPlan.self, from: Data(text(5).utf8))
-            results.append(Sentence(id: sqlite3_column_int64(statement, 0), text: text(1), translation: text(2), learningDate: text(3), createdAt: Self.timestamp(text(4)), studyPlan: plan))
+            results.append(Sentence(id: sqlite3_column_int64(statement, 0), text: text(1), translation: text(2), learningDate: text(3), createdAt: Self.timestamp(text(4)), studyPlan: plan, isFavorite: sqlite3_column_type(statement, 6) != SQLITE_NULL))
             result = sqlite3_step(statement)
         }
         guard result == SQLITE_DONE else { throw failure }
@@ -212,7 +215,7 @@ final class Database {
             return BackupSentence(text: sentence.text, translation: sentence.translation,
                                   learningDate: sentence.learningDate, createdAt: created,
                                   reviewDates: (grouped[sentence.id] ?? []).map(\.date).sorted(),
-                                  resetCycles: cycles.isEmpty ? nil : cycles, studyPlan: sentence.studyPlan)
+                                  resetCycles: cycles.isEmpty ? nil : cycles, studyPlan: sentence.studyPlan, isFavorite: sentence.isFavorite ? true : nil)
         })
     }
     @discardableResult
@@ -226,6 +229,7 @@ final class Database {
                         [.text(sentence.text), .text(sentence.translation), .text(sentence.learningDate), .text(formatter.string(from: sentence.createdAt))])
                 let id = sqlite3_last_insert_rowid(connection)
                 if let plan = sentence.studyPlan { try savePlan(plan, sentenceID: id) }
+                if sentence.isFavorite == true { try setFavorite(id: id, value: true) }
                 for day in sentence.reviewDates {
                     try run("INSERT INTO reviews VALUES (?, ?)", [.integer(id), .text(day)])
                 }
@@ -247,6 +251,10 @@ final class Database {
             let snapshot = plan != nil || existing.last?.studyPlan != nil ? selected : nil
             try insertCycle(sentenceID: sentenceID, cycle: BackupCycle(startedOn: day, createdAt: Date(), reviewDates: dates, studyPlan: snapshot))
         }
+    }
+    func setFavorite(id: Int64, value: Bool) throws {
+        if value { try run("INSERT OR IGNORE INTO sentence_favorites (sentence_id) VALUES (?)", [.integer(id)]) }
+        else { try run("DELETE FROM sentence_favorites WHERE sentence_id = ?", [.integer(id)]) }
     }
     func editSentence(id: Int64, text: String, translation: String, on day: String, plan: StudyPlan, keepHistory: Bool) throws {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)

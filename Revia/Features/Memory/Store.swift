@@ -37,6 +37,14 @@ final class Store: ObservableObject {
         guard let sentence = sentences.first(where: { $0.id == id }) else { throw ReviaError.message(L("sentence_read_failed")) }
         return sentence
     }
+    func toggleFavorite(_ sentence: Sentence) {
+        do {
+            guard let database else { throw ReviaError.message(L("db_not_ready")) }
+            let current = sentences.first { $0.id == sentence.id } ?? sentence
+            try database.setFavorite(id: sentence.id, value: !current.isFavorite)
+            try refresh()
+        } catch { self.error = error.localizedDescription }
+    }
     func beginEditing(_ sentence: Sentence) {
         do {
             guard let database else { throw ReviaError.message(L("db_not_ready")) }

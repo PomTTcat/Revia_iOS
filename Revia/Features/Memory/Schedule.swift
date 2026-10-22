@@ -66,9 +66,10 @@ struct Sentence: Identifiable, Equatable {
     let learningDate: String
     let createdAt: Date?
     let studyPlan: StudyPlan?
-    init(id: Int64, text: String, translation: String, learningDate: String, createdAt: Date? = nil, studyPlan: StudyPlan? = nil) {
+    let isFavorite: Bool
+    init(id: Int64, text: String, translation: String, learningDate: String, createdAt: Date? = nil, studyPlan: StudyPlan? = nil, isFavorite: Bool = false) {
         self.id = id; self.text = text; self.translation = translation
-        self.learningDate = learningDate; self.createdAt = createdAt; self.studyPlan = studyPlan
+        self.learningDate = learningDate; self.createdAt = createdAt; self.studyPlan = studyPlan; self.isFavorite = isFavorite
     }
 }
 
@@ -79,10 +80,10 @@ struct SentenceEdit: Identifiable {
 }
 
 enum SentenceLibrary {
-    static func results(_ sentences: [Sentence], query: String) -> [Sentence] {
+    static func results(_ sentences: [Sentence], query: String, favoritesOnly: Bool = false) -> [Sentence] {
         let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
         return sentences.filter {
-            query.isEmpty || $0.text.localizedStandardContains(query) || $0.translation.localizedStandardContains(query)
+            (!favoritesOnly || $0.isFavorite) && (query.isEmpty || $0.text.localizedStandardContains(query) || $0.translation.localizedStandardContains(query))
         }.sorted {
             let left = $0.createdAt ?? (try? Schedule.date($0.learningDate)) ?? .distantPast
             let right = $1.createdAt ?? (try? Schedule.date($1.learningDate)) ?? .distantPast

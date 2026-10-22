@@ -7,7 +7,8 @@ struct ReviaBackup: Codable {
     let sentences: [BackupSentence]
     init(sentences: [BackupSentence]) {
         format = "revia"
-        if sentences.contains(where: { ($0.resetCycles ?? []).contains { $0.studyPlan != nil } }) { version = 4 }
+        if sentences.contains(where: { $0.isFavorite == true }) { version = 5 }
+        else if sentences.contains(where: { ($0.resetCycles ?? []).contains { $0.studyPlan != nil } }) { version = 4 }
         else if sentences.contains(where: { $0.studyPlan != nil }) { version = 3 }
         else if sentences.contains(where: { !($0.resetCycles ?? []).isEmpty }) { version = 2 }
         else { version = 1 }
@@ -15,8 +16,9 @@ struct ReviaBackup: Codable {
         self.sentences = sentences
     }
     func validate() throws {
-        guard format == "revia", (1...4).contains(version) else { throw ReviaError.message(L("backup_format")) }
+        guard format == "revia", (1...5).contains(version) else { throw ReviaError.message(L("backup_format")) }
         for sentence in sentences {
+            guard version >= 5 || sentence.isFavorite != true else { throw ReviaError.message(L("backup_invalid")) }
             if let plan = sentence.studyPlan {
                 guard version >= 3 else { throw ReviaError.message(L("backup_invalid")) }
                 try plan.validate()
@@ -90,6 +92,7 @@ struct BackupSentence: Codable {
     let reviewDates: [String]
     var resetCycles: [BackupCycle]? = nil
     var studyPlan: StudyPlan? = nil
+    var isFavorite: Bool? = nil
 }
 struct BackupCycle: Codable {
     let startedOn: String

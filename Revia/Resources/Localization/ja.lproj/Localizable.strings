@@ -231,3 +231,15 @@
 "copy" = "コピー";
 
 "share" = "共有";
+
+"favorite" = "お気に入りに追加";
+
+"unfavorite" = "お気に入りを解除";
+
+"favorites" = "お気に入り";
+
+"all_items" = "すべて";
+
+"sentence_filter" = "文章の絞り込み";
+
+"no_favorites" = "お気に入りはまだありません。カード右上のブックマークをタップして追加できます。";
