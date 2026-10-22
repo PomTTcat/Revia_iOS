@@ -186,13 +186,13 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
                 })
         } catch { completion(.failure(error)) }
     }
-    func removeSentence(_ id: Int64, delete: () throws -> Void) throws {
-        guard let database, let cache else { try delete(); return }
+    func mutateSentence(_ id: Int64, change: () throws -> Void) throws {
+        guard let database, let cache else { try change(); return }
         requests[id]?.dispose(); requests[id] = nil; busyIDs.remove(id)
         if playingID == id { stop() }
         if requestedPlaybackID == id { requestedPlaybackID = nil }
         let files = Set(try database.audioRecords(sentenceID: id).map(\.filename))
-        try delete()
+        try change()
         let retained = Set(try database.audioRecords().map(\.filename))
         defer { refreshStorage() }
         for filename in files.subtracting(retained) { try cache.remove(filename) }

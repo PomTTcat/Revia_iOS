@@ -248,6 +248,32 @@ final class Database {
             try insertCycle(sentenceID: sentenceID, cycle: BackupCycle(startedOn: day, createdAt: Date(), reviewDates: dates, studyPlan: snapshot))
         }
     }
+    func editSentence(id: Int64, text: String, translation: String, on day: String, plan: StudyPlan, keepHistory: Bool) throws {
+        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { throw ReviaError.message(L("enter_sentence")) }
+        let dates = try plan.dates(from: day)
+        try transaction {
+            guard let original = try sentences().first(where: { $0.id == id }) else { throw ReviaError.message(L("sentence_read_failed")) }
+            if keepHistory, let previous = try resetCycles(sentenceID: id).last, day < previous.startedOn {
+                throw ReviaError.message(L("reset_date_error"))
+            }
+            try run("UPDATE sentences SET japanese = ?, translation = ? WHERE id = ?", [.text(text), .text(translation.trimmingCharacters(in: .whitespacesAndNewlines)), .integer(id)])
+            if keepHistory {
+                // Editing always starts a new cycle, retaining all archived schedule rows.
+                try insertCycle(sentenceID: id, cycle: BackupCycle(startedOn: day, createdAt: Date(), reviewDates: dates, studyPlan: plan))
+            } else {
+                try run("DELETE FROM review_cycles WHERE sentence_id = ?", [.integer(id)])
+                try run("DELETE FROM reviews WHERE sentence_id = ?", [.integer(id)])
+                try run("DELETE FROM sentence_plans WHERE sentence_id = ?", [.integer(id)])
+                try run("UPDATE sentences SET learning_date = ? WHERE id = ?", [.text(day), .integer(id)])
+                try savePlan(plan, sentenceID: id)
+                for date in dates { try run("INSERT INTO reviews VALUES (?, ?)", [.integer(id), .text(date)]) }
+            }
+            if original.text != text {
+                try run("DELETE FROM audio_records WHERE sentence_id = ?", [.integer(id)])
+            }
+        }
+    }
     private func savePlan(_ plan: StudyPlan, sentenceID: Int64) throws {
         try plan.validate()
         guard !plan.isDefault else { return }

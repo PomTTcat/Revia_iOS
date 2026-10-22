@@ -7,6 +7,7 @@ final class Store: ObservableObject {
     @Published private(set) var reviews: [Review] = []
     @Published private(set) var ready = false
     @Published var error: String?
+    @Published var editing: SentenceEdit?
     @Published var notice: String?
     let speech = SpeechController()
     private var database: Database?
@@ -36,11 +37,35 @@ final class Store: ObservableObject {
         guard let sentence = sentences.first(where: { $0.id == id }) else { throw ReviaError.message(L("sentence_read_failed")) }
         return sentence
     }
+    func beginEditing(_ sentence: Sentence) {
+        do {
+            guard let database else { throw ReviaError.message(L("db_not_ready")) }
+            let plan = try database.resetCycles(sentenceID: sentence.id).last?.studyPlan ?? sentence.studyPlan ?? .defaultPlan
+            editing = SentenceEdit(sentence: sentence, plan: plan)
+        } catch { self.error = error.localizedDescription }
+    }
+    func edit(_ original: Sentence, text: String, translation: String, plan: StudyPlan, keepHistory: Bool) throws -> Sentence {
+        guard let database else { throw ReviaError.message(L("db_not_ready")) }
+        var updated = false
+        do {
+            try speech.mutateSentence(original.id) {
+                try database.editSentence(id: original.id, text: text, translation: translation, on: Schedule.key(Date()), plan: plan, keepHistory: keepHistory)
+                updated = true
+            }
+        } catch {
+            if !updated { throw error }
+            // The database change succeeded; do not invite a second save if file cleanup failed.
+            self.error = error.localizedDescription
+        }
+        try refresh()
+        guard let sentence = sentences.first(where: { $0.id == original.id }) else { throw ReviaError.message(L("sentence_read_failed")) }
+        return sentence
+    }
     func delete(_ sentence: Sentence) {
         do {
             guard let database else { throw ReviaError.message(L("db_not_ready")) }
             var deletionError: Error?
-            do { try speech.removeSentence(sentence.id) { try database.delete(id: sentence.id) } }
+            do { try speech.mutateSentence(sentence.id) { try database.delete(id: sentence.id) } }
             catch { deletionError = error }
             try refresh()
             if let deletionError { throw deletionError }

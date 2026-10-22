@@ -26,6 +26,9 @@ struct RootView: View {
                 }.frame(maxWidth: .infinity, maxHeight: .infinity).background(Palette.background)
             }
         }
+        .sheet(item: $store.editing) { edit in
+            AddSentenceView(date: Date(), edit: edit)
+        }
         .alert(store.error != nil ? L("action_failed") : (store.notice != nil ? L("reset_done") : L("audio_notice")), isPresented: Binding(get: { store.error != nil || store.notice != nil || speech.alert != nil }, set: { if !$0 { store.error = nil; store.notice = nil; speech.alert = nil } })) {
             Button(L("ok"), role: .cancel) { store.error = nil; store.notice = nil; speech.alert = nil }
         } message: { Text(store.error ?? store.notice ?? speech.alert ?? L("try_again")) }

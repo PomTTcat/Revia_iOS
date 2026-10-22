@@ -211,3 +211,23 @@
 "preferences" = "Preferences";
 
 "reset_choose_note" = "Choose a plan to restart reviews from today. Past dates and original records are kept; old future dates are deactivated.";
+
+"edit" = "Edit";
+
+"edit_sentence" = "Edit sentence";
+
+"save_changes" = "Save changes";
+
+"edit_note" = "Update the content and restart reviews from today.";
+
+"keep_history" = "Keep previous study records";
+
+"keep_history_note" = "Keep past dates and the original learning date, deactivate old future dates, and start the new plan today.";
+
+"clear_history_note" = "Saving removes this sentence’s old study and review dates and makes today its new learning date.";
+
+"current_plan" = "%@ (current plan)";
+
+"copy" = "Copy";
+
+"share" = "Share";

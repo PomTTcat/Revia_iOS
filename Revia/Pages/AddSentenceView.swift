@@ -7,8 +7,24 @@ struct AddSentenceView: View {
     @EnvironmentObject private var speech: SpeechController
     @Environment(\.dismiss) private var dismiss
     let date: Date
+    let edit: SentenceEdit?
+    init(date: Date, edit: SentenceEdit? = nil) {
+        self.date = date; self.edit = edit
+        _text = State(initialValue: edit?.sentence.text ?? "")
+        _translation = State(initialValue: edit?.sentence.translation ?? "")
+    }
+    @State private var initialized = false
+    @State private var keepHistory = true
+    private var offersCurrentPlan: Bool { edit.map { !plans.all.contains($0.plan) } ?? false }
+    private var learningDate: Date {
+        if let edit, keepHistory { return (try? Schedule.date(edit.sentence.learningDate)) ?? date }
+        return date
+    }
     @State private var selectedPlanID = StudyPlan.defaultPlan.id
-    private var selectedPlan: StudyPlan { plans.all.first { $0.id == selectedPlanID } ?? .defaultPlan }
+    private var selectedPlan: StudyPlan {
+        if selectedPlanID == "editing-current", let edit { return edit.plan }
+        return plans.all.first { $0.id == selectedPlanID } ?? .defaultPlan
+    }
     @State private var text = ""
     @State private var translation = ""
     @State private var error: String?
@@ -20,13 +36,14 @@ struct AddSentenceView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text(L("sentence_title")).font(.system(size: 30, weight: .bold)).foregroundStyle(Palette.ink)
-                    Text(L("sentence_subtitle")).font(.system(size: 14)).foregroundStyle(Palette.muted)
+                    Text(L(edit == nil ? "sentence_title" : "edit_sentence")).font(.system(size: 30, weight: .bold)).foregroundStyle(Palette.ink)
+                    Text(L(edit == nil ? "sentence_subtitle" : "edit_note")).font(.system(size: 14)).foregroundStyle(Palette.muted)
                     field(title: L("sentence"), text: $text, placeholder: L("sentence_hint"), height: 120)
                     field(title: L("meaning"), text: $translation, placeholder: L("meaning_hint"), height: 90)
-                    LabeledContent(L("learning_date"), value: Localization.date(date, template: "yMMMd"))
+                    LabeledContent(L("learning_date"), value: Localization.date(learningDate, template: "yMMMd"))
                     Picker(L("study_plan"), selection: $selectedPlanID) {
                         ForEach(plans.all) { plan in Text(plan.title).tag(plan.id) }
+                        if offersCurrentPlan, let edit { Text(L("current_plan", edit.plan.title)).tag("editing-current") }
                     }.disabled(saving)
                     Text(selectedPlan.offsets.map { L("plan_summary", $0.map(String.init).joined(separator: "、")) } ?? L("review_plan"))
                         .font(.system(size: 13)).foregroundStyle(Palette.muted).lineSpacing(4)
@@ -39,19 +56,31 @@ struct AddSentenceView: View {
                             Spacer()
                         }.foregroundStyle(speech.canGenerate ? Palette.green : Palette.muted)
                     }.buttonStyle(.plain).disabled(!speech.canGenerate || saving)
+                    if edit != nil {
+                        Toggle(L("keep_history"), isOn: $keepHistory).disabled(saving)
+                        Text(L(keepHistory ? "keep_history_note" : "clear_history_note"))
+                            .font(.footnote).foregroundStyle(Palette.muted)
+                    }
                     if !speech.canGenerate {
                         Text(L("enable_audio_note")).font(.footnote).foregroundStyle(Palette.muted)
                     }
-                    PrimaryButton(title: saving ? L("saving_sentence") : L("save_sentence")) { save() }
+                    PrimaryButton(title: saving ? L("saving_sentence") : L(edit == nil ? "save_sentence" : "save_changes")) { save() }
                         .disabled(saving || saved || text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         .opacity(saving || saved || text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.4 : 1)
                 }.padding(24)
             }.background(Palette.background)
-                .navigationTitle(L("add_sentence")).navigationBarTitleDisplayMode(.inline)
+                .background(KeyboardDismiss())
+                .scrollDismissesKeyboard(.interactively)
+                .navigationTitle(L(edit == nil ? "add_sentence" : "edit_sentence")).navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button(L("cancel")) { dismiss() }.disabled(saving) } }
                 .interactiveDismissDisabled(saving)
-                .onAppear { generateSpeech = speech.canGenerate; selectedPlanID = plans.preferredPlan.id }
-                .onChange(of: selectedPlanID) { _, id in plans.remember(id) }
+                .onAppear {
+                    guard !initialized else { return }
+                    initialized = true
+                    generateSpeech = speech.canGenerate
+                    selectedPlanID = edit.map { offersCurrentPlan ? "editing-current" : $0.plan.id } ?? plans.preferredPlan.id
+                }
+                .onChange(of: selectedPlanID) { _, id in if edit == nil { plans.remember(id) } }
                 .onChange(of: speech.canGenerate) { _, enabled in generateSpeech = enabled }
                 .alert(saved ? L("audio_failed_saved") : L("save_failed"), isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
                     Button(L("ok"), role: .cancel) { error = nil; if saved { dismiss() } }
@@ -62,7 +91,12 @@ struct AddSentenceView: View {
         guard !saving, !saved else { return }
         saving = true
         do {
-            let sentence = try store.add(text: text, translation: translation, date: date, plan: selectedPlan)
+            let sentence: Sentence
+            if let edit {
+                sentence = try store.edit(edit.sentence, text: text, translation: translation, plan: selectedPlan, keepHistory: keepHistory)
+            } else {
+                sentence = try store.add(text: text, translation: translation, date: date, plan: selectedPlan)
+            }
             saved = true
             if generateSpeech && speech.canGenerate {
                 speech.prepare(sentence) { result in

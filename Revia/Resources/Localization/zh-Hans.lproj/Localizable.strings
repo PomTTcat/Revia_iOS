@@ -211,3 +211,23 @@
 "preferences" = "偏好设置";
 
 "reset_choose_note" = "请选择计划，从今天重新安排复习。过去的日期和原始记录保留，旧的未来计划停用。";
+
+"edit" = "编辑";
+
+"edit_sentence" = "编辑句子";
+
+"save_changes" = "保存修改";
+
+"edit_note" = "修改内容并从今天重新安排复习。";
+
+"keep_history" = "保留旧学习记录";
+
+"keep_history_note" = "保留过去的日期和原学习日，停用旧的未来计划，从今天开始新的计划。";
+
+"clear_history_note" = "保存后清除该句旧的学习和复习日期，以今天作为新的学习日。";
+
+"current_plan" = "%@（当前计划）";
+
+"copy" = "拷贝";
+
+"share" = "分享";

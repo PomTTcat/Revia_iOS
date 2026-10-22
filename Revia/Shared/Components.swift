@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct PrimaryButton: View {
     @EnvironmentObject private var language: AppLanguage
@@ -51,7 +52,7 @@ struct SentenceCard: View {
                 .padding(.vertical, -12.5)
             }
             Text(sentence.text).font(.system(size: 21, weight: .medium))
-                .lineSpacing(6).textSelection(.enabled).foregroundStyle(Palette.ink)
+                .lineSpacing(6).foregroundStyle(Palette.ink)
             HStack {
                 Button { speech.play(sentence) } label: {
                     Group {
@@ -75,7 +76,7 @@ struct SentenceCard: View {
             if !sentence.translation.isEmpty {
                 DisclosureGroup(isExpanded: Binding(get: { notesExpanded ?? !collapseNotes }, set: { notesExpanded = $0 })) {
                     Text(sentence.translation).font(.system(size: 15)).lineSpacing(5)
-                        .foregroundStyle(Palette.muted).textSelection(.enabled)
+                        .foregroundStyle(Palette.muted)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 6)
                 } label: {
                     Text(L("notes")).font(.system(size: 14)).foregroundStyle(Palette.muted)
@@ -85,6 +86,13 @@ struct SentenceCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 20).padding(.top, 6).padding(.bottom, 8)
         .background(fresh ? Palette.fresh : Palette.review, in: RoundedRectangle(cornerRadius: 12))
+        .contextMenu {
+            Button { UIPasteboard.general.string = sentence.text } label: { Label(L("copy"), systemImage: "doc.on.doc") }
+            ShareLink(item: sentence.translation.isEmpty ? sentence.text : sentence.text + "\n\n" + sentence.translation) {
+                Label(L("share"), systemImage: "square.and.arrow.up")
+            }
+            Button { store.beginEditing(sentence) } label: { Label(L("edit"), systemImage: "pencil") }
+        }
         .onChange(of: collapseNotes) { _, _ in notesExpanded = nil }
         .alert(L("reset_reviews"), isPresented: $choosingPlan) {
             ForEach(plans.all) { plan in

@@ -370,3 +370,73 @@ final class PlanSelectionTests: XCTestCase {
         XCTAssertTrue(try database!.resetCycles(sentenceID: id).isEmpty)
     }
 }
+
+final class SentenceEditTests: XCTestCase {
+    func testEditingKeepsIdentityHistoryAndInvalidatesOnlyThisSentencesAudio() throws {
+        let database = try Database(path: ":memory:")
+        let id = try database.add(text: "Old sentence", translation: "Old note", date: "2026-10-01")
+        let other = try database.add(text: "Old sentence", translation: "", date: "2026-10-02")
+        let original = try XCTUnwrap(database.sentences().first { $0.id == id })
+        let file = AudioCache.filename(text: original.text, voice: "voice", model: ElevenLabs.model)
+        for target in [id, other] {
+            try database.saveAudio(AudioRecord(sentenceID: target, text: original.text, voiceID: "voice", modelID: ElevenLabs.model, filename: file, version: AudioCache.version))
+        }
+        let plan = StudyPlan(id: "edit", name: "Edited plan", offsets: [1, 3])
+        try database.editSentence(id: id, text: "New sentence", translation: "New note", on: "2026-10-10", plan: plan, keepHistory: true)
+        let edited = try XCTUnwrap(database.sentences().first { $0.id == id })
+        XCTAssertEqual(try database.sentences().count, 2)
+        XCTAssertEqual(edited.id, original.id)
+        XCTAssertEqual(edited.createdAt, original.createdAt)
+        XCTAssertEqual(edited.learningDate, original.learningDate)
+        XCTAssertEqual(edited.text, "New sentence")
+        XCTAssertEqual(edited.translation, "New note")
+        let days = Set(try database.reviews().filter { $0.sentenceID == id }.map(\.date))
+        XCTAssertEqual(days, ["2026-10-02", "2026-10-04", "2026-10-08", "2026-10-10", "2026-10-11", "2026-10-13"])
+        XCTAssertTrue(try database.audioRecords(sentenceID: id).isEmpty)
+        XCTAssertEqual(try database.audioRecords(sentenceID: other).first?.filename, file)
+        XCTAssertEqual(try database.exportBackup().sentences.first { $0.text == "New sentence" }?.reviewDates, try Schedule.reviews(for: "2026-10-01"))
+        let destination = try Database(path: ":memory:")
+        try destination.importBackup(ReviaBackup.decode(database.exportBackup().encoded()))
+        XCTAssertEqual(try destination.sentences().first { $0.text == "New sentence" }?.translation, "New note")
+        let destinationID = try XCTUnwrap(destination.sentences().first { $0.text == "New sentence" }?.id)
+        XCTAssertEqual(try destination.resetCycles(sentenceID: destinationID).last?.studyPlan, plan)
+    }
+    func testEditingWithoutHistoryReplacesOnlyThisSentencesDatesAndPreservesUnchangedAudio() throws {
+        let database = try Database(path: ":memory:")
+        let id = try database.add(text: "Same text", translation: "Before", date: "2026-10-01")
+        let other = try database.add(text: "Other", translation: "", date: "2026-10-02")
+        let original = try XCTUnwrap(database.sentences().first { $0.id == id })
+        let otherDays = try database.reviews().filter { $0.sentenceID == other }
+        let audio = AudioRecord(sentenceID: id, text: original.text, voiceID: "voice", modelID: ElevenLabs.model, filename: AudioCache.filename(text: original.text, voice: "voice", model: ElevenLabs.model), version: AudioCache.version)
+        try database.saveAudio(audio)
+        try database.resetReviews(sentenceID: id, on: "2026-10-05", plan: .defaultPlan)
+        let plan = StudyPlan(id: "short", name: "Short", offsets: [2, 7])
+        try database.editSentence(id: id, text: "Same text", translation: "After", on: "2026-10-10", plan: plan, keepHistory: false)
+        let edited = try XCTUnwrap(database.sentences().first { $0.id == id })
+        XCTAssertEqual(edited.id, id)
+        XCTAssertEqual(edited.createdAt, original.createdAt)
+        XCTAssertEqual(edited.learningDate, "2026-10-10")
+        XCTAssertEqual(edited.studyPlan, plan)
+        XCTAssertTrue(try database.resetCycles(sentenceID: id).isEmpty)
+        XCTAssertEqual(try database.reviews().filter { $0.sentenceID == id }.map(\.date), ["2026-10-12", "2026-10-17"])
+        XCTAssertEqual(try database.reviews().filter { $0.sentenceID == other }, otherDays)
+        XCTAssertEqual(try database.audioRecords(sentenceID: id), [audio])
+        let backup = try database.exportBackup()
+        let entry = try XCTUnwrap(backup.sentences.first { $0.text == "Same text" })
+        XCTAssertEqual(entry.learningDate, "2026-10-10")
+        XCTAssertEqual(entry.reviewDates, ["2026-10-12", "2026-10-17"])
+        try backup.validate()
+    }
+    func testInvalidEditDoesNotPartiallyChangeContentOrHistory() throws {
+        let database = try Database(path: ":memory:")
+        let id = try database.add(text: "Original", translation: "Note", date: "2026-10-01")
+        let sentence = try database.sentences().first
+        let dates = try database.reviews()
+        XCTAssertThrowsError(try database.editSentence(id: id, text: " ", translation: "Bad", on: "2026-10-10", plan: .defaultPlan, keepHistory: false))
+        let broken = StudyPlan(id: "bad", name: "Bad", offsets: [3, 1])
+        XCTAssertThrowsError(try database.editSentence(id: id, text: "Bad edit", translation: "Bad", on: "2026-10-10", plan: broken, keepHistory: false))
+        XCTAssertEqual(try database.sentences().first, sentence)
+        XCTAssertEqual(try database.reviews(), dates)
+        XCTAssertTrue(try database.resetCycles(sentenceID: id).isEmpty)
+    }
+}

@@ -72,6 +72,12 @@ struct Sentence: Identifiable, Equatable {
     }
 }
 
+struct SentenceEdit: Identifiable {
+    let sentence: Sentence
+    let plan: StudyPlan
+    var id: Int64 { sentence.id }
+}
+
 enum SentenceLibrary {
     static func results(_ sentences: [Sentence], query: String) -> [Sentence] {
         let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
