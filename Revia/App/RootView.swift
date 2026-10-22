@@ -4,19 +4,20 @@ struct RootView: View {
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var store: Store
     @EnvironmentObject private var speech: SpeechController
+    @State private var selectedTab = 0
     var body: some View {
         let _ = language.code
         Group {
             if store.ready {
-                TabView {
+                TabView(selection: $selectedTab) {
                     NavigationStack { CalendarView() }
-                        .tabItem { Label(L("calendar"), systemImage: "calendar") }
+                        .tabItem { Label(L("calendar"), systemImage: "calendar") }.tag(0)
                     NavigationStack { TodayView() }
-                        .tabItem { Label(L("today"), systemImage: "sun.max") }
+                        .tabItem { Label(L("today"), systemImage: "sun.max") }.tag(1)
                     NavigationStack { SentencesView() }
-                        .tabItem { Label(L("all_sentences"), systemImage: "text.alignleft") }
+                        .tabItem { Label(L("all_sentences"), systemImage: "text.alignleft") }.tag(2)
                     NavigationStack { SettingsView() }
-                        .tabItem { Label(L("settings"), systemImage: "gearshape") }
+                        .tabItem { Label(L("settings"), systemImage: "gearshape") }.tag(3)
                 }
             } else {
                 VStack(spacing: 20) {
@@ -26,6 +27,7 @@ struct RootView: View {
                 }.frame(maxWidth: .infinity, maxHeight: .infinity).background(Palette.background)
             }
         }
+        .background(KeyboardDismiss(keepSearchFocused: selectedTab == 2))
         .sheet(item: $store.editing) { edit in
             AddSentenceView(date: Date(), edit: edit)
         }

@@ -69,7 +69,6 @@ struct AddSentenceView: View {
                         .opacity(saving || saved || text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.4 : 1)
                 }.padding(24)
             }.background(Palette.background)
-                .background(KeyboardDismiss())
                 .scrollDismissesKeyboard(.interactively)
                 .navigationTitle(L(edit == nil ? "add_sentence" : "edit_sentence")).navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button(L("cancel")) { dismiss() }.disabled(saving) } }

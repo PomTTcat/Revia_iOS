@@ -97,7 +97,7 @@ struct PlanEditorView: View {
             }.padding(24)
         }
         .foregroundStyle(Palette.ink).background(Palette.background)
-        .background(KeyboardDismiss()).scrollDismissesKeyboard(.interactively)
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle(L("study_plan")).navigationBarTitleDisplayMode(.inline)
         .alert(L("action_failed"), isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
             Button(L("ok"), role: .cancel) { error = nil }

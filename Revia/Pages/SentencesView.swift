@@ -22,6 +22,6 @@ struct SentencesView: View {
         .background(Palette.background)
         .navigationTitle(L("all_sentences"))
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: L("search_sentences"))
-        .scrollDismissesKeyboard(.interactively)
+        .scrollDismissesKeyboard(.never)
     }
 }

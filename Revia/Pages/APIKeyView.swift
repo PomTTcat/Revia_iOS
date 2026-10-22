@@ -27,7 +27,6 @@ struct APIKeyView: View {
         }
         .scrollContentBackground(.hidden)
         .background(Palette.background)
-        .background(KeyboardDismiss())
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle("API Key")
         .navigationBarTitleDisplayMode(.inline)
