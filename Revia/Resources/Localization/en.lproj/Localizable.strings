@@ -253,3 +253,19 @@
 "close_search" = "Clear and close search";
 
 "hide_content" = "Hide content";
+
+"bulk_import" = "Bulk import";
+
+"bulk_note" = "Paste an array to add new sentences. All use today as the learning date and the default plan. No audio is generated. Existing sentences remain unchanged; duplicates are added too.";
+
+"bulk_format" = "Use a JSON array: content is the required sentence; comment is an optional note. All entries are checked before importing. This is separate from transferring a backup.";
+
+"bulk_input" = "Paste content";
+
+"bulk_example" = "Format example";
+
+"bulk_invalid" = "Invalid format. Enter a JSON array with a text content field and an optional text comment field.";
+
+"bulk_empty" = "The array is empty. Add at least one sentence.";
+
+"bulk_blank" = "Entry %d has empty content. Nothing was imported.";

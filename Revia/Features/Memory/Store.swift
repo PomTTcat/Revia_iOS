@@ -102,6 +102,13 @@ final class Store: ObservableObject {
         try refresh()
         return count
     }
+    func importSentences(_ text: String) throws -> Int {
+        guard let database else { throw ReviaError.message(L("db_not_ready")) }
+        let backup = try BulkImport.backup(from: text)
+        let count = try database.importBackup(backup)
+        try refresh()
+        return count
+    }
     func newSentences(on day: String) -> [Sentence] { sentences.filter { $0.learningDate == day } }
     func reviewSentences(on day: String) -> [Sentence] {
         let ids = Set(reviews.filter { $0.date == day }.map(\.sentenceID))

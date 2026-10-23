@@ -100,3 +100,28 @@ struct BackupCycle: Codable {
     let reviewDates: [String]
     var studyPlan: StudyPlan? = nil
 }
+
+
+/// Converts pasted content into a normal, atomic append using the default schedule.
+enum BulkImport {
+    private struct Entry: Decodable {
+        let content: String
+        let comment: String?
+    }
+    static func backup(from text: String, now: Date = Date()) throws -> ReviaBackup {
+        let entries: [Entry]
+        do { entries = try JSONDecoder().decode([Entry].self, from: Data(text.utf8)) }
+        catch { throw ReviaError.message(L("bulk_invalid")) }
+        guard !entries.isEmpty else { throw ReviaError.message(L("bulk_empty")) }
+        let day = Schedule.key(now)
+        let dates = try StudyPlan.defaultPlan.dates(from: day)
+        let sentences = try entries.enumerated().map { index, entry in
+            let content = entry.content.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !content.isEmpty else { throw ReviaError.message(L("bulk_blank", index + 1)) }
+            return BackupSentence(text: content,
+                                  translation: (entry.comment ?? "").trimmingCharacters(in: .whitespacesAndNewlines),
+                                  learningDate: day, createdAt: now, reviewDates: dates)
+        }
+        return ReviaBackup(sentences: sentences)
+    }
+}

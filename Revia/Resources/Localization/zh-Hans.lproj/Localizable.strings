@@ -253,3 +253,19 @@
 "close_search" = "清除并关闭搜索";
 
 "hide_content" = "重新遮盖内容";
+
+"bulk_import" = "批量导入";
+
+"bulk_note" = "粘贴数组来新增文章。学习日统一为今天，使用默认计划，不自动生成语音。已有文章不变，重复内容也会直接新增。";
+
+"bulk_format" = "请输入 JSON 数组：content 是必填正文，comment 是可选备注。全部检查通过后才会导入，此功能与换机备份导入分开。";
+
+"bulk_input" = "粘贴内容";
+
+"bulk_example" = "格式示例";
+
+"bulk_invalid" = "格式不正确。请输入包含字符串 content 和可选字符串 comment 的 JSON 数组。";
+
+"bulk_empty" = "数组为空，请至少添加一条文章。";
+
+"bulk_blank" = "第 %d 项正文为空，尚未导入任何内容。";

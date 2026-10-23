@@ -512,3 +512,37 @@ final class FavoriteTests: XCTestCase {
         XCTAssertEqual(try database!.sentences().first?.isFavorite, true)
     }
 }
+
+
+final class BulkImportTests: XCTestCase {
+    func testDefaultPlanAndOptionalNotes() throws {
+        let day = try Schedule.date("2026-10-23")
+        let backup = try BulkImport.backup(from: #"[{"content":"  你好。  ","comment":"  备注  "},{"content":"Hello."},{"content":"こんにちは。","comment":null}]"#, now: day)
+        XCTAssertEqual(backup.sentences.map(\.text), ["你好。", "Hello.", "こんにちは。"])
+        XCTAssertEqual(backup.sentences.map(\.translation), ["备注", "", ""])
+        for sentence in backup.sentences {
+            XCTAssertEqual(sentence.learningDate, "2026-10-23")
+            XCTAssertEqual(sentence.reviewDates, try Schedule.reviews(for: "2026-10-23"))
+            XCTAssertNil(sentence.studyPlan)
+        }
+        try backup.validate()
+    }
+    func testRejectsInvalidInput() {
+        for input in ["[]", "{}", "not json", #"[{"content":12}]"#, #"[{"content":"ok","comment":false}]"#, #"[{"comment":"missing"}]"#, #"[{"content":"ok"},{"content":"  "}]"#] {
+            XCTAssertThrowsError(try BulkImport.backup(from: input), input)
+        }
+    }
+    func testAppendKeepsDuplicatesAndOriginalData() throws {
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).path
+        defer { for suffix in ["", "-wal", "-shm"] { try? FileManager.default.removeItem(atPath: path + suffix) } }
+        let database = try Database(path: path)
+        try database.add(text: "existing", translation: "old", date: "2026-10-01")
+        let backup = try BulkImport.backup(from: #"[{"content":"same"},{"content":"same"}]"#, now: Schedule.date("2026-10-23"))
+        XCTAssertEqual(try database.importBackup(backup), 2)
+        let sentences = try database.sentences()
+        XCTAssertEqual(sentences.count, 3)
+        XCTAssertEqual(sentences.filter { $0.text == "same" }.count, 2)
+        XCTAssertEqual(sentences.first { $0.text == "existing" }?.learningDate, "2026-10-01")
+        XCTAssertEqual(try database.reviews().count, 45)
+    }
+}
