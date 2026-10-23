@@ -30,17 +30,58 @@ struct SentenceCard: View {
     @EnvironmentObject private var speech: SpeechController
     let sentence: Sentence
     let fresh: Bool
+    var compact = false
+    var onHide: (() -> Void)? = nil
+    var forceNotesCollapsed = false
     @State private var confirming = false
     @State private var choosingPlan = false
     @AppStorage("notes.collapsed") private var collapseNotes = false
     @State private var notesExpanded: Bool?
     var body: some View {
         let _ = language.code
+        Group {
+            if compact {
+                HStack(spacing: 12) {
+                    Text(sentence.text)
+                        .font(.system(size: 18, weight: .medium))
+                        .lineLimit(1).truncationMode(.tail)
+                        .foregroundStyle(Palette.ink)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Button { speech.play(sentence) } label: {
+                        Group {
+                            if speech.busyIDs.contains(sentence.id) {
+                                ProgressView().controlSize(.small)
+                            } else {
+                                Image(systemName: speech.playingID == sentence.id ? "stop.fill" : "play.fill")
+                            }
+                        }
+                        .font(.system(size: 18, weight: .medium))
+                        .frame(width: 44, height: 44).contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain).foregroundStyle(Palette.green)
+                    .disabled(speech.busyIDs.contains(sentence.id))
+                    .accessibilityLabel(L(speech.busyIDs.contains(sentence.id) ? "generating_audio" : (speech.playingID == sentence.id ? "stop_audio" : "play_audio")))
+                }
+            } else {
         VStack(alignment: .leading, spacing: 7) {
             HStack {
                 Text(L("added_on", (try? Schedule.date(sentence.learningDate)).map { Localization.date($0, template: "yMMMd") } ?? sentence.learningDate)).font(.system(size: 12)).foregroundStyle(Palette.muted)
                 Spacer()
                 HStack(spacing: 0) {
+                    if let onHide {
+                        Button {
+                            notesExpanded = false
+                            onHide()
+                        } label: {
+                            Image(systemName: "eye.slash")
+                                .resizable().scaledToFit()
+                                .frame(width: 20, height: 20)
+                                .frame(width: 30, height: 44)
+                                .contentShape(Rectangle())
+                        }
+                        .foregroundStyle(Palette.muted)
+                        .accessibilityLabel(L("hide_content"))
+                    }
                     Button { store.toggleFavorite(sentence) } label: {
                         Image(systemName: sentence.isFavorite ? "bookmark.fill" : "bookmark")
                             .resizable().scaledToFit()
@@ -70,6 +111,8 @@ struct SentenceCard: View {
                 .padding(.trailing, -5)
             }
             Text(sentence.text).font(.system(size: 21, weight: .medium))
+                .lineLimit(compact ? 1 : nil)
+                .truncationMode(.tail)
                 .lineSpacing(6).foregroundStyle(Palette.ink)
             HStack {
                 Button { speech.play(sentence) } label: {
@@ -98,13 +141,15 @@ struct SentenceCard: View {
             }
             .padding(.vertical, -6.5)
             if !sentence.translation.isEmpty {
-                DisclosureGroup(isExpanded: Binding(get: { notesExpanded ?? !collapseNotes }, set: { notesExpanded = $0 })) {
+                DisclosureGroup(isExpanded: Binding(get: { notesExpanded ?? (!forceNotesCollapsed && !collapseNotes) }, set: { notesExpanded = $0 })) {
                     Text(sentence.translation).font(.system(size: 15)).lineSpacing(5)
                         .foregroundStyle(Palette.muted)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 6)
                 } label: {
                     Text(L("notes")).font(.system(size: 14)).foregroundStyle(Palette.muted)
                 }.tint(Palette.green)
+            }
+        }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -118,13 +163,16 @@ struct SentenceCard: View {
             Button { store.beginEditing(sentence) } label: { Label(L("edit"), systemImage: "pencil") }
         }
         .onChange(of: collapseNotes) { _, _ in notesExpanded = nil }
+        .onChange(of: forceNotesCollapsed) { _, collapsed in
+            if collapsed { notesExpanded = false }
+        }
 
 
     }
 }
 
 
-/// Keeps the real card's height while hiding its text, controls and accessibility content.
+/// Uses a compact single-line height until the sentence is revealed.
 struct ListenFirstCard: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var speech: SpeechController
@@ -133,10 +181,17 @@ struct ListenFirstCard: View {
     let enabled: Bool
     let day: String
     @State private var revealed = false
+    @State private var forceNotesCollapsed = false
     @ScaledMetric(relativeTo: .body) private var singleLineControlSize: CGFloat = 109
 
     var body: some View {
-        SentenceCard(sentence: sentence, fresh: fresh)
+        SentenceCard(sentence: sentence, fresh: fresh, onHide: enabled ? {
+            forceNotesCollapsed = true
+            withAnimation(.easeOut(duration: 0.2)) { revealed = false }
+        } : nil, forceNotesCollapsed: forceNotesCollapsed)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(height: enabled && !revealed ? singleLineControlSize + 20 : nil, alignment: .top)
+            .clipped()
             .opacity(enabled && !revealed ? 0 : 1)
             .allowsHitTesting(!enabled || revealed)
             .accessibilityHidden(enabled && !revealed)

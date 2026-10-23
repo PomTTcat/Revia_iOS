@@ -245,3 +245,11 @@
 "no_favorites" = "还没有收藏的句子，点击卡片右上角的书签即可收藏。";
 
 "slide_reveal" = "滑动查看内容";
+
+"compact_cards" = "切换为缩略卡片";
+
+"expand_cards" = "切换为展开卡片";
+
+"close_search" = "清除并关闭搜索";
+
+"hide_content" = "重新遮盖内容";

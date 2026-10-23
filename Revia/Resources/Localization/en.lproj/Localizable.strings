@@ -245,3 +245,11 @@
 "no_favorites" = "No favorites yet. Tap the bookmark on a sentence card to save it here.";
 
 "slide_reveal" = "Slide to reveal";
+
+"compact_cards" = "Show compact cards";
+
+"expand_cards" = "Show expanded cards";
+
+"close_search" = "Clear and close search";
+
+"hide_content" = "Hide content";

@@ -245,3 +245,11 @@
 "no_favorites" = "お気に入りはまだありません。カード右上のブックマークをタップして追加できます。";
 
 "slide_reveal" = "スライドして表示";
+
+"compact_cards" = "カードを縮小表示";
+
+"expand_cards" = "カードを展開表示";
+
+"close_search" = "検索をクリアして閉じる";
+
+"hide_content" = "内容を隠す";
