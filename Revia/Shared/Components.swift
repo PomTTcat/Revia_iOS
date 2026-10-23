@@ -126,6 +126,7 @@ struct SentenceCard: View {
 
 /// Keeps the real card's height while hiding its text, controls and accessibility content.
 struct ListenFirstCard: View {
+    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var speech: SpeechController
     let sentence: Sentence
     let fresh: Bool
@@ -142,16 +143,16 @@ struct ListenFirstCard: View {
             .overlay {
                 if enabled && !revealed {
                     GeometryReader { geometry in
-                        let sliderWidth: CGFloat = max(44, geometry.size.width * 2 / 3 - 20)
-                        let side: CGFloat = max(44, min(singleLineControlSize, geometry.size.width - sliderWidth - 30))
+                        let baselineSliderWidth: CGFloat = max(44, geometry.size.width * 2 / 3 - 20)
+                        let side: CGFloat = max(44, min(singleLineControlSize, geometry.size.width - baselineSliderWidth - 30))
                         let playSide = max(44, side - 40)
-                        let sliderHeight = max(44, side - 20)
+                        let sliderHeight = playSide + 12
+                        let sliderWidth = max(44, geometry.size.width - 40 - 10 - playSide)
                         HStack(spacing: 10) {
                             RevealSlider(height: sliderHeight) {
                                 withAnimation(.easeOut(duration: 0.2)) { revealed = true }
                             }
                             .frame(width: sliderWidth, height: sliderHeight)
-                            Spacer(minLength: 0)
                             Button { speech.play(sentence) } label: {
                                 Group {
                                     if speech.busyIDs.contains(sentence.id) {
@@ -170,9 +171,24 @@ struct ListenFirstCard: View {
                             .disabled(speech.busyIDs.contains(sentence.id))
                             .accessibilityLabel(L(speech.busyIDs.contains(sentence.id) ? "generating_audio" : (speech.playingID == sentence.id ? "stop_audio" : "play_audio")))
                         }
-                        .padding(.horizontal, 20)
+                        .padding(6)
+                        .overlay {
+                            Capsule().strokeBorder(Palette.border, lineWidth: 1)
+                                .allowsHitTesting(false)
+                        }
+                        .padding(.horizontal, 14)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(fresh ? Palette.fresh : Palette.review, in: RoundedRectangle(cornerRadius: 12))
+                        .background {
+                            Image("ListenCover")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: geometry.size.width, height: geometry.size.height)
+                                .overlay {
+                                    Palette.background.opacity(colorScheme == .dark ? 0.86 : 0.56)
+                                }
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .accessibilityHidden(true)
+                        }
                     }
                 }
             }
@@ -187,7 +203,7 @@ private struct RevealSlider: View {
     @State private var offset: CGFloat = 0
     var body: some View {
         GeometryReader { geometry in
-            let knob: CGFloat = min(height - 12, geometry.size.width * 0.42)
+            let knob: CGFloat = height - 12
             let travel: CGFloat = max(1, geometry.size.width - knob - 12)
             ZStack(alignment: .leading) {
                 Capsule().fill(Palette.review)
