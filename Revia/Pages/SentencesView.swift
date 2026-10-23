@@ -47,7 +47,7 @@ struct SentencesView: View {
                     .accessibilityLabel(L(compact ? "expand_cards" : "compact_cards"))
                 }
             }
-            .frame(height: 44).padding(.horizontal, 24).padding(.top, 8)
+            .frame(height: 44).padding(.horizontal, 24).padding(.top, 8).padding(.bottom, 10)
             ScrollView {
                 LazyVStack(spacing: 14) {
                     if !compact {
