@@ -122,3 +122,105 @@ struct SentenceCard: View {
 
     }
 }
+
+
+/// Keeps the real card's height while hiding its text, controls and accessibility content.
+struct ListenFirstCard: View {
+    @EnvironmentObject private var speech: SpeechController
+    let sentence: Sentence
+    let fresh: Bool
+    let enabled: Bool
+    let day: String
+    @State private var revealed = false
+    @ScaledMetric(relativeTo: .body) private var singleLineControlSize: CGFloat = 109
+
+    var body: some View {
+        SentenceCard(sentence: sentence, fresh: fresh)
+            .opacity(enabled && !revealed ? 0 : 1)
+            .allowsHitTesting(!enabled || revealed)
+            .accessibilityHidden(enabled && !revealed)
+            .overlay {
+                if enabled && !revealed {
+                    GeometryReader { geometry in
+                        let sliderWidth: CGFloat = max(44, geometry.size.width * 2 / 3 - 20)
+                        let side: CGFloat = max(44, min(singleLineControlSize, geometry.size.width - sliderWidth - 30))
+                        let playSide = max(44, side - 40)
+                        let sliderHeight = max(44, side - 20)
+                        HStack(spacing: 10) {
+                            RevealSlider(height: sliderHeight) {
+                                withAnimation(.easeOut(duration: 0.2)) { revealed = true }
+                            }
+                            .frame(width: sliderWidth, height: sliderHeight)
+                            Spacer(minLength: 0)
+                            Button { speech.play(sentence) } label: {
+                                Group {
+                                    if speech.busyIDs.contains(sentence.id) {
+                                        ProgressView().tint(Palette.onAccent)
+                                    } else {
+                                        Image(systemName: speech.playingID == sentence.id ? "stop.fill" : "play.fill")
+                                            .font(.system(size: playSide * 0.34, weight: .medium))
+                                    }
+                                }
+                                .frame(width: playSide, height: playSide)
+                                .foregroundStyle(Palette.onAccent)
+                                .background(Palette.green, in: Circle())
+                                .contentShape(Circle())
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(speech.busyIDs.contains(sentence.id))
+                            .accessibilityLabel(L(speech.busyIDs.contains(sentence.id) ? "generating_audio" : (speech.playingID == sentence.id ? "stop_audio" : "play_audio")))
+                        }
+                        .padding(.horizontal, 20)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(fresh ? Palette.fresh : Palette.review, in: RoundedRectangle(cornerRadius: 12))
+                    }
+                }
+            }
+            .onChange(of: day) { _, _ in revealed = false }
+            .onChange(of: sentence.text) { _, _ in revealed = false }
+    }
+}
+
+private struct RevealSlider: View {
+    let height: CGFloat
+    let onReveal: () -> Void
+    @State private var offset: CGFloat = 0
+    var body: some View {
+        GeometryReader { geometry in
+            let knob: CGFloat = min(height - 12, geometry.size.width * 0.42)
+            let travel: CGFloat = max(1, geometry.size.width - knob - 12)
+            ZStack(alignment: .leading) {
+                Capsule().fill(Palette.review)
+                    .overlay(Capsule().strokeBorder(Palette.border, lineWidth: 1))
+                Text(L("slide_reveal"))
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Palette.muted)
+                    .multilineTextAlignment(.center)
+                    .padding(.leading, knob + 8).padding(.trailing, 8)
+                    .frame(maxWidth: .infinity)
+                    .opacity(1 - Double(offset / travel))
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 22, weight: .semibold))
+                    .frame(width: knob, height: knob)
+                    .foregroundStyle(Palette.onAccent)
+                    .background(Palette.green, in: Circle())
+                    .offset(x: 6 + offset)
+            }
+            .contentShape(Rectangle())
+            .gesture(DragGesture(minimumDistance: 8)
+                .onChanged { value in
+                    guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                    offset = min(travel, max(0, value.translation.width))
+                }
+                .onEnded { _ in
+                    if offset >= travel * 0.9 { onReveal() }
+                    withAnimation(.easeOut(duration: 0.2)) { offset = 0 }
+                })
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(L("slide_reveal"))
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction { onReveal() }
+        }
+        .frame(height: height)
+    }
+}
