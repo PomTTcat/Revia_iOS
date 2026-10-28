@@ -30,7 +30,7 @@ struct ReviaApp: App {
                         do { try await Task.sleep(for: .seconds(BrainCircuit.duration)) }
                         catch { return }
                     }
-                    withAnimation(.easeOut(duration: reduceMotion ? 0.1 : 0.18), completionCriteria: .logicallyComplete) {
+                    withAnimation(.easeOut(duration: reduceMotion ? 0.1 : LaunchAppearance.fadeDuration), completionCriteria: .logicallyComplete) {
                         launchFading = true
                     } completion: {
                         showingLaunch = false

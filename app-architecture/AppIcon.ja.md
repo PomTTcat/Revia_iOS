@@ -35,3 +35,9 @@ Base prompt: Use case: style-transfer. Edit target: the attached Revia app icon.
 - Ocean palette: very dark midnight navy background; luminous icy blue/cyan neural paths and blue-white memory nodes.
 - Iris palette: very dark midnight plum background; luminous lavender/lilac neural paths and violet-white memory nodes.
 - Clay palette: very dark warm brown background; luminous soft apricot/terracotta neural paths and warm cream-white memory nodes.
+
+## ニュートラルな起動リソース
+
+全テーマ共通で `Revia/Resources/Assets.xcassets/LaunchNeutral.imageset/LaunchNeutral.png`（1024×1024・不透明PNG）を使います。内蔵 image_gen で元画像をニュートラルなダークグレー／シルバーホワイトへ編集しました。システム静的起動画面とアプリ内アニメーションにのみ使用し、ホーム画面のアプリアイコンは置き換えません。元のLaunchLogoリソースは保持しますが、起動画面からの参照は外しました。
+
+Generation prompt (built-in image_gen): Use case: style-transfer. Edit target: existing Revia brain logo. Produce ONE neutral launch-screen image, changing ONLY colors: flat edge-to-edge solid charcoal gray background exactly #15171A, luminous soft white and neutral silver brain paths, three white memory nodes. No green, blue, purple, orange or other hue. Preserve the original brain silhouette, path geometry, node positions, proportions, composition, delicate depth and soft glow. No text, no border, no external corner mask. Full opaque square PNG, 1024x1024, suitable for the same single launch screen regardless of app theme.

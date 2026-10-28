@@ -14,7 +14,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="LaunchLogo" translatesAutoresizingMaskIntoConstraints="NO" id="launch-logo">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="LaunchNeutral" translatesAutoresizingMaskIntoConstraints="NO" id="launch-logo">
                                 <rect key="frame" x="116.5" y="310" width="160" height="160"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="160" id="logo-width"/>
@@ -24,11 +24,11 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Revia" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="launch-name">
                                 <rect key="frame" x="116.5" y="488" width="160" height="43"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="36"/>
-                                <color key="textColor" red="0.81" green="0.97" blue="0.86" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="textColor" red="0.95" green="0.95" blue="0.96" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="launch-safe"/>
-                        <color key="backgroundColor" red="0.02" green="0.09" blue="0.065" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.08235294117647059" green="0.09019607843137255" blue="0.10196078431372549" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="launch-logo" firstAttribute="centerX" secondItem="launch-view" secondAttribute="centerX" id="logo-center-x"/>
                             <constraint firstItem="launch-logo" firstAttribute="centerY" secondItem="launch-view" secondAttribute="centerY" constant="-36" id="logo-center-y"/>
@@ -42,5 +42,5 @@
             </objects>
         </scene>
     </scenes>
-    <resources><image name="LaunchLogo" width="1024" height="1024"/></resources>
+    <resources><image name="LaunchNeutral" width="1024" height="1024"/></resources>
 </document>

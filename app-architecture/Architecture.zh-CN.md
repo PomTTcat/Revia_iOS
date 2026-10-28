@@ -222,6 +222,10 @@ API Key验证时使用与文章保存一致的居中加载动画和“正在验�
 
 环境设置 → 主题色提供墨绿（默认）、海蓝、鸢尾紫、陶土橙四套配色，独立于浅色／深色主题模式。`Features/Appearance/ThemeManager.swift` 集中定义 AppTheme、ThemeColors 与 ThemeManager；`Shared/Palette.swift` 根据已选配色和当前外观提供语义颜色，原 green 命名统一为 accent。所有 SwiftUI 页面订阅同一个 ThemeManager，修改 UserDefaults `app.colorTheme` 后即时刷新，保留导航、搜索、卡片状态。文章、计划与音频数据不变。
 
-ThemeManager 串行调用 iOS 公共的备用图标 API，森林绿恢复默认图标，其余分别使用 AppIconOcean / AppIconIris / AppIconClay。应用主题先即时保存，系统图标切换期间暂时禁用选择；失败时保留颜色、显示提示，重新点击已选颜色可重试。未开启后台或启动时自动更换，避免无用户操作的系统图标提示。支持浅色／深色配色与应用内启动页；系统静态 Launch Screen 保留原始墨绿资源。
+ThemeManager 串行调用 iOS 公共的备用图标 API，森林绿恢复默认图标，其余分别使用 AppIconOcean / AppIconIris / AppIconClay。应用主题先即时保存，系统图标切换期间暂时禁用选择；失败时保留颜色、显示提示，重新点击已选颜色可重试。未开启后台或启动时自动更换，避免无用户操作的系统图标提示。支持浅色／深色配色；启动页统一为下文说明的中性设计。
 
 备用图标以1024×1024不透明PNG随包提供，Debug/Release 的 Alternate App Icon Sets 均包含全部三套图标。主题页预览使用相应 Theme*.imageset。听力遮罩仍使用静态图片，非绿色主题会降低图片饱和度并叠加主题色，不进行实时模糊。
+
+## 统一的中性启动页
+
+启动过程不再读取主题色，四套主题共用一套深灰（#15171A）背景、银白脑形和白色记忆亮点。系统 LaunchScreen.storyboard 与 App 内 LaunchView 都使用 LaunchNeutral.imageset，文字配色和定位保持一致；BrainCircuit 保留原先1.6秒逐渐减速的三节点光流动画，不再叠加绿色图层。动画结束后启动页整体用0.35秒淡出，露出已经按保存主题和浅深色渲染的首页。减少动态效果时跳过光流并以0.1秒淡出。主题颜色和对应桌面图标仍仅作用于App主体与桌面，不改变启动页。

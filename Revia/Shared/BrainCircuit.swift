@@ -2,20 +2,16 @@ import SwiftUI
 
 /// A single circuit gradually decelerates as it returns to the first node.
 struct BrainCircuit: View {
-    @EnvironmentObject private var theme: ThemeManager
     static let duration: Double = 1.6
     let animated: Bool
     @State private var startedAt = Date()
     private let nodes = [CGPoint(x: 420, y: 300), CGPoint(x: 725, y: 448), CGPoint(x: 500, y: 596)]
-    private var background: Color { Palette.brandBackground }
-    private var mint: Color { Palette.glow }
+    private let glowColor = Color.white
 
     var body: some View {
-        let _ = theme.selected
         ZStack {
-            Image(theme.selected.previewName).resizable().scaledToFit()
+            Image("LaunchNeutral").resizable().scaledToFit()
             if animated {
-                background.opacity(0.67)
                 TimelineView(.animation(minimumInterval: 1.0 / 60)) { timeline in
                     let time = min(1, max(0, timeline.date.timeIntervalSince(startedAt) / Self.duration))
                     // Quadratic ease-out: fast at the start, smoothly slowing to a stop.
@@ -31,13 +27,13 @@ struct BrainCircuit: View {
                             if head > 0 && fade > 0 {
                                 let path = route(index).applying(transform)
                                 // A faint trail remains briefly after each node is reached.
-                                context.stroke(path.trimmedPath(from: 0, to: head), with: .color(mint.opacity(0.25 * fade)), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                                context.stroke(path.trimmedPath(from: 0, to: head), with: .color(glowColor.opacity(0.25 * fade)), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
                                 let light = path.trimmedPath(from: tail, to: head)
                                 context.drawLayer { glow in
                                     glow.addFilter(.blur(radius: 3))
-                                    glow.stroke(light, with: .color(mint.opacity(fade)), style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                                    glow.stroke(light, with: .color(glowColor.opacity(fade)), style: StrokeStyle(lineWidth: 5, lineCap: .round))
                                 }
-                                context.stroke(light, with: .color(Palette.glow.opacity(fade)), style: StrokeStyle(lineWidth: 1.8, lineCap: .round))
+                                context.stroke(light, with: .color(glowColor.opacity(fade)), style: StrokeStyle(lineWidth: 1.8, lineCap: .round))
                             }
                         }
                         for index in nodes.indices {
@@ -51,10 +47,10 @@ struct BrainCircuit: View {
                             context.drawLayer { glow in
                                 glow.addFilter(.blur(radius: 4))
                                 let halo = CGRect(x: point.x - 10, y: point.y - 10, width: 20, height: 20)
-                                glow.fill(Path(ellipseIn: halo), with: .color(mint.opacity(brightness * 0.85)))
+                                glow.fill(Path(ellipseIn: halo), with: .color(glowColor.opacity(brightness * 0.85)))
                             }
                             let dot = CGRect(x: point.x - radius, y: point.y - radius, width: radius * 2, height: radius * 2)
-                            context.fill(Path(ellipseIn: dot), with: .color(mint.opacity(0.15 + brightness * 0.85)))
+                            context.fill(Path(ellipseIn: dot), with: .color(glowColor.opacity(0.15 + brightness * 0.85)))
                             if brightness > 0 {
                                 let core = CGRect(x: point.x - 2.3, y: point.y - 2.3, width: 4.6, height: 4.6)
                                 context.fill(Path(ellipseIn: core), with: .color(.white.opacity(brightness)))
