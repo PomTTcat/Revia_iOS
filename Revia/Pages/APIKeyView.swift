@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct APIKeyView: View {
     @EnvironmentObject private var language: AppLanguage
@@ -14,8 +15,10 @@ struct APIKeyView: View {
                     Label(speech.active ? L("key_active") : L("key_inactive"), systemImage: speech.active ? "checkmark.shield.fill" : "shield")
                         .foregroundStyle(speech.active ? Palette.green : Palette.muted)
                     Spacer()
-                    if speech.validating { ProgressView() }
-                    Button(speech.validating ? L("validating_key") : L("activate_key")) { speech.validate() }
+                    Button(speech.validating ? L("validating_key") : L("activate_key")) {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        speech.validate()
+                    }
                         .disabled(speech.validating || speech.draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
                 if speech.active || !speech.draft.isEmpty {
@@ -30,5 +33,24 @@ struct APIKeyView: View {
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle("API Key")
         .navigationBarTitleDisplayMode(.inline)
+        .disabled(speech.validating)
+        .overlay {
+            if speech.validating {
+                ZStack {
+                    Color.black.opacity(0.18).ignoresSafeArea()
+                    VStack(spacing: 16) {
+                        ProgressView().controlSize(.large).tint(Palette.green)
+                        Text(L("validating_key"))
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(Palette.ink)
+                    }
+                    .padding(28)
+                    .background(Palette.surface, in: RoundedRectangle(cornerRadius: 20))
+                    .padding(24)
+                    .accessibilityElement(children: .combine)
+                }
+                .contentShape(Rectangle())
+            }
+        }
     }
 }

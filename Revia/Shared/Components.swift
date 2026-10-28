@@ -33,6 +33,8 @@ struct SentenceCard: View {
     var compact = false
     var onHide: (() -> Void)? = nil
     var forceNotesCollapsed = false
+    @AppStorage("card.fontSize") private var cardFont = CardTextSize.normal.rawValue
+    private var textSize: CardTextSize { CardTextSize.value(cardFont) }
     @State private var confirming = false
     @State private var choosingPlan = false
     @AppStorage("notes.collapsed") private var collapseNotes = false
@@ -43,7 +45,7 @@ struct SentenceCard: View {
             if compact {
                 HStack(spacing: 12) {
                     Text(sentence.text)
-                        .font(.system(size: 18, weight: .medium))
+                        .font(.system(size: textSize.compactSize, weight: .medium))
                         .lineLimit(1).truncationMode(.tail)
                         .foregroundStyle(Palette.ink)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -110,7 +112,7 @@ struct SentenceCard: View {
                 .symbolRenderingMode(.monochrome)
                 .padding(.trailing, -5)
             }
-            Text(sentence.text).font(.system(size: 21, weight: .medium))
+            Text(sentence.text).font(.system(size: textSize.bodySize, weight: .medium))
                 .lineLimit(compact ? 1 : nil)
                 .truncationMode(.tail)
                 .lineSpacing(6).foregroundStyle(Palette.ink)
@@ -142,7 +144,7 @@ struct SentenceCard: View {
             .padding(.vertical, -6.5)
             if !sentence.translation.isEmpty {
                 DisclosureGroup(isExpanded: Binding(get: { notesExpanded ?? (!forceNotesCollapsed && !collapseNotes) }, set: { notesExpanded = $0 })) {
-                    Text(sentence.translation).font(.system(size: 15)).lineSpacing(5)
+                    Text(sentence.translation).font(.system(size: textSize.noteSize)).lineSpacing(5)
                         .foregroundStyle(Palette.muted)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 6)
                 } label: {

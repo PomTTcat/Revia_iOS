@@ -269,3 +269,22 @@
 "bulk_empty" = "数组为空，请至少添加一条文章。";
 
 "bulk_blank" = "第 %d 项正文为空，尚未导入任何内容。";
+
+"card_font" = "卡片字体大小";
+
+
+"font_small" = "小";
+
+"font_normal" = "普通";
+
+"font_large" = "大";
+
+"font_preview" = "预览";
+
+"card_font_note" = "拖动选择大小，立即应用于所有卡片的正文和备注。";
+
+"font_sample" = "每天学一点，让记忆留得更久。";
+
+"font_sample_note" = "备注字体也会随选择一起调整。";
+
+"font_largest" = "最大";

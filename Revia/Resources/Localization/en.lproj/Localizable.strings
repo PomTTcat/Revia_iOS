@@ -269,3 +269,22 @@
 "bulk_empty" = "The array is empty. Add at least one sentence.";
 
 "bulk_blank" = "Entry %d has empty content. Nothing was imported.";
+
+"card_font" = "Card text size";
+
+
+"font_small" = "Small";
+
+"font_normal" = "Normal";
+
+"font_large" = "Large";
+
+"font_preview" = "Preview";
+
+"card_font_note" = "Drag to choose a size. Applies immediately to sentence and note text on all cards.";
+
+"font_sample" = "A little practice each day makes memories last.";
+
+"font_sample_note" = "Notes use the selected size too.";
+
+"font_largest" = "Largest";

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct AddSentenceView: View {
     @EnvironmentObject private var language: AppLanguage
@@ -85,9 +86,33 @@ struct AddSentenceView: View {
                     Button(L("ok"), role: .cancel) { error = nil; if saved { dismiss() } }
                 } message: { Text(error ?? L("try_again")) }
         }
+        .disabled(saving)
+        .overlay {
+            if saving {
+                ZStack {
+                    Color.black.opacity(0.18)
+                        .ignoresSafeArea()
+                    VStack(spacing: 16) {
+                        ProgressView()
+                            .controlSize(.large)
+                            .tint(Palette.green)
+                        Text(L(saved ? "generating_audio" : "saving_sentence"))
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(Palette.ink)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(28)
+                    .background(Palette.surface, in: RoundedRectangle(cornerRadius: 20))
+                    .padding(24)
+                    .accessibilityElement(children: .combine)
+                }
+                .contentShape(Rectangle())
+            }
+        }
     }
     private func save() {
         guard !saving, !saved else { return }
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         saving = true
         do {
             let sentence: Sentence

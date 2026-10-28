@@ -269,3 +269,22 @@
 "bulk_empty" = "配列が空です。文章を1件以上入力してください。";
 
 "bulk_blank" = "%d件目の本文が空です。読み込みは行われていません。";
+
+"card_font" = "カードの文字サイズ";
+
+
+"font_small" = "小";
+
+"font_normal" = "標準";
+
+"font_large" = "大";
+
+"font_preview" = "プレビュー";
+
+"card_font_note" = "スライダーでサイズを選べます。すべてのカードの本文と備考にすぐ反映されます。";
+
+"font_sample" = "毎日少しずつ学んで、記憶を育てましょう。";
+
+"font_sample_note" = "備考の文字サイズも一緒に変わります。";
+
+"font_largest" = "最大";
