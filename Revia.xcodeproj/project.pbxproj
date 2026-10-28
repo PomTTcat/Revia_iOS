@@ -468,6 +468,11 @@
 					A8F577B5C0F03F45F4BD5122 = {
 						DevelopmentTeam = RP9288PULU;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -716,6 +721,7 @@
 				DEVELOPMENT_TEAM = RP9288PULU;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Revia/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Revia;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -760,6 +766,7 @@
 				DEVELOPMENT_TEAM = RP9288PULU;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Revia/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Revia;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
