@@ -2,9 +2,11 @@ import SwiftUI
 import UIKit
 
 struct APIKeyView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var speech: SpeechController
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         Form {
             Section {
@@ -13,7 +15,7 @@ struct APIKeyView: View {
                     .privacySensitive()
                 HStack {
                     Label(speech.active ? L("key_active") : L("key_inactive"), systemImage: speech.active ? "checkmark.shield.fill" : "shield")
-                        .foregroundStyle(speech.active ? Palette.green : Palette.muted)
+                        .foregroundStyle(speech.active ? Palette.accent : Palette.muted)
                     Spacer()
                     Button(speech.validating ? L("validating_key") : L("activate_key")) {
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
@@ -39,7 +41,7 @@ struct APIKeyView: View {
                 ZStack {
                     Color.black.opacity(0.18).ignoresSafeArea()
                     VStack(spacing: 16) {
-                        ProgressView().controlSize(.large).tint(Palette.green)
+                        ProgressView().controlSize(.large).tint(Palette.accent)
                         Text(L("validating_key"))
                             .font(.system(size: 16, weight: .medium))
                             .foregroundStyle(Palette.ink)

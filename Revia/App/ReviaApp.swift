@@ -11,7 +11,9 @@ struct ReviaApp: App {
     @StateObject private var reminder = ReminderController()
     @StateObject private var plans = PlanCatalog()
     @StateObject private var language = AppLanguage()
+    @StateObject private var theme = ThemeManager()
     var body: some Scene {
+        let _ = theme.selected
         WindowGroup {
             RootView()
                 .disabled(showingLaunch)
@@ -36,6 +38,7 @@ struct ReviaApp: App {
                 }
                 .environmentObject(store).environmentObject(store.speech)
                 .environmentObject(language)
+                .environmentObject(theme)
                 .environmentObject(reminder)
                 .environmentObject(plans)
                 .task { await reminder.refresh() }
@@ -45,7 +48,7 @@ struct ReviaApp: App {
                 .onChange(of: language.code) { _, _ in Task { await reminder.refresh() } }
                 .environment(\.locale, language.locale)
                 .environment(\.calendar, Schedule.calendar)
-                .tint(Palette.green)
+                .tint(Palette.accent)
                 .preferredColorScheme((AppAppearance(rawValue: appearance) ?? .system).colorScheme)
         }
     }

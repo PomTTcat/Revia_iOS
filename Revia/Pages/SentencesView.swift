@@ -2,6 +2,7 @@ import SwiftUI
 import UIKit
 
 struct SentencesView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var store: Store
     @State private var favoritesOnly = false
@@ -9,6 +10,7 @@ struct SentencesView: View {
     @State private var searchEditing = false
     @AppStorage("sentences.compact") private var compact = false
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         let sentences = SentenceLibrary.results(store.sentences, query: query, favoritesOnly: favoritesOnly)
         VStack(spacing: 0) {
@@ -43,7 +45,7 @@ struct SentencesView: View {
                             .frame(width: 44, height: 44)
                             .background(Palette.review, in: Circle())
                     }
-                    .buttonStyle(.plain).foregroundStyle(Palette.green)
+                    .buttonStyle(.plain).foregroundStyle(Palette.accent)
                     .accessibilityLabel(L(compact ? "expand_cards" : "compact_cards"))
                 }
             }

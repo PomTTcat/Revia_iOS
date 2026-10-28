@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CalendarView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -16,11 +17,12 @@ struct CalendarView: View {
         Localization.date(month, template: "yMMMM")
     }
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading, spacing: 14) {
-                    Text(L("brand_line")).font(.system(size: 11)).tracking(2).foregroundStyle(Palette.green)
+                    Text(L("brand_line")).font(.system(size: 11)).tracking(2).foregroundStyle(Palette.accent)
                     Text(L("calendar_title")).font(.system(size: 30, weight: .bold)).foregroundStyle(Palette.ink)
                     Text(L("calendar_subtitle")).font(.system(size: 14)).foregroundStyle(Palette.muted)
                 }.padding(.top, 12)
@@ -46,7 +48,7 @@ struct CalendarView: View {
                     if #available(iOS 18.0, *), !reduceMotion {
                         addButton
                             .matchedTransitionSource(id: "add-sentence", in: addTransition) { source in
-                                source.background(Palette.green)
+                                source.background(Palette.accent)
                                     .clipShape(RoundedRectangle(cornerRadius: 30))
                             }
                     } else {
@@ -78,7 +80,7 @@ struct CalendarView: View {
                 .font(.system(size: 26, weight: .medium))
                 .foregroundStyle(Palette.onAccent)
                 .frame(width: 60, height: 60)
-                .background(Palette.green, in: Circle())
+                .background(Palette.accent, in: Circle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel(L("add_today"))
@@ -93,10 +95,10 @@ struct CalendarView: View {
             Text("\(Schedule.calendar.component(.day, from: date))")
                 .font(.system(size: 16)).frame(width: 36, height: 36)
                 .foregroundStyle(today ? Palette.onAccent : Palette.ink)
-                .background(today ? Palette.green : .clear, in: Circle())
+                .background(today ? Palette.accent : .clear, in: Circle())
             ZStack {
                 if fresh || review {
-                    Circle().fill(today && fresh ? Palette.green : Palette.marker)
+                    Circle().fill(today && fresh ? Palette.accent : Palette.marker)
                         .frame(width: 5, height: 5)
                 }
             }.frame(height: 6)

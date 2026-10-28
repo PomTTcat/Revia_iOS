@@ -19,3 +19,19 @@
 多言語の文章記憶アプリという位置付けの英語プロンプトを以下に残します。この説明の更新に伴い既存アイコンを再生成したわけではありません。
 
 Use case: logo-brand. Asset type: final iOS app icon for a multilingual sentence and spaced-repetition memory app, Revia. Generate one square 1024x1024 opaque icon, full bleed edge-to-edge deep midnight charcoal / very dark forest-green background. Central iconic stylized brain made of a few bold elegant continuous mint-green neural paths, with three subtle luminous memory nodes connected into a gently recurring curved loop integrated into the brain folds, suggesting recall and memories strengthening over time. Sophisticated restrained minimal branding, crisp smooth silhouette, strong readability at 40px, large centered symbol occupying about 65 percent of canvas. Subtle dimensional depth, almost flat, refined soft light, clean negative space. No words, letters, numbers, borders, mockup, phone, drop shadow outside canvas, rounded outer corners, tiny details, realistic anatomy or pink flesh. Square image itself must have no corner masking; iOS will mask it. Keep the palette dark with clear mint accent, calm and thoughtful, not a busy AI circuitry illustration.
+
+## テーマカラー別アイコン
+
+内蔵 image_gen で元画像の色のみを編集し、脳の形・3つの記憶ノード・配置を維持しました。出力を1024×1024の不透明PNGへ正規化しています。標準の緑の原画像は変更しません。以下をiOS代替アイコンと設定プレビューに使います。
+
+- `Revia/Resources/Assets.xcassets/AppIconOcean.appiconset/AppIconOcean.png`
+- `Revia/Resources/Assets.xcassets/AppIconIris.appiconset/AppIconIris.png`
+- `Revia/Resources/Assets.xcassets/AppIconClay.appiconset/AppIconClay.png`
+
+### Generation prompts (built-in image_gen)
+
+Base prompt: Use case: style-transfer. Edit target: the attached Revia app icon. Change ONLY the color palette to [PALETTE]. Preserve the exact brain silhouette, all path geometry, the three luminous nodes and their positions, scale, composition, shading, glow, and edge-to-edge square background of the original. No new details, no text, no border, no rounded outside corners. Final production iOS alternate app icon, 1024x1024 opaque PNG.
+
+- Ocean palette: very dark midnight navy background; luminous icy blue/cyan neural paths and blue-white memory nodes.
+- Iris palette: very dark midnight plum background; luminous lavender/lilac neural paths and violet-white memory nodes.
+- Clay palette: very dark warm brown background; luminous soft apricot/terracotta neural paths and warm cream-white memory nodes.

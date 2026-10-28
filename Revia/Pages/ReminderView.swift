@@ -1,10 +1,12 @@
 import SwiftUI
 
 struct ReminderView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var reminder: ReminderController
     @Environment(\.openURL) private var openURL
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         Form {
             Section {

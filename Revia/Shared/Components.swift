@@ -2,28 +2,33 @@ import SwiftUI
 import UIKit
 
 struct PrimaryButton: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     let title: String
     let action: () -> Void
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         Button(action: action) {
             Text(title).font(.system(size: 16, weight: .semibold))
                 .frame(maxWidth: .infinity).padding(17)
-                .foregroundStyle(Palette.onAccent).background(Palette.green, in: RoundedRectangle(cornerRadius: 16))
+                .foregroundStyle(Palette.onAccent).background(Palette.accent, in: RoundedRectangle(cornerRadius: 16))
         }.buttonStyle(.plain)
     }
 }
 struct EmptyViewMessage: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     let text: String
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         Text(text).font(.system(size: 14)).foregroundStyle(Palette.muted)
             .frame(maxWidth: .infinity).padding(24)
     }
 }
 struct SentenceCard: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var store: Store
     @EnvironmentObject private var plans: PlanCatalog
@@ -40,6 +45,7 @@ struct SentenceCard: View {
     @AppStorage("notes.collapsed") private var collapseNotes = false
     @State private var notesExpanded: Bool?
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         Group {
             if compact {
@@ -60,7 +66,7 @@ struct SentenceCard: View {
                         .font(.system(size: 18, weight: .medium))
                         .frame(width: 44, height: 44).contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain).foregroundStyle(Palette.green)
+                    .buttonStyle(.plain).foregroundStyle(Palette.accent)
                     .disabled(speech.busyIDs.contains(sentence.id))
                     .accessibilityLabel(L(speech.busyIDs.contains(sentence.id) ? "generating_audio" : (speech.playingID == sentence.id ? "stop_audio" : "play_audio")))
                 }
@@ -91,7 +97,7 @@ struct SentenceCard: View {
                             .frame(width: 30, height: 44)
                             .contentShape(Rectangle())
                     }
-                    .foregroundStyle(sentence.isFavorite ? Palette.green : Palette.muted)
+                    .foregroundStyle(sentence.isFavorite ? Palette.accent : Palette.muted)
                     .accessibilityLabel(L(sentence.isFavorite ? "unfavorite" : "favorite"))
                     Button(role: .destructive) { confirming = true } label: {
                         Image(systemName: "xmark")
@@ -125,14 +131,14 @@ struct SentenceCard: View {
                     .font(.system(size: 18, weight: .medium)).frame(width: 44, height: 44, alignment: .leading)
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain).foregroundStyle(Palette.green).disabled(speech.busyIDs.contains(sentence.id))
+                .buttonStyle(.plain).foregroundStyle(Palette.accent).disabled(speech.busyIDs.contains(sentence.id))
                 .accessibilityLabel(L(speech.busyIDs.contains(sentence.id) ? "generating_audio" : (speech.playingID == sentence.id ? "stop_audio" : "play_audio")))
                 Spacer()
                 Button { choosingPlan = true } label: {
                     Text(L("reset_reviews"))
                         .font(.system(size: 14, weight: .medium)).frame(minHeight: 44)
                         .contentShape(Rectangle())
-                }.buttonStyle(.plain).foregroundStyle(Palette.green)
+                }.buttonStyle(.plain).foregroundStyle(Palette.accent)
                     .accessibilityLabel(L("reset_reviews"))
         .alert(L("reset_reviews"), isPresented: $choosingPlan) {
             ForEach(plans.all) { plan in
@@ -149,7 +155,7 @@ struct SentenceCard: View {
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 6)
                 } label: {
                     Text(L("notes")).font(.system(size: 14)).foregroundStyle(Palette.muted)
-                }.tint(Palette.green)
+                }.tint(Palette.accent)
             }
         }
             }
@@ -176,6 +182,7 @@ struct SentenceCard: View {
 
 /// Uses a compact single-line height until the sentence is revealed.
 struct ListenFirstCard: View {
+    @EnvironmentObject private var theme: ThemeManager
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var speech: SpeechController
     let sentence: Sentence
@@ -187,6 +194,7 @@ struct ListenFirstCard: View {
     @ScaledMetric(relativeTo: .body) private var singleLineControlSize: CGFloat = 109
 
     var body: some View {
+        let _ = theme.selected
         SentenceCard(sentence: sentence, fresh: fresh, onHide: enabled ? {
             forceNotesCollapsed = true
             withAnimation(.easeOut(duration: 0.2)) { revealed = false }
@@ -221,7 +229,7 @@ struct ListenFirstCard: View {
                                 }
                                 .frame(width: playSide, height: playSide)
                                 .foregroundStyle(Palette.onAccent)
-                                .background(Palette.green, in: Circle())
+                                .background(Palette.accent, in: Circle())
                                 .contentShape(Circle())
                             }
                             .buttonStyle(.plain)
@@ -238,6 +246,8 @@ struct ListenFirstCard: View {
                         .background {
                             Image("ListenCover")
                                 .resizable()
+                                .saturation(theme.selected == .forest ? 1 : 0)
+                                .colorMultiply(theme.selected == .forest ? .white : Palette.fresh)
                                 .scaledToFill()
                                 .frame(width: geometry.size.width, height: geometry.size.height)
                                 .overlay {
@@ -255,10 +265,12 @@ struct ListenFirstCard: View {
 }
 
 private struct RevealSlider: View {
+    @EnvironmentObject private var theme: ThemeManager
     let height: CGFloat
     let onReveal: () -> Void
     @State private var offset: CGFloat = 0
     var body: some View {
+        let _ = theme.selected
         GeometryReader { geometry in
             let knob: CGFloat = height - 12
             let travel: CGFloat = max(1, geometry.size.width - knob - 12)
@@ -276,7 +288,7 @@ private struct RevealSlider: View {
                     .font(.system(size: 22, weight: .semibold))
                     .frame(width: knob, height: knob)
                     .foregroundStyle(Palette.onAccent)
-                    .background(Palette.green, in: Circle())
+                    .background(Palette.accent, in: Circle())
                     .offset(x: 6 + offset)
             }
             .contentShape(Rectangle())

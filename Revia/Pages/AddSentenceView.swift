@@ -2,6 +2,7 @@ import SwiftUI
 import UIKit
 
 struct AddSentenceView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var store: Store
     @EnvironmentObject private var plans: PlanCatalog
@@ -33,6 +34,7 @@ struct AddSentenceView: View {
     @State private var saving = false
     @State private var saved = false
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         NavigationStack {
             ScrollView {
@@ -55,7 +57,7 @@ struct AddSentenceView: View {
                             Image(systemName: generateSpeech && speech.canGenerate ? "checkmark.square.fill" : "square")
                             Text(L("generate_audio"))
                             Spacer()
-                        }.foregroundStyle(speech.canGenerate ? Palette.green : Palette.muted)
+                        }.foregroundStyle(speech.canGenerate ? Palette.accent : Palette.muted)
                     }.buttonStyle(.plain).disabled(!speech.canGenerate || saving)
                     if edit != nil {
                         Toggle(L("keep_history"), isOn: $keepHistory).disabled(saving)
@@ -95,7 +97,7 @@ struct AddSentenceView: View {
                     VStack(spacing: 16) {
                         ProgressView()
                             .controlSize(.large)
-                            .tint(Palette.green)
+                            .tint(Palette.accent)
                         Text(L(saved ? "generating_audio" : "saving_sentence"))
                             .font(.system(size: 16, weight: .medium))
                             .foregroundStyle(Palette.ink)

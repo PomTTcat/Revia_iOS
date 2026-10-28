@@ -2,16 +2,18 @@ import SwiftUI
 
 /// A single circuit gradually decelerates as it returns to the first node.
 struct BrainCircuit: View {
+    @EnvironmentObject private var theme: ThemeManager
     static let duration: Double = 1.6
     let animated: Bool
     @State private var startedAt = Date()
     private let nodes = [CGPoint(x: 420, y: 300), CGPoint(x: 725, y: 448), CGPoint(x: 500, y: 596)]
-    private let background = Color(red: 0.02, green: 0.09, blue: 0.065)
-    private let mint = Color(red: 0.54, green: 1, blue: 0.68)
+    private var background: Color { Palette.brandBackground }
+    private var mint: Color { Palette.glow }
 
     var body: some View {
+        let _ = theme.selected
         ZStack {
-            Image("LaunchLogo").resizable().scaledToFit()
+            Image(theme.selected.previewName).resizable().scaledToFit()
             if animated {
                 background.opacity(0.67)
                 TimelineView(.animation(minimumInterval: 1.0 / 60)) { timeline in
@@ -35,7 +37,7 @@ struct BrainCircuit: View {
                                     glow.addFilter(.blur(radius: 3))
                                     glow.stroke(light, with: .color(mint.opacity(fade)), style: StrokeStyle(lineWidth: 5, lineCap: .round))
                                 }
-                                context.stroke(light, with: .color(Color(red: 0.82, green: 1, blue: 0.86).opacity(fade)), style: StrokeStyle(lineWidth: 1.8, lineCap: .round))
+                                context.stroke(light, with: .color(Palette.glow.opacity(fade)), style: StrokeStyle(lineWidth: 1.8, lineCap: .round))
                             }
                         }
                         for index in nodes.indices {

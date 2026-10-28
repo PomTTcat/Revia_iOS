@@ -1,12 +1,14 @@
 import SwiftUI
 
 struct PreferencesView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var reminder: ReminderController
     @AppStorage("app.appearance") private var appearance = AppAppearance.system.rawValue
     @AppStorage("notes.collapsed") private var collapseNotes = false
     @AppStorage("card.fontSize") private var cardFont = CardTextSize.normal.rawValue
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         Form {
             Section {
@@ -15,6 +17,14 @@ struct PreferencesView: View {
                 }
                 Picker(L("appearance"), selection: $appearance) {
                     ForEach(AppAppearance.allCases) { mode in Text(mode.title).tag(mode.rawValue) }
+                }
+                NavigationLink { ThemeSettingsView() } label: {
+                    HStack {
+                        Text(L("color_theme"))
+                        Spacer()
+                        Circle().fill(Palette.accent).frame(width: 14, height: 14)
+                        Text(theme.selected.title).foregroundStyle(Palette.muted)
+                    }
                 }
                 NavigationLink { CardFontSettingsView() } label: {
                     HStack {
@@ -51,17 +61,19 @@ enum CardTextSize: Int, CaseIterable {
 }
 
 private struct CardFontSettingsView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @AppStorage("card.fontSize") private var selection = CardTextSize.normal.rawValue
     private var size: CardTextSize { CardTextSize.value(selection) }
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         Form {
             Section {
                 VStack(spacing: 16) {
                     Text(size.title).font(.headline).foregroundStyle(Palette.ink)
                     Slider(value: Binding(get: { Double(size.rawValue) }, set: { selection = Int($0.rounded()) }), in: 0...3, step: 1)
-                        .tint(Palette.green)
+                        .tint(Palette.accent)
                         .accessibilityLabel(L("card_font"))
                         .accessibilityValue(size.title)
                     HStack {
@@ -69,7 +81,7 @@ private struct CardFontSettingsView: View {
                             if option != .small { Spacer(minLength: 0) }
                             Text(option.title)
                                 .font(.caption)
-                                .foregroundStyle(option == size ? Palette.green : Palette.muted)
+                                .foregroundStyle(option == size ? Palette.accent : Palette.muted)
                         }
                     }
                 }.padding(.vertical, 12)

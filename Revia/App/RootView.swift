@@ -1,11 +1,13 @@
 import SwiftUI
 
 struct RootView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var store: Store
     @EnvironmentObject private var speech: SpeechController
     @State private var selectedTab = 0
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         Group {
             if store.ready {

@@ -288,3 +288,21 @@
 "font_sample_note" = "Notes use the selected size too.";
 
 "font_largest" = "Largest";
+
+"color_theme" = "Theme color";
+
+"color_forest" = "Forest green";
+
+"color_ocean" = "Ocean blue";
+
+"color_iris" = "Iris purple";
+
+"color_clay" = "Terracotta";
+
+"color_note" = "Colors apply immediately and are saved. The app icon changes to match; iOS may show a confirmation. If the icon fails to update, tap the selected color again to retry.";
+
+"icon_title" = "App icon";
+
+"icon_failed" = "The theme color was saved, but the app icon could not be changed. Tap the selected color again to retry.";
+
+"icon_unavailable" = "The theme color was saved. This device does not support changing the app icon.";

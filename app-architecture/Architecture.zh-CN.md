@@ -217,3 +217,11 @@ API Key验证时使用与文章保存一致的居中加载动画和“正在验�
 字体四档名称更新为小、普通、大、最大，实际字号数组保持不变（正文15/18/21/25，缩略12/15/18/22，备注12/13/15/18点），默认第二档普通；已有用户选择保持原档位和字号。
 
 开启后台音频播放能力：Debug/Release均读取 Revia/Info.plist 的 UIBackgroundModes audio 数组，配合已有 AVAudioSession playback / spokenAudio。正在播放的音频切到其他App或锁屏后可继续，播放完成仍释放会话；不引入持续静音或保活任务，其他音频抢占与系统中断仍按系统行为处理。
+
+## 主题色与备用图标
+
+环境设置 → 主题色提供墨绿（默认）、海蓝、鸢尾紫、陶土橙四套配色，独立于浅色／深色主题模式。`Features/Appearance/ThemeManager.swift` 集中定义 AppTheme、ThemeColors 与 ThemeManager；`Shared/Palette.swift` 根据已选配色和当前外观提供语义颜色，原 green 命名统一为 accent。所有 SwiftUI 页面订阅同一个 ThemeManager，修改 UserDefaults `app.colorTheme` 后即时刷新，保留导航、搜索、卡片状态。文章、计划与音频数据不变。
+
+ThemeManager 串行调用 iOS 公共的备用图标 API，森林绿恢复默认图标，其余分别使用 AppIconOcean / AppIconIris / AppIconClay。应用主题先即时保存，系统图标切换期间暂时禁用选择；失败时保留颜色、显示提示，重新点击已选颜色可重试。未开启后台或启动时自动更换，避免无用户操作的系统图标提示。支持浅色／深色配色与应用内启动页；系统静态 Launch Screen 保留原始墨绿资源。
+
+备用图标以1024×1024不透明PNG随包提供，Debug/Release 的 Alternate App Icon Sets 均包含全部三套图标。主题页预览使用相应 Theme*.imageset。听力遮罩仍使用静态图片，非绿色主题会降低图片饱和度并叠加主题色，不进行实时模糊。

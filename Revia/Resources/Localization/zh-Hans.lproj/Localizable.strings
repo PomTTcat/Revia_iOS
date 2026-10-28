@@ -288,3 +288,21 @@
 "font_sample_note" = "备注字体也会随选择一起调整。";
 
 "font_largest" = "最大";
+
+"color_theme" = "主题色";
+
+"color_forest" = "墨绿";
+
+"color_ocean" = "海蓝";
+
+"color_iris" = "鸢尾紫";
+
+"color_clay" = "陶土橙";
+
+"color_note" = "颜色立即生效并自动保存，App 图标也会切换为对应配色，iOS 可能显示更换提示。如果图标未能更换，可再次点击已选颜色重试。";
+
+"icon_title" = "App 图标";
+
+"icon_failed" = "主题色已保存，但 App 图标更换失败。可以再次点击已选颜色重试。";
+
+"icon_unavailable" = "主题色已保存，当前设备不支持更换 App 图标。";

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct DayView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @Environment(\.scenePhase) private var scenePhase
     @State private var now = Date()
@@ -13,6 +14,7 @@ struct DayView: View {
     private var fresh: [Sentence] { store.newSentences(on: Schedule.key(date)) }
     private var reviews: [Sentence] { store.reviewSentences(on: Schedule.key(date)) }
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {

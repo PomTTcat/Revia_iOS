@@ -546,3 +546,106 @@ final class BulkImportTests: XCTestCase {
         XCTAssertEqual(try database.reviews().count, 45)
     }
 }
+
+final class ThemeTests: XCTestCase {
+    @MainActor
+    private final class Icons: AppIconChanging {
+        var supportsAlternateIcons = true
+        var alternateIconName: String?
+        var requests: [String?] = []
+        var completion: (@MainActor (Error?) -> Void)?
+        func changeIcon(to name: String?, completion: @escaping @MainActor (Error?) -> Void) {
+            requests.append(name)
+            self.completion = completion
+        }
+        func finish(error: Error? = nil) {
+            if error == nil { alternateIconName = requests.last ?? nil }
+            let callback = completion
+            completion = nil
+            callback?(error)
+        }
+    }
+    @MainActor
+    func testThemePersistenceAndSerializedIconChanges() async throws {
+        let suite = UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let icons = Icons()
+        let manager = ThemeManager(defaults: defaults, icons: icons)
+        XCTAssertEqual(manager.selected, .forest)
+        manager.select(.ocean)
+        XCTAssertEqual(manager.selected, .ocean)
+        XCTAssertEqual(AppTheme.current(in: defaults), .ocean)
+        XCTAssertTrue(manager.changingIcon)
+        manager.select(.iris)
+        XCTAssertEqual(manager.selected, .ocean)
+        XCTAssertEqual(icons.requests.count, 1)
+        icons.finish()
+        XCTAssertFalse(manager.changingIcon)
+        XCTAssertEqual(ThemeManager(defaults: defaults, icons: icons).selected, .ocean)
+        manager.select(.ocean)
+        XCTAssertEqual(icons.requests.count, 1)
+        manager.select(.forest)
+        XCTAssertNil(icons.requests.last!)
+        icons.finish()
+        XCTAssertNil(manager.iconError)
+        XCTAssertEqual(manager.selected, .forest)
+    }
+    @MainActor
+    func testIconFailureKeepsThemeAndAllowsRetry() async throws {
+        let suite = UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let icons = Icons()
+        let manager = ThemeManager(defaults: defaults, icons: icons)
+        manager.select(.clay)
+        icons.finish(error: NSError(domain: "test", code: 1))
+        XCTAssertFalse(manager.changingIcon)
+        XCTAssertNotNil(manager.iconError)
+        XCTAssertEqual(manager.selected, .clay)
+        XCTAssertEqual(AppTheme.current(in: defaults), .clay)
+        manager.select(.clay)
+        XCTAssertEqual(icons.requests.count, 2)
+        icons.finish()
+        XCTAssertNil(manager.iconError)
+    }
+    @MainActor
+    func testUnsupportedIconsAndUnknownSavedTheme() async throws {
+        let suite = UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        defaults.set("unknown", forKey: AppTheme.preference)
+        let icons = Icons()
+        icons.supportsAlternateIcons = false
+        let manager = ThemeManager(defaults: defaults, icons: icons)
+        XCTAssertEqual(manager.selected, .forest)
+        manager.select(.iris)
+        XCTAssertEqual(manager.selected, .iris)
+        XCTAssertNotNil(manager.iconError)
+        XCTAssertFalse(manager.changingIcon)
+        XCTAssertTrue(icons.requests.isEmpty)
+    }
+    func testThemeTextContrastInBothAppearances() {
+        func luminance(_ hex: UInt) -> Double {
+            let rgb = [16, 8, 0].map { Double((hex >> $0) & 255) / 255 }
+            let linear = rgb.map { $0 <= 0.04045 ? $0 / 12.92 : pow(($0 + 0.055) / 1.055, 2.4) }
+            return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722
+        }
+        func contrast(_ a: UInt, _ b: UInt) -> Double {
+            let x = luminance(a), y = luminance(b)
+            return (max(x, y) + 0.05) / (min(x, y) + 0.05)
+        }
+        for theme in AppTheme.allCases {
+            let c = theme.colors
+            for dark in [false, true] {
+                let resolve: (ThemeColorPair) -> UInt = { dark ? $0.dark : $0.light }
+                for text in [c.ink, c.muted, c.accent] {
+                    for background in [c.background, c.surface, c.fresh, c.review] {
+                        XCTAssertGreaterThanOrEqual(contrast(resolve(text), resolve(background)), 4.5, "\(theme) dark=\(dark)")
+                    }
+                }
+                XCTAssertGreaterThanOrEqual(contrast(resolve(c.onAccent), resolve(c.accent)), 4.5, "\(theme) onAccent")
+            }
+        }
+    }
+}

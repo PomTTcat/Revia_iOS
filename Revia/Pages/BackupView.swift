@@ -2,6 +2,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct BackupView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var store: Store
     @State private var importing = false
@@ -9,6 +10,7 @@ struct BackupView: View {
     @State private var exportURL: URL?
     @State private var backupMessage: String?
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         Form {
             Section {
@@ -66,6 +68,7 @@ struct BackupView: View {
 
 
 private struct BulkImportView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var store: Store
     @State private var input = ""
@@ -82,6 +85,7 @@ private struct BulkImportView: View {
     ]
     """
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         Form {
             Section {

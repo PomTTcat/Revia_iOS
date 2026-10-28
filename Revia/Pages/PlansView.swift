@@ -1,9 +1,11 @@
 import SwiftUI
 
 struct PlansView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var plans: PlanCatalog
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         Form {
             Section {
@@ -32,6 +34,7 @@ struct PlansView: View {
 }
 
 struct PlanEditorView: View {
+    @EnvironmentObject private var theme: ThemeManager
     @EnvironmentObject private var language: AppLanguage
     @EnvironmentObject private var plans: PlanCatalog
     @Environment(\.dismiss) private var dismiss
@@ -47,6 +50,7 @@ struct PlanEditorView: View {
         _blocks = State(initialValue: plan?.blocks ?? [])
     }
     var body: some View {
+        let _ = theme.selected
         let _ = language.code
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -66,7 +70,7 @@ struct PlanEditorView: View {
                 Button { blocks.append(0) } label: {
                     Label(L("review_node"), systemImage: "flag.fill")
                         .frame(maxWidth: .infinity).padding(14)
-                        .foregroundStyle(Palette.onAccent).background(Palette.green, in: RoundedRectangle(cornerRadius: 12))
+                        .foregroundStyle(Palette.onAccent).background(Palette.accent, in: RoundedRectangle(cornerRadius: 12))
                 }.disabled(blocks.isEmpty || blocks.last == 0 || count >= 15)
                 HStack {
                     Text(L("node_count", count)).font(.subheadline)
@@ -84,7 +88,7 @@ struct PlanEditorView: View {
                                 }
                                 .font(.system(size: 12)).frame(maxWidth: .infinity).padding(.vertical, 10)
                                 .foregroundStyle(block == 0 ? Palette.onAccent : Palette.ink)
-                                .background(block == 0 ? Palette.green : Palette.surface, in: RoundedRectangle(cornerRadius: 8))
+                                .background(block == 0 ? Palette.accent : Palette.surface, in: RoundedRectangle(cornerRadius: 8))
                             }.accessibilityLabel(L("remove_block", index + 1))
                         }
                     }
