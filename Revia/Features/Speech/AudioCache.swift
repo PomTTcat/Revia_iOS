@@ -9,6 +9,7 @@ struct AudioRecord: Equatable {
     let filename: String
     let version: Int
 }
+enum AudioFormat: String { case mp3, caf }
 struct AudioCache {
     static let version = 1
     let directory: URL
@@ -16,12 +17,12 @@ struct AudioCache {
         self.directory = directory
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     }
-    static func filename(text: String, voice: String, model: String) -> String {
+    static func filename(text: String, voice: String, model: String, format: AudioFormat = .mp3) -> String {
         let identity = "\(version)\u{0}\(voice)\u{0}\(model)\u{0}\(text)"
-        return SHA256.hash(data: Data(identity.utf8)).map { String(format: "%02x", $0) }.joined() + ".mp3"
+        return SHA256.hash(data: Data(identity.utf8)).map { String(format: "%02x", $0) }.joined() + "." + format.rawValue
     }
     func url(for filename: String) throws -> URL {
-        guard filename.range(of: "^[a-f0-9]{64}\\.mp3$", options: .regularExpression) != nil else {
+        guard filename.range(of: "^[a-f0-9]{64}\\.(mp3|caf)$", options: .regularExpression) != nil else {
             throw ReviaError.message(L("invalid_filename"))
         }
         return directory.appendingPathComponent(filename)
@@ -43,7 +44,7 @@ struct AudioCache {
     }
     func bytes() throws -> Int64 {
         try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.fileSizeKey, .isRegularFileKey])
-            .filter { $0.pathExtension == "mp3" }
+            .filter { AudioFormat(rawValue: $0.pathExtension) != nil }
             .reduce(0) { total, url in
                 let values = try url.resourceValues(forKeys: [.fileSizeKey, .isRegularFileKey])
                 return total + (values.isRegularFile == true ? Int64(values.fileSize ?? 0) : 0)

@@ -229,3 +229,11 @@ ThemeManager 串行调用 iOS 公共的备用图标 API，森林绿恢复默认�
 ## 统一的中性启动页
 
 启动过程不再读取主题色，四套主题共用一套深灰（#15171A）背景、银白脑形和白色记忆亮点。系统 LaunchScreen.storyboard 与 App 内 LaunchView 都使用 LaunchNeutral.imageset，文字配色和定位保持一致；BrainCircuit 保留原先1.6秒逐渐减速的三节点光流动画，不再叠加绿色图层。动画结束后启动页整体用0.35秒淡出，露出已经按保存主题和浅深色渲染的首页。减少动态效果时跳过光流并以0.1秒淡出。主题颜色和对应桌面图标仍仅作用于App主体与桌面，不改变启动页。
+
+## 系统语音与语音设置
+
+设置新增语音设置页面，来源可选自动／系统语音／ElevenLabs。默认自动：已验证Key与有效ElevenLabs音色就绪时用ElevenLabs，否则用Apple系统语音；明确选择ElevenLabs时仍要求Key。系统音色来自设备可用列表，按中英日分别选择，性别标签使用系统male/female信息，unspecified不标性别。语言可自动识别或明确指定，短句误判时可手动设置。保存到speech.source、speech.systemLanguage与speech.systemVoices，不随备份迁移。
+
+SystemSpeechGenerator使用AVSpeechSynthesizer.write生成PCM，通过AVAudioFile封装为CAF，串行处理请求，支持取消、90秒超时和临时文件清理。临时生成不发声；验证音频后复用原有SQLite/AudioCache流水线保存到Application Support/Speech，模型标记apple_tts_v1、音色记录真实系统ID。AudioCache兼容原有MP3与新增CAF，统计、清理孤立文件、删除引用都兼容两种格式。播放仍使用AVAudioPlayer与现有后台音频会话。
+
+所有音源优先使用已有本地录音，切换来源或音色不会自动重新生成已有录音。没有Key时添加页面可默认勾选生成语音；缺少对应语言音色时提示下载，系统语音失败保留已保存文章。Key验证依旧使用ElevenLabs，不受系统音源选择影响。

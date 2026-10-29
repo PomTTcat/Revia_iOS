@@ -12,13 +12,13 @@ struct SettingsView: View {
                 NavigationLink { PreferencesView() } label: { Text(L("preferences")) }
             }.listRowBackground(Palette.surface)
             Section {
-                Picker(L("voice_type"), selection: Binding(get: { speech.selectedVoiceID }, set: { speech.selectCustomVoice($0) })) {
-                    Text(L("male_voice")).tag(ElevenLabs.defaultVoice.id)
-                    Text(L("female_voice")).tag(ElevenLabs.femaleVoice.id)
-                    if !ElevenLabs.presetVoices.contains(where: { $0.id == speech.selectedVoiceID }) {
-                        Text(L("custom_voice")).tag(speech.selectedVoiceID)
+                NavigationLink { SpeechSettingsView() } label: {
+                    HStack {
+                        Text(L("speech_settings"))
+                        Spacer()
+                        Text(speech.source.title).font(.subheadline).foregroundStyle(Palette.muted)
                     }
-                }.disabled(speech.validating)
+                }
                 NavigationLink { APIKeyView() } label: {
                     HStack {
                         Text("API Key")

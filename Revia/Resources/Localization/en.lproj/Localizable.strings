@@ -37,7 +37,6 @@
 "meaning_hint" = "Add a translation or your own explanation";
 "learning_date" = "Learning date";
 "generate_audio" = "Generate audio";
-"enable_audio_note" = "Activate an API key and select a voice in Settings to enable audio.";
 "saving_sentence" = "Saving / generating audio…";
 "save_sentence" = "Save sentence";
 "add_sentence" = "Add sentence";
@@ -85,7 +84,6 @@
 "storage_read_failed" = "Unable to read audio storage usage: %@";
 "audio_not_ready" = "Audio storage is not ready.";
 "audio_busy" = "Audio for this sentence is already being generated.";
-"audio_missing" = "No local audio is available. Activate an API key and select a voice in Settings.";
 "playback_failed" = "Audio playback failed. Please try again.";
 "db_open_failed" = "Unable to open the database.";
 "network_failed" = "Connection failed. Check your network and try again.";
@@ -306,3 +304,35 @@
 "icon_failed" = "The theme color was saved, but the app icon could not be changed. Tap the selected color again to retry.";
 
 "icon_unavailable" = "The theme color was saved. This device does not support changing the app icon.";
+
+"speech_settings" = "Voice settings";
+
+"speech_source" = "Voice source";
+
+"speech_source_automatic" = "Automatic";
+
+"speech_source_system" = "System voice";
+
+"speech_source_elevenlabs" = "ElevenLabs";
+
+"speech_source_note" = "Automatic uses ElevenLabs when a key is active, otherwise the system voice. System voices need no API key.";
+
+"system_language" = "Sentence language";
+
+"speech_auto_language" = "Detect automatically";
+
+"system_default_voice" = "System default";
+
+"system_voice_none" = "No voice available";
+
+"system_voice_note" = "Choose an installed voice for each language. Male or female labels appear only when provided by the system. Download more voices in iPhone Accessibility settings. Short sentences may be detected incorrectly; choose a language above if needed. Changes apply to new audio only.";
+
+"eleven_key_note" = "Activate an API key to use ElevenLabs. System voices work without a key.";
+
+"system_voice_missing" = "No usable voice was found for this language. Download a voice in iPhone Accessibility settings, then return to Voice settings.";
+
+"system_speech_failed" = "System speech generation failed. Check that the selected voice is available and try again.";
+
+"enable_audio_note" = "Choose a system voice in Voice settings, or activate an API key to use ElevenLabs.";
+
+"audio_missing" = "No local audio is available. Check the voice source and voice settings.";

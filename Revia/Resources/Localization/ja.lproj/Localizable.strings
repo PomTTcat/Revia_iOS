@@ -37,7 +37,6 @@
 "meaning_hint" = "翻訳、文法、使い方などを自由に記入";
 "learning_date" = "学習日";
 "generate_audio" = "音声を生成";
-"enable_audio_note" = "設定でAPIキーを有効にし、声を選ぶと利用できます。";
 "saving_sentence" = "保存・音声生成中…";
 "save_sentence" = "文章を保存";
 "add_sentence" = "文章を追加";
@@ -85,7 +84,6 @@
 "storage_read_failed" = "音声の使用容量を取得できませんでした：%@";
 "audio_not_ready" = "音声ストレージの準備ができていません。";
 "audio_busy" = "この文章の音声は生成中です。";
-"audio_missing" = "保存済みの音声がありません。設定でAPIキーを有効にし、声を選択してください。";
 "playback_failed" = "音声を再生できませんでした。もう一度お試しください。";
 "db_open_failed" = "データベースを開けませんでした。";
 "network_failed" = "接続できませんでした。ネットワークを確認して再試行してください。";
@@ -306,3 +304,35 @@
 "icon_failed" = "テーマカラーは保存しましたが、アイコンを変更できませんでした。選択中の色をもう一度タップすると再試行できます。";
 
 "icon_unavailable" = "テーマカラーを保存しました。この端末ではアプリアイコンを変更できません。";
+
+"speech_settings" = "音声設定";
+
+"speech_source" = "音声の種類";
+
+"speech_source_automatic" = "自動";
+
+"speech_source_system" = "システム音声";
+
+"speech_source_elevenlabs" = "ElevenLabs";
+
+"speech_source_note" = "自動では有効なAPIキーがある場合にElevenLabs、それ以外はシステム音声を使います。システム音声にAPIキーは不要です。";
+
+"system_language" = "文章の言語";
+
+"speech_auto_language" = "自動判定";
+
+"system_default_voice" = "システムの既定";
+
+"system_voice_none" = "利用可能な声なし";
+
+"system_voice_note" = "言語ごとに端末の音声を選べます。男性・女性の表示はシステムの情報に従います。音声の追加はiPhoneのアクセシビリティ設定から行えます。短い文章は言語を誤判定する場合があるため、必要に応じて上で指定してください。変更は新しい音声にのみ適用されます。";
+
+"eleven_key_note" = "ElevenLabsを使うにはAPIキーを有効にしてください。システム音声はキーなしで使えます。";
+
+"system_voice_missing" = "この言語で使える音声がありません。iPhoneのアクセシビリティ設定で音声を追加してから、音声設定に戻ってください。";
+
+"system_speech_failed" = "システム音声を生成できませんでした。選択した音声が利用可能か確認して、もう一度お試しください。";
+
+"enable_audio_note" = "音声設定でシステム音声を選ぶか、APIキーを有効にしてElevenLabsを選んでください。";
+
+"audio_missing" = "保存済みの音声がありません。音声の種類と音声設定を確認してください。";

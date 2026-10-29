@@ -649,3 +649,47 @@ final class ThemeTests: XCTestCase {
         }
     }
 }
+
+
+final class SystemSpeechTests: XCTestCase {
+    func testSourceSelectionAndExplicitLanguageOverride() {
+        XCTAssertEqual(SpeechSource.automatic.resolved(elevenReady: false), .system)
+        XCTAssertEqual(SpeechSource.automatic.resolved(elevenReady: true), .elevenlabs)
+        XCTAssertEqual(SpeechSource.system.resolved(elevenReady: true), .system)
+        XCTAssertEqual(SpeechSource.elevenlabs.resolved(elevenReady: false), .elevenlabs)
+        XCTAssertEqual(SystemSpeechLanguage.japanese.code(for: "hello"), "ja")
+        XCTAssertEqual(SystemSpeechLanguage.chinese.code(for: "hello"), "zh")
+        XCTAssertEqual(SystemSpeechLanguage.english.code(for: "こんにちは"), "en")
+    }
+    func testCAFAndMP3CacheStorageAndRemoval() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let cache = try AudioCache(directory: directory)
+        let mp3 = AudioCache.filename(text: "hello", voice: "eleven", model: "eleven_v3")
+        let caf = AudioCache.filename(text: "hello", voice: "apple", model: "apple_tts_v1", format: .caf)
+        XCTAssertTrue(mp3.hasSuffix(".mp3"))
+        XCTAssertTrue(caf.hasSuffix(".caf"))
+        XCTAssertNotEqual(mp3, caf)
+        _ = try cache.write(Data([1, 2]), filename: mp3)
+        _ = try cache.write(Data([3, 4, 5]), filename: caf)
+        XCTAssertEqual(try cache.bytes(), 5)
+        XCTAssertNotNil(cache.existing(caf))
+        XCTAssertThrowsError(try cache.url(for: "../voice.caf"))
+        XCTAssertThrowsError(try cache.url(for: String(repeating: "a", count: 64) + ".wav"))
+        try cache.remove(caf)
+        XCTAssertNil(cache.existing(caf))
+        XCTAssertEqual(try cache.bytes(), 2)
+    }
+    func testSystemAudioMetadataCascade() throws {
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).path
+        defer { for suffix in ["", "-wal", "-shm"] { try? FileManager.default.removeItem(atPath: path + suffix) } }
+        let database = try Database(path: path)
+        let id = try database.add(text: "こんにちは", translation: "", date: "2026-10-28")
+        let filename = AudioCache.filename(text: "こんにちは", voice: "apple-ja", model: "apple_tts_v1", format: .caf)
+        let record = AudioRecord(sentenceID: id, text: "こんにちは", voiceID: "apple-ja", modelID: "apple_tts_v1", filename: filename, version: AudioCache.version)
+        try database.saveAudio(record)
+        XCTAssertEqual(try database.audioRecords(sentenceID: id), [record])
+        try database.delete(id: id)
+        XCTAssertTrue(try database.audioRecords().isEmpty)
+    }
+}

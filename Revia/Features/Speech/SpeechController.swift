@@ -10,6 +10,14 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
     @Published private(set) var active = false
     @Published private(set) var validating = false
     @Published private(set) var canGenerate = false
+    @Published private(set) var source: SpeechSource = .automatic
+    @Published private(set) var systemLanguage: SystemSpeechLanguage = .automatic
+    @Published private(set) var systemVoices: [SystemVoice] = []
+    @Published private(set) var systemSelections: [String: String] = [:]
+    var effectiveSource: SpeechSource { source.resolved(elevenReady: active && voices.contains { $0.id == selectedVoiceID }) }
+    private let sourceState = BehaviorRelay<SpeechSource>(value: .automatic)
+    private let systemState = BehaviorRelay<Bool>(value: false)
+    private let systemSpeech: any SystemSpeechProviding
     @Published private(set) var voices: [Voice] = []
     @Published private(set) var selectedVoiceID = ""
     @Published private(set) var storageBytes: Int64 = 0
@@ -30,9 +38,15 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
     private var requestedPlaybackID: Int64?
     private let defaults: UserDefaults
 
-    init(api: ElevenLabs = ElevenLabs(), defaults: UserDefaults = .standard, credentials: CredentialStorage = CredentialStore()) {
+    init(api: ElevenLabs = ElevenLabs(), defaults: UserDefaults = .standard, credentials: CredentialStorage = CredentialStore(), systemSpeech: (any SystemSpeechProviding)? = nil) {
         self.api = api; self.defaults = defaults; self.credentials = credentials
+        self.systemSpeech = systemSpeech ?? SystemSpeechGenerator()
         super.init()
+        source = defaults.string(forKey: "speech.source").flatMap(SpeechSource.init(rawValue:)) ?? .automatic
+        systemLanguage = defaults.string(forKey: "speech.systemLanguage").flatMap(SystemSpeechLanguage.init(rawValue:)) ?? .automatic
+        systemSelections = defaults.dictionary(forKey: "speech.systemVoices") as? [String: String] ?? [:]
+        refreshSystemVoices()
+        sourceState.accept(source)
         selectedVoiceID = defaults.string(forKey: "speech.voice") ?? ElevenLabs.defaultVoice.id
         if let data = defaults.data(forKey: "speech.voices"), let saved = try? JSONDecoder().decode([Voice].self, from: data) { voices = saved }
         for voice in ElevenLabs.presetVoices where !voices.contains(where: { $0.id == voice.id }) { voices.append(voice) }
@@ -43,8 +57,10 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
         } catch { alert = error.localizedDescription }
         activeState.accept(active)
         voiceState.accept(voices.contains { $0.id == selectedVoiceID })
-        Observable.combineLatest(activeState, voiceState)
-            .map { $0 && $1 }.distinctUntilChanged()
+        Observable.combineLatest(activeState, voiceState, sourceState, systemState)
+            .map { active, voice, source, system in
+                source.resolved(elevenReady: active && voice) == .system ? system : active && voice
+            }.distinctUntilChanged()
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in self?.canGenerate = $0 })
             .disposed(by: bag)
@@ -54,10 +70,32 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
         cache = try AudioCache(directory: directory.appendingPathComponent("Speech", isDirectory: true))
         // Reconcile orphan files left by an interrupted file/database operation.
         let referenced = Set(try database.audioRecords().map(\.filename))
-        for url in try FileManager.default.contentsOfDirectory(at: cache!.directory, includingPropertiesForKeys: nil) where url.pathExtension == "mp3" && !referenced.contains(url.lastPathComponent) {
+        for url in try FileManager.default.contentsOfDirectory(at: cache!.directory, includingPropertiesForKeys: nil) where AudioFormat(rawValue: url.pathExtension) != nil && !referenced.contains(url.lastPathComponent) {
             try cache!.remove(url.lastPathComponent)
         }
         refreshStorage()
+    }
+    func selectSource(_ value: SpeechSource) {
+        source = value
+        defaults.set(value.rawValue, forKey: "speech.source")
+        sourceState.accept(value)
+    }
+    func selectSystemLanguage(_ value: SystemSpeechLanguage) {
+        systemLanguage = value
+        defaults.set(value.rawValue, forKey: "speech.systemLanguage")
+    }
+    func selectSystemVoice(_ id: String, language: String) {
+        systemSelections[language] = id.isEmpty ? nil : id
+        defaults.set(systemSelections, forKey: "speech.systemVoices")
+    }
+    func refreshSystemVoices() {
+        systemVoices = systemSpeech.voices
+        systemState.accept(!systemVoices.isEmpty)
+    }
+    private func systemVoice(for text: String) -> SystemVoice? {
+        let code = systemLanguage.code(for: text)
+        let base = String(code.split(separator: "-").first ?? "en")
+        return systemSpeech.voice(language: code, preferredID: systemSelections[base])
     }
     func changeKey(_ value: String) {
         guard value != draft else { return }
@@ -132,7 +170,11 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
         guard !busyIDs.contains(sentence.id) else { completion(.failure(ReviaError.message(L("audio_busy")))); return }
         do {
             let records = try database.audioRecords(sentenceID: sentence.id)
-            let matching = records.first { $0.text == sentence.text && $0.voiceID == selectedVoiceID && $0.modelID == ElevenLabs.model && $0.version == AudioCache.version }
+            let engine = effectiveSource
+            let appleVoice = engine == .system ? systemVoice(for: sentence.text) : nil
+            let voice = engine == .system ? (appleVoice?.id ?? "") : selectedVoiceID
+            let model = engine == .system ? SystemSpeechGenerator.model : ElevenLabs.model
+            let matching = records.first { $0.text == sentence.text && $0.voiceID == voice && $0.modelID == model && $0.version == AudioCache.version }
             // Always use a matching local file before considering a paid request.
             if let record = matching, let url = cache.existing(record.filename) {
                 if play && requestedPlaybackID == sentence.id { try startPlayer(url, sentenceID: sentence.id) }
@@ -143,17 +185,18 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
                 if play && requestedPlaybackID == sentence.id { try startPlayer(url, sentenceID: sentence.id) }
                 completion(.success(())); return
             }
-            guard canGenerate, let key = activeKey, !selectedVoiceID.isEmpty else {
-                // Deactivated keys may still play any existing recording for this text.
-                if let local = records.first(where: { $0.text == sentence.text && cache.existing($0.filename) != nil }), let url = cache.existing(local.filename) {
-                    if play && requestedPlaybackID == sentence.id { try startPlayer(url, sentenceID: sentence.id) }
-                    completion(.success(())); return
-                }
-                throw ReviaError.message(L("audio_missing"))
+            guard canGenerate else { throw ReviaError.message(L("audio_missing")) }
+            let key = activeKey
+            let generate: Single<Data>
+            if engine == .system {
+                guard let appleVoice else { throw ReviaError.message(L("system_voice_missing")) }
+                generate = systemSpeech.generate(text: sentence.text, voice: appleVoice)
+            } else {
+                guard let key, !voice.isEmpty else { throw ReviaError.message(L("audio_missing")) }
+                generate = api.generate(text: sentence.text, voice: voice, key: key)
             }
-            let voice = selectedVoiceID
-            let filename = AudioCache.filename(text: sentence.text, voice: voice, model: ElevenLabs.model)
-            let record = AudioRecord(sentenceID: sentence.id, text: sentence.text, voiceID: voice, modelID: ElevenLabs.model, filename: filename, version: AudioCache.version)
+            let filename = AudioCache.filename(text: sentence.text, voice: voice, model: model, format: engine == .system ? .caf : .mp3)
+            let record = AudioRecord(sentenceID: sentence.id, text: sentence.text, voiceID: voice, modelID: model, filename: filename, version: AudioCache.version)
             // Identical sentences can share one file while retaining separate database references.
             if let url = cache.existing(filename) {
                 try database.saveAudio(record)
@@ -161,7 +204,7 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
                 completion(.success(())); return
             }
             busyIDs.insert(sentence.id)
-            requests[sentence.id] = api.generate(text: sentence.text, voice: voice, key: key)
+            requests[sentence.id] = generate
                 .observe(on: MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] data in
                     guard let self else { return }
@@ -181,7 +224,7 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
                 }, onFailure: { [weak self] error in
                     guard let self else { return }
                     self.busyIDs.remove(sentence.id); self.requests[sentence.id] = nil
-                    if case SpeechFailure.authentication = error, self.activeKey == key { self.deactivate() }
+                    if case SpeechFailure.authentication = error, engine == .elevenlabs, self.activeKey == key { self.deactivate() }
                     completion(.failure(error))
                 })
         } catch { completion(.failure(error)) }

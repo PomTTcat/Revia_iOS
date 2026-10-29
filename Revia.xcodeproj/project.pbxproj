@@ -9,7 +9,9 @@
 /* Begin PBXBuildFile section */
 		00118769493CC5F42E5E1A95 /* Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCFA9C73E57CBB8F5D5F932 /* Backup.swift */; };
 		01687E0234EAA60FCC980AE2 /* BackupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC99F3F1D8295E39CA88A85 /* BackupView.swift */; };
+		02634B51B3C2A48FCDC71854 /* SpeechSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F141BE0C27451B736E7994 /* SpeechSettingsView.swift */; };
 		07629C95EDFFA17A9D93DD97 /* Schedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 316137D4BDE065274DB28CD1 /* Schedule.swift */; };
+		09C97FE9AC903C34A2FD3235 /* SystemSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D273C8402A9B3522FFDDBB6 /* SystemSpeech.swift */; };
 		0ADE138DE4C4DD0B8FBB1A74 /* KeyboardDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC21C53DFE7CD0D218811FE /* KeyboardDismiss.swift */; };
 		0C4781C930C03FDC352A2F5F /* ReviaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72739D0FE780E43DE3DBF832 /* ReviaTests.swift */; };
 		0E5359F31BE48EF52CCB446F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9935B3AEBC14A8BC278502E9 /* Localizable.strings */; };
@@ -75,6 +77,7 @@
 		103D5F231FDA04CFB7DD9A92 /* SentencesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SentencesView.swift; sourceTree = "<group>"; };
 		137C1C896A92E703BBF10833 /* APIKeyView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = APIKeyView.swift; sourceTree = "<group>"; };
 		1748F98A98535DF1F6EA9B4E /* AppAppearance.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
+		1D273C8402A9B3522FFDDBB6 /* SystemSpeech.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SystemSpeech.swift; sourceTree = "<group>"; };
 		1DE065ED8C5005F8CA868FC9 /* TodayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
 		21D152AAC82D2662C889B5E1 /* ThemeManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		237EA0486E58599701F54C48 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -95,6 +98,7 @@
 		6061403F78245DC96CD705C3 /* LocalizationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
 		66A792F1401B26B1182D95E7 /* Components.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 		6DD0FE5746DD1C10FAE5940F /* AddSentenceView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddSentenceView.swift; sourceTree = "<group>"; };
+		70F141BE0C27451B736E7994 /* SpeechSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeechSettingsView.swift; sourceTree = "<group>"; };
 		72739D0FE780E43DE3DBF832 /* ReviaTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviaTests.swift; sourceTree = "<group>"; };
 		7BC99F3F1D8295E39CA88A85 /* BackupView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupView.swift; sourceTree = "<group>"; };
 		7BDBF795823E0CCDF3BBFC62 /* ReviaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReviaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -262,6 +266,7 @@
 			children = (
 				99A8046F745895EB3FFE4F06 /* SpeechController.swift */,
 				C016601A93E6AC48B5524D3A /* AudioCache.swift */,
+				1D273C8402A9B3522FFDDBB6 /* SystemSpeech.swift */,
 			);
 			name = Speech;
 			path = Speech;
@@ -369,6 +374,7 @@
 				4FBCCBD33ED544961B2833A9 /* PlansView.swift */,
 				C89C62DAA210CB38D1DDB32A /* PreferencesView.swift */,
 				F5C3CE2562C1BB6FBB62DBBE /* ThemeSettingsView.swift */,
+				70F141BE0C27451B736E7994 /* SpeechSettingsView.swift */,
 			);
 			name = Pages;
 			path = Pages;
@@ -565,6 +571,8 @@
 				AF7DE0875E1F784C63FE2863 /* PreferencesView.swift in Sources */,
 				FE15561E6EAA54801D8F3AEF /* ThemeManager.swift in Sources */,
 				9361AA3270A63A4DEAF0B7CD /* ThemeSettingsView.swift in Sources */,
+				09C97FE9AC903C34A2FD3235 /* SystemSpeech.swift in Sources */,
+				02634B51B3C2A48FCDC71854 /* SpeechSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

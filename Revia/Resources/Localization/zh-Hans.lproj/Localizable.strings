@@ -37,7 +37,6 @@
 "meaning_hint" = "写下你对这句话的理解";
 "learning_date" = "学习日期";
 "generate_audio" = "生成语音";
-"enable_audio_note" = "在设置中激活 API Key 并选择音色后可勾选。";
 "saving_sentence" = "正在保存 / 生成语音…";
 "save_sentence" = "保存句子";
 "add_sentence" = "添加句子";
@@ -85,7 +84,6 @@
 "storage_read_failed" = "无法读取语音占用空间：%@";
 "audio_not_ready" = "语音存储尚未就绪";
 "audio_busy" = "该句子的语音正在生成";
-"audio_missing" = "本地没有语音。请先在设置中激活 API Key 并选择音色。";
 "playback_failed" = "语音播放失败，请重试。";
 "db_open_failed" = "无法打开数据库";
 "network_failed" = "网络连接失败，请检查网络后重试。";
@@ -306,3 +304,35 @@
 "icon_failed" = "主题色已保存，但 App 图标更换失败。可以再次点击已选颜色重试。";
 
 "icon_unavailable" = "主题色已保存，当前设备不支持更换 App 图标。";
+
+"speech_settings" = "语音设置";
+
+"speech_source" = "语音来源";
+
+"speech_source_automatic" = "自动";
+
+"speech_source_system" = "系统语音";
+
+"speech_source_elevenlabs" = "ElevenLabs";
+
+"speech_source_note" = "自动模式下，有已激活的 API Key 时使用 ElevenLabs，否则使用系统语音。系统语音不需要 API Key。";
+
+"system_language" = "句子语言";
+
+"speech_auto_language" = "自动识别";
+
+"system_default_voice" = "系统默认";
+
+"system_voice_none" = "暂无可用音色";
+
+"system_voice_note" = "可按语言选择手机上的音色，男女标记以系统提供的信息为准。可在 iPhone 辅助功能设置中下载更多音色。短句可能识别不准，必要时可在上方指定语言。修改仅影响新生成的语音。";
+
+"eleven_key_note" = "使用 ElevenLabs 需要激活 API Key，系统语音无需 Key。";
+
+"system_voice_missing" = "未找到该语言可用的音色。请在 iPhone 辅助功能设置中下载音色，再返回语音设置。";
+
+"system_speech_failed" = "系统语音生成失败，请检查所选音色是否可用后重试。";
+
+"enable_audio_note" = "请在语音设置中选择系统音色，或激活 API Key 使用 ElevenLabs。";
+
+"audio_missing" = "本地没有语音，请检查语音来源及音色设置。";
