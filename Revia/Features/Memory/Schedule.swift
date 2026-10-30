@@ -79,7 +79,19 @@ struct SentenceEdit: Identifiable {
     var id: Int64 { sentence.id }
 }
 
+struct SentenceDayGroup: Identifiable {
+    let date: String
+    let sentences: [Sentence]
+    var id: String { date }
+}
+
 enum SentenceLibrary {
+    /// Group already-filtered, newest-first results without reordering rows within a day.
+    static func groupedByLearningDate(_ sentences: [Sentence]) -> [SentenceDayGroup] {
+        Dictionary(grouping: sentences, by: \.learningDate)
+            .map { SentenceDayGroup(date: $0.key, sentences: $0.value) }
+            .sorted { $0.date > $1.date }
+    }
     static func results(_ sentences: [Sentence], query: String, favoritesOnly: Bool = false) -> [Sentence] {
         let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
         return sentences.filter {

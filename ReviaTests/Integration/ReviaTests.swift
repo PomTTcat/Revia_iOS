@@ -777,3 +777,31 @@ final class PlaybackRequestTests: XCTestCase {
         XCTAssertNil(state.pending)
     }
 }
+
+
+final class SentenceDayGroupingTests: XCTestCase {
+    func testDatesAreDescendingAndEachDayPreservesNewestFirstRows() {
+        let sentences = [
+            Sentence(id: 1, text: "old day", translation: "", learningDate: "2026-10-28", createdAt: Date(timeIntervalSince1970: 30)),
+            Sentence(id: 2, text: "first", translation: "", learningDate: "2026-10-30", createdAt: Date(timeIntervalSince1970: 10)),
+            Sentence(id: 3, text: "second", translation: "", learningDate: "2026-10-30", createdAt: Date(timeIntervalSince1970: 20)),
+            Sentence(id: 4, text: "third", translation: "", learningDate: "2026-10-30", createdAt: Date(timeIntervalSince1970: 25))
+        ]
+        let groups = SentenceLibrary.groupedByLearningDate(SentenceLibrary.results(sentences, query: ""))
+        XCTAssertEqual(groups.map(\.date), ["2026-10-30", "2026-10-28"])
+        XCTAssertEqual(groups.map { $0.sentences.map(\.id) }, [[4, 3, 2], [1]])
+        XCTAssertEqual(groups.map(\.id), groups.map(\.date))
+    }
+    func testSearchAndFavoriteFiltersRemoveEmptyDayHeaders() {
+        let sentences = [
+            Sentence(id: 1, text: "keep", translation: "", learningDate: "2026-10-30", isFavorite: true),
+            Sentence(id: 2, text: "other", translation: "", learningDate: "2026-10-29"),
+            Sentence(id: 3, text: "keep too", translation: "", learningDate: "2026-10-28")
+        ]
+        let filtered = SentenceLibrary.results(sentences, query: "keep", favoritesOnly: true)
+        let groups = SentenceLibrary.groupedByLearningDate(filtered)
+        XCTAssertEqual(groups.map(\.date), ["2026-10-30"])
+        XCTAssertEqual(groups.first?.sentences.map(\.id), [1])
+        XCTAssertTrue(SentenceLibrary.groupedByLearningDate([]).isEmpty)
+    }
+}

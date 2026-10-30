@@ -59,8 +59,25 @@ struct SentencesView: View {
                     if sentences.isEmpty {
                         EmptyViewMessage(text: L(query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? (favoritesOnly ? "no_favorites" : "no_sentences") : "no_results"))
                     }
-                    ForEach(sentences) { sentence in
-                        SentenceCard(sentence: sentence, fresh: false, compact: compact)
+                    if compact {
+                        ForEach(SentenceLibrary.groupedByLearningDate(sentences)) { group in
+                            Section {
+                                ForEach(group.sentences) { sentence in
+                                    SentenceCard(sentence: sentence, fresh: false, compact: true)
+                                }
+                            } header: {
+                                Text((try? Schedule.date(group.date)).map { Localization.date($0, template: "yMMMd") } ?? group.date)
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(Palette.muted)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.top, 8)
+                                    .accessibilityAddTraits(.isHeader)
+                            }
+                        }
+                    } else {
+                        ForEach(sentences) { sentence in
+                            SentenceCard(sentence: sentence, fresh: false)
+                        }
                     }
                 }.padding(24)
             }
