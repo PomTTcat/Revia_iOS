@@ -21,6 +21,7 @@
 		45E7DDBF33B638EBB70F498E /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D874DC24CF9C03C122E83F /* ShareSheet.swift */; };
 		54A8CB47A384209245EFF7B3 /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067FC8AEAB96DD6CDE021207 /* LaunchView.swift */; };
 		585EE80BBE5CF450B95BED82 /* PlanCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC58591AB756549EBF8DBE13 /* PlanCatalog.swift */; };
+		6FAFF1EFB6CE4FB516E9FAAF /* PlaybackRepeat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD29442EB5E4C25E7C7DF94 /* PlaybackRepeat.swift */; };
 		7326667BA1045E9715044BA3 /* ReminderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2E02C3319E4AECCC7D7B72 /* ReminderController.swift */; };
 		75D3284DD55AB825C2339758 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D04CF18977B141F97AEBAC30 /* Foundation.framework */; };
 		775C80384BE956EE74CA735B /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8C266AF53772C5280B83D4 /* CredentialStore.swift */; };
@@ -52,6 +53,7 @@
 		D2815D08BA481CD693CC288C /* StudyPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AD4DC2994E0805283034B8 /* StudyPlan.swift */; };
 		D78D3CF6DE6B6C8F4550F193 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E648457BB85E9017903F1890 /* SettingsView.swift */; };
 		DB4EB93C1FFF46997EA10B7F /* APIKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137C1C896A92E703BBF10833 /* APIKeyView.swift */; };
+		E4382BB3C7A35D73E25F2EFD /* PlaybackRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C6B97F44B08D271D8085D7 /* PlaybackRequest.swift */; };
 		E4F80C56D51E493BCD889D12 /* ElevenLabsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1883EBBB6B7327C6E3165C7 /* ElevenLabsTests.swift */; };
 		F549FB9E21F403E44081B587 /* ReminderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451FDD53A356C9111358B568 /* ReminderTests.swift */; };
 		F80D783E90802E0C17EDFED6 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 765495EE2A3FD0EE2F557C52 /* RxRelay */; };
@@ -74,6 +76,7 @@
 		0596104D45C685738C809E0B /* DayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DayView.swift; sourceTree = "<group>"; };
 		067FC8AEAB96DD6CDE021207 /* LaunchView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LaunchView.swift; sourceTree = "<group>"; };
 		0C133678F11F8C5D43ED05B8 /* libsqlite3.tbd */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		0CD29442EB5E4C25E7C7DF94 /* PlaybackRepeat.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlaybackRepeat.swift; sourceTree = "<group>"; };
 		103D5F231FDA04CFB7DD9A92 /* SentencesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SentencesView.swift; sourceTree = "<group>"; };
 		137C1C896A92E703BBF10833 /* APIKeyView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = APIKeyView.swift; sourceTree = "<group>"; };
 		1748F98A98535DF1F6EA9B4E /* AppAppearance.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
@@ -110,6 +113,7 @@
 		BC58591AB756549EBF8DBE13 /* PlanCatalog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlanCatalog.swift; sourceTree = "<group>"; };
 		C016601A93E6AC48B5524D3A /* AudioCache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AudioCache.swift; sourceTree = "<group>"; };
 		C89C62DAA210CB38D1DDB32A /* PreferencesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
+		C8C6B97F44B08D271D8085D7 /* PlaybackRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlaybackRequest.swift; sourceTree = "<group>"; };
 		CEEB447666036EADD9493EE0 /* Database.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		D04CF18977B141F97AEBAC30 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		D4D7D17B1B3E0FF072DC7D59 /* Store.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
@@ -267,6 +271,8 @@
 				99A8046F745895EB3FFE4F06 /* SpeechController.swift */,
 				C016601A93E6AC48B5524D3A /* AudioCache.swift */,
 				1D273C8402A9B3522FFDDBB6 /* SystemSpeech.swift */,
+				0CD29442EB5E4C25E7C7DF94 /* PlaybackRepeat.swift */,
+				C8C6B97F44B08D271D8085D7 /* PlaybackRequest.swift */,
 			);
 			name = Speech;
 			path = Speech;
@@ -573,6 +579,8 @@
 				9361AA3270A63A4DEAF0B7CD /* ThemeSettingsView.swift in Sources */,
 				09C97FE9AC903C34A2FD3235 /* SystemSpeech.swift in Sources */,
 				02634B51B3C2A48FCDC71854 /* SpeechSettingsView.swift in Sources */,
+				6FAFF1EFB6CE4FB516E9FAAF /* PlaybackRepeat.swift in Sources */,
+				E4382BB3C7A35D73E25F2EFD /* PlaybackRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

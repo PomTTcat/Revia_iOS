@@ -10,6 +10,13 @@ struct SpeechSettingsView: View {
         let _ = language.code
         Form {
             Section {
+                Toggle(L("repeat_playback"), isOn: Binding(get: { speech.repetition.enabled }, set: { speech.setRepeatEnabled($0) }))
+                Picker(L("repeat_count"), selection: Binding(get: { speech.repetition.count }, set: { speech.selectRepeatCount($0) })) {
+                    ForEach(PlaybackRepeatCount.allCases) { count in Text(count.title).tag(count) }
+                }.disabled(!speech.repetition.enabled)
+            } footer: { Text(L("repeat_note")) }
+            .listRowBackground(Palette.surface)
+            Section {
                 Picker(L("speech_source"), selection: Binding(get: { speech.source }, set: { speech.selectSource($0) })) {
                     ForEach(SpeechSource.allCases) { option in Text(option.title).tag(option) }
                 }

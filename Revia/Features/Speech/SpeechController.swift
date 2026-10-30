@@ -6,6 +6,7 @@ import RxRelay
 
 @MainActor
 final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate {
+    @Published private(set) var repetition: PlaybackRepeatSettings
     @Published private(set) var draft = ""
     @Published private(set) var active = false
     @Published private(set) var validating = false
@@ -35,11 +36,15 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
     private var database: Database?
     private var cache: AudioCache?
     private var player: AVAudioPlayer?
-    private var requestedPlaybackID: Int64?
+    private var repeatSession: PlaybackRepeatSession?
+    private var interruptionObserver: AnyCancellable?
+    private var playbackRequests = PlaybackRequestState()
+    private var activePlaybackRequest: PlaybackRequest?
     private let defaults: UserDefaults
 
     init(api: ElevenLabs = ElevenLabs(), defaults: UserDefaults = .standard, credentials: CredentialStorage = CredentialStore(), systemSpeech: (any SystemSpeechProviding)? = nil) {
         self.api = api; self.defaults = defaults; self.credentials = credentials
+        self.repetition = PlaybackRepeatSettings(defaults: defaults)
         self.systemSpeech = systemSpeech ?? SystemSpeechGenerator()
         super.init()
         source = defaults.string(forKey: "speech.source").flatMap(SpeechSource.init(rawValue:)) ?? .automatic
@@ -64,6 +69,13 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in self?.canGenerate = $0 })
             .disposed(by: bag)
+        interruptionObserver = NotificationCenter.default.publisher(for: AVAudioSession.interruptionNotification)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] notification in
+                guard let value = notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? NSNumber,
+                      AVAudioSession.InterruptionType(rawValue: value.uintValue) == .began else { return }
+                self?.stop()
+            }
     }
     func configure(database: Database, directory: URL) throws {
         self.database = database
@@ -74,6 +86,16 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
             try cache!.remove(url.lastPathComponent)
         }
         refreshStorage()
+    }
+    func setRepeatEnabled(_ enabled: Bool) {
+        guard repetition.enabled != enabled else { return }
+        repetition.enabled = enabled
+        repetition.save(in: defaults)
+        if !enabled { stop() }
+    }
+    func selectRepeatCount(_ count: PlaybackRepeatCount) {
+        repetition.count = count
+        repetition.save(in: defaults)
     }
     func selectSource(_ value: SpeechSource) {
         source = value
@@ -160,12 +182,17 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
     func play(_ sentence: Sentence) {
         if playingID == sentence.id { stop(); return }
         guard !busyIDs.contains(sentence.id) else { return }
-        requestedPlaybackID = sentence.id
-        prepare(sentence, play: true) { [weak self] result in
-            if case .failure(let error) = result { self?.alert = error.localizedDescription }
+        stop()
+        let request = playbackRequests.begin(sentenceID: sentence.id)
+        prepare(sentence, play: true, request: request) { [weak self] result in
+            guard let self, self.playbackRequests.isCurrent(request) else { return }
+            if case .failure(let error) = result {
+                self.playbackRequests.finish(request)
+                self.alert = error.localizedDescription
+            }
         }
     }
-    func prepare(_ sentence: Sentence, play: Bool = false, completion: @escaping (Result<Void, Error>) -> Void) {
+    func prepare(_ sentence: Sentence, play: Bool = false, request: PlaybackRequest? = nil, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let database, let cache else { completion(.failure(ReviaError.message(L("audio_not_ready")))); return }
         guard !busyIDs.contains(sentence.id) else { completion(.failure(ReviaError.message(L("audio_busy")))); return }
         do {
@@ -177,12 +204,12 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
             let matching = records.first { $0.text == sentence.text && $0.voiceID == voice && $0.modelID == model && $0.version == AudioCache.version }
             // Always use a matching local file before considering a paid request.
             if let record = matching, let url = cache.existing(record.filename) {
-                if play && requestedPlaybackID == sentence.id { try startPlayer(url, sentenceID: sentence.id) }
+                if play, let request, playbackRequests.isCurrent(request) { try startPlayer(url, sentenceID: sentence.id, request: request) }
                 completion(.success(())); return
             }
             // Changing the voice affects new recordings; existing audio stays playable without a paid regeneration.
             if let record = records.first(where: { $0.text == sentence.text && cache.existing($0.filename) != nil }), let url = cache.existing(record.filename) {
-                if play && requestedPlaybackID == sentence.id { try startPlayer(url, sentenceID: sentence.id) }
+                if play, let request, playbackRequests.isCurrent(request) { try startPlayer(url, sentenceID: sentence.id, request: request) }
                 completion(.success(())); return
             }
             guard canGenerate else { throw ReviaError.message(L("audio_missing")) }
@@ -200,7 +227,7 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
             // Identical sentences can share one file while retaining separate database references.
             if let url = cache.existing(filename) {
                 try database.saveAudio(record)
-                if play && requestedPlaybackID == sentence.id { try startPlayer(url, sentenceID: sentence.id) }
+                if play, let request, playbackRequests.isCurrent(request) { try startPlayer(url, sentenceID: sentence.id, request: request) }
                 completion(.success(())); return
             }
             busyIDs.insert(sentence.id)
@@ -218,7 +245,7 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
                             if !(try database.audioRecords()).contains(where: { $0.filename == filename }) { try? cache.remove(filename) }
                             throw error
                         }
-                        if play && self.requestedPlaybackID == sentence.id { try self.startPlayer(url, sentenceID: sentence.id) }
+                        if play, let request, self.playbackRequests.isCurrent(request) { try self.startPlayer(url, sentenceID: sentence.id, request: request) }
                         completion(.success(()))
                     } catch { completion(.failure(error)) }
                 }, onFailure: { [weak self] error in
@@ -233,15 +260,15 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
         guard let database, let cache else { try change(); return }
         requests[id]?.dispose(); requests[id] = nil; busyIDs.remove(id)
         if playingID == id { stop() }
-        if requestedPlaybackID == id { requestedPlaybackID = nil }
+        if playbackRequests.pending?.sentenceID == id { playbackRequests.cancel() }
         let files = Set(try database.audioRecords(sentenceID: id).map(\.filename))
         try change()
         let retained = Set(try database.audioRecords().map(\.filename))
         defer { refreshStorage() }
         for filename in files.subtracting(retained) { try cache.remove(filename) }
     }
-    private func startPlayer(_ url: URL, sentenceID: Int64) throws {
-        stop()
+    private func startPlayer(_ url: URL, sentenceID: Int64, request: PlaybackRequest) throws {
+        stopPlayer()
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
             try AVAudioSession.sharedInstance().setActive(true)
@@ -249,19 +276,39 @@ final class SpeechController: NSObject, ObservableObject, AVAudioPlayerDelegate 
             player.delegate = self
             guard player.prepareToPlay(), player.play() else { throw SpeechFailure.invalidAudio }
             self.player = player; playingID = sentenceID
+            activePlaybackRequest = request
+            repeatSession = PlaybackRepeatSession(settings: repetition)
         } catch { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation); throw error }
     }
     func stop() {
-        player?.stop(); player = nil; playingID = nil; requestedPlaybackID = nil
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        playbackRequests.cancel()
+        stopPlayer()
+    }
+    private func stopPlayer() {
+        let hadPlayer = player != nil
+        player?.stop(); player = nil; repeatSession = nil; playingID = nil; activePlaybackRequest = nil
+        if hadPlayer { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation) }
+    }
+    private func finishPlayback() {
+        let request = activePlaybackRequest
+        stopPlayer()
+        if let request { playbackRequests.finish(request) }
     }
     nonisolated func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        Task { @MainActor [weak self] in if self?.player === player { self?.stop() } }
+        Task { @MainActor [weak self] in
+            guard let self, self.player === player else { return }
+            guard flag else { self.finishPlayback(); self.alert = L("playback_failed"); return }
+            guard self.repeatSession?.finishedPlayback() == true else { self.finishPlayback(); return }
+            player.currentTime = 0
+            guard player.prepareToPlay(), player.play(atTime: player.deviceCurrentTime + PlaybackRepeatSession.interval) else {
+                self.finishPlayback(); self.alert = L("playback_failed"); return
+            }
+        }
     }
     nonisolated func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
         Task { @MainActor [weak self] in
             guard self?.player === player else { return }
-            self?.stop(); self?.alert = L("playback_failed")
+            self?.finishPlayback(); self?.alert = L("playback_failed")
         }
     }
 }

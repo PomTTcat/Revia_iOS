@@ -693,3 +693,87 @@ final class SystemSpeechTests: XCTestCase {
         XCTAssertTrue(try database.audioRecords().isEmpty)
     }
 }
+
+final class PlaybackRepeatTests: XCTestCase {
+    func testDefaultsPersistenceAndInvalidCountFallback() throws {
+        let suite = UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        var settings = PlaybackRepeatSettings(defaults: defaults)
+        XCTAssertFalse(settings.enabled)
+        XCTAssertEqual(settings.count, .three)
+        settings.enabled = true
+        settings.count = .forever
+        settings.save(in: defaults)
+        let restored = PlaybackRepeatSettings(defaults: defaults)
+        XCTAssertTrue(restored.enabled)
+        XCTAssertEqual(restored.count, .forever)
+        defaults.set(99, forKey: PlaybackRepeatSettings.countKey)
+        XCTAssertEqual(PlaybackRepeatSettings(defaults: defaults).count, .three)
+    }
+    func testTotalCountsIncludeTheFirstPlayAndStopAtTheLimit() throws {
+        let suite = UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        var settings = PlaybackRepeatSettings(defaults: defaults)
+        settings.enabled = true
+        for count in [PlaybackRepeatCount.twice, .three, .five] {
+            settings.count = count
+            var session = PlaybackRepeatSession(settings: settings)
+            for _ in 1..<count.rawValue { XCTAssertTrue(session.finishedPlayback()) }
+            XCTAssertFalse(session.finishedPlayback())
+            XCTAssertFalse(session.finishedPlayback())
+        }
+    }
+    func testDisabledAndForeverSessionsUsePlaybackSnapshots() throws {
+        let suite = UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        var settings = PlaybackRepeatSettings(defaults: defaults)
+        settings.count = .forever
+        var once = PlaybackRepeatSession(settings: settings)
+        XCTAssertFalse(once.finishedPlayback())
+        settings.enabled = true
+        var forever = PlaybackRepeatSession(settings: settings)
+        settings.enabled = false
+        settings.count = .twice
+        for _ in 0..<1000 { XCTAssertTrue(forever.finishedPlayback()) }
+        var next = PlaybackRepeatSession(settings: settings)
+        XCTAssertFalse(next.finishedPlayback())
+    }
+}
+
+
+final class PlaybackRequestTests: XCTestCase {
+    func testLateEndOfPreviousAudioCannotClearNewRequest() {
+        var state = PlaybackRequestState()
+        let first = state.begin(sentenceID: 1)
+        let next = state.begin(sentenceID: 2)
+        state.finish(first)
+        XCTAssertTrue(state.isCurrent(next))
+        XCTAssertFalse(state.isCurrent(first))
+        state.finish(next)
+        XCTAssertNil(state.pending)
+    }
+    func testOlderGenerationForSameSentenceCannotRestartNewPlayback() {
+        var state = PlaybackRequestState()
+        let first = state.begin(sentenceID: 1)
+        state.cancel()
+        let next = state.begin(sentenceID: 1)
+        XCTAssertNotEqual(first, next)
+        XCTAssertFalse(state.isCurrent(first))
+        state.finish(first)
+        XCTAssertTrue(state.isCurrent(next))
+    }
+    func testStopInvalidatesAllPendingGenerationCompletions() {
+        var state = PlaybackRequestState()
+        let first = state.begin(sentenceID: 1)
+        let next = state.begin(sentenceID: 2)
+        state.cancel()
+        XCTAssertFalse(state.isCurrent(first))
+        XCTAssertFalse(state.isCurrent(next))
+        state.finish(first)
+        state.finish(next)
+        XCTAssertNil(state.pending)
+    }
+}

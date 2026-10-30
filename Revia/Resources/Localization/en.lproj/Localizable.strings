@@ -336,3 +336,13 @@
 "enable_audio_note" = "Choose a system voice in Voice settings, or activate an API key to use ElevenLabs.";
 
 "audio_missing" = "No local audio is available. Check the voice source and voice settings.";
+
+"repeat_playback" = "Repeat playback";
+
+"repeat_count" = "Play count";
+
+"repeat_times" = "%d times";
+
+"repeat_forever" = "Until stopped";
+
+"repeat_note" = "Counts include the first play, with 3 seconds between plays. Settings apply to the next playback. Turning repeat off stops the current playback.";

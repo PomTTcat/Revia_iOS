@@ -336,3 +336,13 @@
 "enable_audio_note" = "音声設定でシステム音声を選ぶか、APIキーを有効にしてElevenLabsを選んでください。";
 
 "audio_missing" = "保存済みの音声がありません。音声の種類と音声設定を確認してください。";
+
+"repeat_playback" = "繰り返し再生";
+
+"repeat_count" = "再生回数";
+
+"repeat_times" = "%d回";
+
+"repeat_forever" = "停止するまで";
+
+"repeat_note" = "回数には最初の再生を含み、間隔は3秒です。設定は次の再生から反映されます。繰り返しをオフにすると再生を停止します。";

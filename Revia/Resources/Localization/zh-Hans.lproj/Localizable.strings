@@ -336,3 +336,13 @@
 "enable_audio_note" = "请在语音设置中选择系统音色，或激活 API Key 使用 ElevenLabs。";
 
 "audio_missing" = "本地没有语音，请检查语音来源及音色设置。";
+
+"repeat_playback" = "重复播放";
+
+"repeat_count" = "播放次数";
+
+"repeat_times" = "%d 次";
+
+"repeat_forever" = "一直重复";
+
+"repeat_note" = "次数包含首次播放，每次间隔 3 秒。设置用于下次播放，关闭重复开关会停止当前播放。";
